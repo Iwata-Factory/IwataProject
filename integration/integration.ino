@@ -114,7 +114,7 @@ void loop() {
 
   while (1) { // 着陸の判定を行う
     static int i = 0; // 判定の繰り返し回数を調べる
-    if (!(determine_landing())) {
+    if (determine_landing()) {
       delay(5000);
       break;
     } else {
