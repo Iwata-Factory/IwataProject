@@ -31,18 +31,18 @@ static float last_distance = -1; // 目的地までの距離(m)。負の値で�
 static const uint8_t length = 6;   //読み出しデータの個数
 
 // 構造体を宣言
-struct Vector2D { // 2次元のベクトル
+typedef struct { // 2次元のベクトル
   double x; //2次元ベクトルのx座標
   double y; //2次元ベクトルのy座標
-};
+} Vector2D;
 
-struct Vector3D { // 3次元のベクトル
+typedef struct { // 3次元のベクトル
   double x; //3次元ベクトルのx座標
   double y; //3次元ベクトルのy座標
   double z; //3次元ベクトルのz座標
-};
+} Vector3D;
 
-struct GPS { // GPS関連
+struct GPS { // GPS関連    /* これだけ良くわからなかったのでtypedefしていません */
   double utc = 0.0;       //グリニッジ天文時
   double latitude = 0.0;   //経度
   double longtitude = 0.0;   //緯度
@@ -53,24 +53,24 @@ struct GPS { // GPS関連
   /*Speedとdistanceは小文字が予約語だったのでとりあえず大文字にしてあります*/
 };
 
-struct AC { // 加速度センサ
+typedef struct { // 加速度センサ
   double x = 0.0; // x軸方向
   double y = 0.0; // y軸方向
   double z = 0.0; // z軸方向
-};
+} AC;
 
-struct TM { // 地磁気センサ
+typedef struct { // 地磁気センサ
   double x = 0.0; // x軸方向
   double y = 0.0; // y軸方向
   double z = 0.0; // z軸方向
-};
+} TM;
 
-struct DRIVE { // モーター制御
+typedef struct { // モーター制御
   int right1 = 0; // 8番ピン対応
   int right2 = 0; // 9番ピン対応
   int leght1 = 0; // 10番ピン対応
   int leght2 = 0; // 11番ピン対応
-};
+} DRIVE;
 
 // 50,51をArduinoとGPS間のシリアル通信用に
 SoftwareSerial g_gps( PIN_GPS_Rx, PIN_GPS_Tx);
@@ -140,18 +140,22 @@ void loop() {
 
   // need パラシュートから安全に離れる処理を書く
 
-  while (1) {
+  while (1) { // この部分をひたすらに繰り返す
+
     static int i = 0; // 繰り返し数のカウント
 
-    static double my_direction = 1; //自分の向いている方位（北を0として時計回りに0~360の値を取る）
+    static double my_direction = -1; //自分の向いている方位（北を0として時計回りに0~360の値を取る）
+    static double dst_direction = -1; //目的地の方位。負の値で初期化。
     static double my_rotation = 500; //自分が回転すべき大きさ(-180~180までの値を取る)
+
 
     //GPSから目的地までの距離と方角を得る
     while (1) {
 
       struct GPS gps; // 構造体宣言
-      static int j = 0; // GPS受信の思考回数のカウント
-      static int k = 0; // GPS受信の成功数のカウント
+
+      static int j = 0; // GPS受信の成功回数のカウント
+      static int k = 0; // GPS受信の試行数のカウント
 
       double gps_direction_array[5]; // サンプルを入れる箱
       double gps_distance_array[5]; // サンプルを入れる箱
@@ -172,21 +176,56 @@ void loop() {
           k += 1;
         }
       }
-      
+
       // ここで平均値を取る
       // gps_direction_arrayを投げて向きの中央値を計算
       // gps_distance_arrayを投げて距離の中央値を計算
-      
+
     }
 
+    //自分が向いている角度を取得
+    while (1) {
+      static int j = 0; // 方角取得の成功数をカウント
+      static int k = 0; // 方角取得の試行数をカウント
+      double my_direction_array[5]; // 自身の方角を格納、中央値を使う
 
+      while (j < 5) { // 5個の方位のサンプルを取得
+        my_direction_array[j] = get_my_direction();
+        if (my_direction_array[j] >= 0 && my_direction_array[j] <= 360) { // 正しく取れていればmy_directionは0~360
+          j += 1;
+          k += 1;
+        } else {
+          k += 1;
+        }
+      }
+      // 中央値を取得
+      //my_directionに代入
+    }
 
+    // 必要な回転量を計算する(-180~180で出力)
 
+    while (1) {
+      // Vector2D型のベクトルを定義
+      Vector2D my_vector;
+      my_vector.x = cos(rad2deg(my_direction));
+      my_vector.y = sin(rad2deg(my_direction));
+      Vector2D dst_vector;
+      dst_vector.x = cos(rad2deg(dst_direction));
+      dst_vector.y = sin(rad2deg(dst_direction));
 
+      // 内積を計算(単位ベクトル同士だからこれがcosθ)
+      double inner_product = my_vector.x * dst_vector.x + my_vector.y * dst_vector.y;
+      my_rotation = rad2deg(acos(inner_product)); //(初期値は500だがこれによって0~180に収まる)
+      
+      // ここでmy_rotationを-180~180に直す(どちら向きの回転が早いか)
+      break; /*現状ではここをwhile文にする理由は無いが念のため*/
+    }
 
+    //ここに回転部分を書く
+
+    //ここに進行部分を書く(直進＋α)
   }
-
-
-
-
 }
+
+
+
