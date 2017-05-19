@@ -123,4 +123,70 @@ void loop() {
     }
   }
 
+  /* 着陸判定をパスしたら2秒回転します。 */
+  digitalWrite(M1_1, 0);
+  digitalWrite(M1_2, 1);
+  digitalWrite(M2_1, 1);
+  digitalWrite(M2_2, 0);
+  delay(200);
+  // 停止
+  digitalWrite(M1_1, 1);
+  digitalWrite(M1_2, 1);
+  digitalWrite(M2_1, 1);
+  digitalWrite(M2_2, 1);
+
+
+  // need　ケーシングを開く処理を書く
+
+  // need パラシュートから安全に離れる処理を書く
+
+  while (1) {
+    static int i = 0; // 繰り返し数のカウント
+
+    static double my_direction = 1; //自分の向いている方位（北を0として時計回りに0~360の値を取る）
+    static double my_rotation = 500; //自分が回転すべき大きさ(-180~180までの値を取る)
+
+    //GPSから目的地までの距離と方角を得る
+    while (1) {
+
+      struct GPS gps; // 構造体宣言
+      static int j = 0; // GPS受信の思考回数のカウント
+      static int k = 0; // GPS受信の成功数のカウント
+
+      double gps_direction_array[5]; // サンプルを入れる箱
+      double gps_distance_array[5]; // サンプルを入れる箱
+
+      while (!gps_get(&gps)) { //
+        delay(50);
+      }
+
+      while (j < 5) { // 成功サンプルを5個取得したい
+        if (gps.Direction >= 0 && gps.distance >= 0) {
+          gps_direction_array[j] = gps.Direction;
+          gps_distance_array[j] = gps.distance;
+          delay(1000);
+          j += 1;
+          k += 1;
+        } else {
+          delay(1000);
+          k += 1;
+        }
+      }
+      
+      // ここで平均値を取る
+      // gps_direction_arrayを投げて向きの中央値を計算
+      // gps_distance_arrayを投げて距離の中央値を計算
+      
+    }
+
+
+
+
+
+
+  }
+
+
+
+
 }
