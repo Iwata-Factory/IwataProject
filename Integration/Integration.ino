@@ -183,51 +183,83 @@ void loop() {
       last_distance = value_ave(5, gps_distance_array); /*注意:引数の渡し方検討*/
     }
 
-    //自分が向いている角度を取得
-    while (1) {
-      static int j = 0; // 方角取得の成功数をカウント
-      static int k = 0; // 方角取得の試行数をカウント
+    // 5回以内の回転で位置補正
+    static int m = 0; // GPS受信の成功回数のカウント
+    while (m < 5) {
+      //自分が向いている角度を取得
+      while (1) {
+        static int j = 0; // 方角取得の成功数をカウント
+        static int k = 0; // 方角取得の試行数をカウント
 
-      double my_direction_array[5]; // 自身の方角を格納、中央値を使う
+        double my_direction_array[5]; // 自身の方角を格納、中央値を使う
 
-      while (j < 5) { // 5個の方位のサンプルを取得
-        my_direction_array[j] = get_my_direction();
-        if (my_direction_array[j] >= 0 && my_direction_array[j] <= 360) { // 正しく取れていればmy_directionは0~360
-          j += 1;
-          k += 1;
-        } else {
-          k += 1;
+        while (j < 5) { // 5個の方位のサンプルを取得
+          my_direction_array[j] = get_my_direction();
+          if (my_direction_array[j] >= 0 && my_direction_array[j] <= 360) { // 正しく取れていればmy_directionは0~360
+            j += 1;
+            k += 1;
+          } else {
+            k += 1;
+          }
         }
+        // my_direction_arrayの中央値を取得
+        my_direction = value_ave(5, my_direction_array);
       }
-      // my_direction_arrayの中央値を取得
-      my_direction = value_ave(5, my_direction_array);
+
+      // 必要な回転量を計算する(-180~180で出力)
+
+      while (1) {
+
+        //相対偏角
+        double relative_args = 0; // 自分の位置が基準
+
+        // Vector2D型のベクトルを定義
+        Vector2D my_vector;
+        my_vector.x = cos(rad2deg(my_direction));
+        my_vector.y = sin(rad2deg(my_direction));
+        Vector2D dst_vector;
+        dst_vector.x = cos(rad2deg(dst_direction));
+        dst_vector.y = sin(rad2deg(dst_direction));
+
+        // 偏角を計算
+        double my_args = atan2(my_vector.y, my_vector.x);
+        double dst_args = atan2(dst_vector.y, dst_vector.x);
+
+        if (dst_args - my_args >= 0) {
+          relative_args = dst_args - my_args;
+        } else {
+          relative_args = dst_args + 2 * M_PI - my_args; // M_PIはπ
+        }
+
+        // 内積を計算(単位ベクトル同士だからこれがcosθ)
+        double inner_product = my_vector.x * dst_vector.x + my_vector.y * dst_vector.y;
+        my_rotation = rad2deg(acos(inner_product)); //(初期値は500だがこれによって0~180に収まる)
+
+        // ここでmy_rotationを-180~180に直す(どちら向きの回転が早いか)
+        if (relative_args < 10 || 350 <= relative_args) { // 方角がほぼ問題ないなら回転しないようにする。
+          my_rotation = 0;
+        } else if (10 <= relative_args && relative_args < 180) { //この時は正方向(右向き)　の回転が早い
+          my_rotation = my_rotation;
+        } else if (180 <= relative_args && relative_args < 350) {
+          my_rotation = -1 * my_rotation;
+        }
+        break; /*現状ではここをwhile文にする理由は無いが念のため*/
+      }
+      //ここに回転部分を書く
+      if (!(my_rotation == 0)) { // 回転する人用があれば回転し、向きの取得から繰り返す
+        go_rotate(my_rotation);
+        m += 1;
+      } else {
+        break; // 直進部分へ移行
+      }
     }
 
-    // 必要な回転量を計算する(-180~180で出力)
-
-    while (1) {
-      // Vector2D型のベクトルを定義
-      Vector2D my_vector;
-      my_vector.x = cos(rad2deg(my_direction));
-      my_vector.y = sin(rad2deg(my_direction));
-      Vector2D dst_vector;
-      dst_vector.x = cos(rad2deg(dst_direction));
-      dst_vector.y = sin(rad2deg(dst_direction));
-
-      // 内積を計算(単位ベクトル同士だからこれがcosθ)
-      double inner_product = my_vector.x * dst_vector.x + my_vector.y * dst_vector.y;
-      my_rotation = rad2deg(acos(inner_product)); //(初期値は500だがこれによって0~180に収まる)
-
-
-
-      // ここでmy_rotationを-180~180に直す(どちら向きの回転が早いか)
-      break; /*現状ではここをwhile文にする理由は無いが念のため*/
-    }
-
-    //ここに回転部分を書く
-
-    //ここに進行部分を書く(直進＋α)
+    //直進する
+    go_straight(5000); /* 引数は暫定です */
   }
+
+  // ここに来たらゴール近傍
+  
 }
 
 

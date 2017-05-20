@@ -54,6 +54,12 @@ int AnalyzeLineString( char szLineString[], struct GPS* gps) {
   min = temp - deg * 100;
   gps->longtitude = deg + min / 60;
 
+  //緯度経度が明らかにおかしい場合はじく
+  if (LATITUDE_MINIMUM < gps->latitude && LATITUDE_MAXIMUM > gps-> latitude && LONGTITUDE_MINIMUM < gps->longtitude && LONGTITUDE_MAXIMUM > gps->longtitude) {
+  } else {
+    return 0;
+  }
+
   return 1;
 }
 // １行文字列の読み込み
