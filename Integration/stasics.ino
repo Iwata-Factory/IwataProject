@@ -103,3 +103,52 @@ double rad_ave(const int array_num, double* value){
   return ave;
 }
 
+
+//角度の外れ値を１ことってその平均をだす
+double rad_out(const int array_num, double* value){
+  int i=0;
+  int j=0;  
+  double temp=0;
+  struct rad_vector vector[array_num];
+  struct rad_vector vector_ave;
+  double value_distance[5];
+  double ave=0;
+  
+  
+  ave = rad_ave(array_num, value);  //まずはすべての平均角度をとる
+
+   //角度を北から時計回りにとったxy座標上の点にする
+  for (i=0; i<array_num; i++){
+    vector[i].x = cos(value[i]);
+    vector[i].y = sin(value[i]);
+  }
+
+  vector_ave.x = cos(ave);
+  vector_ave.y = sin(ave); 
+  
+  for (i=0; i<array_num; i++){
+    value_distance[i] = sqrt(pow((vector[i].x - vector_ave.x), 2)+pow((vector[i].y - vector_ave.y), 2));
+  }
+
+  //距離を比較し一番長いのを外れ値として省く
+  for (i=1; i<array_num; i++){
+    if (value_distance[i] > value_distance[i-1]){
+      //何もしない
+    } else {  //平均ちからの距離を昇順でだし、一番大きい点を最後に来るように並び替える
+      temp = value_distance[i];
+      value_distance[i] = value_distance[i-1];
+      value_distance[i-1] = temp; 
+
+      temp = value[i];
+      value[i] = value[i-1];
+      value[i-1] = temp; 
+  
+     
+    }   
+  }
+
+  ave = rad_ave(array_num-1, value);   //一番距離の大きい点を省いた平均を出す
+
+  return ave;
+}
+
