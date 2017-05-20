@@ -11,6 +11,13 @@
   Serial.println(gps.Direction);
   Serial.println(gps.distance);
   ------------------------------------------*/
+#define LATITUDE_MINIMUM 30  //緯度の最小値
+#define LATITUDE_MAXIMUM 40  //緯度の最大値
+#define LONGTITUDE_MINIMUM 130  //経度の最小値
+#define LONGTITUDE_MAXIMUM 140  //経度の最大値
+
+
+
 // センテンスの解析。
 // $GPRMCの場合、引数変数に、緯度、経度を入れ、戻り値 1 を返す。
 // $GPRMC以外の場合、戻り値は 0 を返す。
@@ -53,6 +60,13 @@ int AnalyzeLineString( char szLineString[], struct GPS* gps) {
   deg = (int)(temp / 100);
   min = temp - deg * 100;
   gps->longtitude = deg + min / 60;
+
+
+  //緯度経度が明らかにおかしい場合はじく
+  if (LATITUDE_MINIMUM < gps->latitude && LATITUDE_MAXIMUM > gps-> latitude && LONGTITUDE_MINIMUM < gps->longtitude && LONGTITUDE_MAXIMUM > gps->longtitude){
+  } else {
+    return 0;
+  }
 
   return 1;
 }
