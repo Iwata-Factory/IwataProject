@@ -177,16 +177,17 @@ void loop() {
         }
       }
 
-      // ここで平均値を取る
-      // gps_direction_arrayを投げて向きの中央値を計算
-      // gps_distance_arrayを投げて距離の中央値を計算
-
+      // gps_direction_arrayを投げて向きの平均を計算
+      dst_direction = rad_ave(5, gps_direction_array); /*注意:引数の渡し方検討*/
+      // gps_distance_arrayを投げて向きの平均を計算
+      last_distance = value_ave(5, gps_distance_array); /*注意:引数の渡し方検討*/
     }
 
     //自分が向いている角度を取得
     while (1) {
       static int j = 0; // 方角取得の成功数をカウント
       static int k = 0; // 方角取得の試行数をカウント
+
       double my_direction_array[5]; // 自身の方角を格納、中央値を使う
 
       while (j < 5) { // 5個の方位のサンプルを取得
@@ -198,8 +199,8 @@ void loop() {
           k += 1;
         }
       }
-      // 中央値を取得
-      //my_directionに代入
+      // my_direction_arrayの中央値を取得
+      my_direction = value_ave(5, my_direction_array);
     }
 
     // 必要な回転量を計算する(-180~180で出力)
@@ -216,7 +217,9 @@ void loop() {
       // 内積を計算(単位ベクトル同士だからこれがcosθ)
       double inner_product = my_vector.x * dst_vector.x + my_vector.y * dst_vector.y;
       my_rotation = rad2deg(acos(inner_product)); //(初期値は500だがこれによって0~180に収まる)
-      
+
+
+
       // ここでmy_rotationを-180~180に直す(どちら向きの回転が早いか)
       break; /*現状ではここをwhile文にする理由は無いが念のため*/
     }
