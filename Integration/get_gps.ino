@@ -4,7 +4,7 @@
   Serial.println('\n');
   Serial.println('以下gps構造体の中身表示');
   Serial.println(gps.latitude);
-  Serial.println(gps.longtitude);
+  Serial.println(gps.longitude);
   Serial.println(gps.utc);
   Serial.println(gps.Speed);
   Serial.println(gps.course);
@@ -52,10 +52,10 @@ int AnalyzeLineString( char szLineString[], GPS gps) {
   temp = atof(psz_long);
   deg = (int)(temp / 100);
   min = temp - deg * 100;
-  gps.longtitude = deg + min / 60;
+  gps.longitude = deg + min / 60;
 
   //緯度経度が明らかにおかしい場合はじく
-  if (LATITUDE_MINIMUM < gps.latitude && LATITUDE_MAXIMUM > gps.latitude && LONGTITUDE_MINIMUM < gps.longtitude && LONGTITUDE_MAXIMUM > gps.longtitude) {
+  if (LATITUDE_MINIMUM < gps.latitude && LATITUDE_MAXIMUM > gps.latitude &&  LONGITUDE_MINIMUM < gps.longitude && LONGITUDE_MAXIMUM > gps.longitude) {
   } else {
     return 0;
   }
@@ -127,13 +127,13 @@ GPS gps_get(GPS gps) {
   //小数点6けたで表示する
   dtostrf(gps.utc, 10, 6, sz_utc);
   dtostrf(gps.latitude, 10, 6, sz_lat);
-  dtostrf(gps.longtitude, 10, 6, sz_long);
+  dtostrf(gps.longitude, 10, 6, sz_long);
 
   Serial.print("utc : ");
   Serial.println(sz_utc);
   Serial.print("latitude : ");
   Serial.println(sz_lat);
-  Serial.print("longtitude : ");
+  Serial.print("longitude : ");
   Serial.println(sz_long);
   Serial.print("Speed : ");
   Serial.println(gps.Speed);   //knot表示されます
@@ -141,7 +141,7 @@ GPS gps_get(GPS gps) {
   Serial.println(gps.course);
   float LatA = 35.710039, LongA = 139.810726;      //目的地
   float LatB = gps.latitude;       //現在地の緯度経度
-  float LongB = gps.longtitude;
+  float LongB = gps.longitude;
   float direct = 0, distance = 0;   //目的地までの距離方角
   //目的地への距離方角算出
   distance = sqrt(pow(LongA - LongB, 2) + pow(LatA - LatB, 2)) * 99096.44, 0;

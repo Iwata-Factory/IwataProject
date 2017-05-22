@@ -16,8 +16,8 @@
 #define GPSBAUDRATE 9600 //シリアル通信のデータ送信レートを9600bpsに定義するための定数(GPSとArduino)
 #define LATITUDE_MINIMUM 30  //緯度の最小値
 #define LATITUDE_MAXIMUM 40  //緯度の最大値
-#define LONGTITUDE_MINIMUM 130  //経度の最小値
-#define LONGTITUDE_MAXIMUM 140  //経度の最大値
+#define LONGITUDE_MINIMUM 130  //経度の最小値
+#define LONGITUDE_MAXIMUM 140  //経度の最大値
 #define HMC5883L 0x1E   //HMC5883L(地磁気センサ)のスレーブアドレス
 #define ADXL345 0x53  //ADXL345(加速度センサ)のスレーブアドレス
 #define M1_1 8 // モーター制御用ピン
@@ -45,7 +45,7 @@ typedef struct { // 3次元のベクトル
 typedef struct { // GPS関連    /* これだけ良くわからなかったのでtypedefしていません */
   double utc = 0.0;       //グリニッジ天文時
   double latitude = 0.0;   //経度
-  double longtitude = 0.0;   //緯度
+  double longitude = 0.0;   //緯度
   double Speed = 0.0;    //移動速度
   double course = 0.0;    //移動方位
   double Direction = -1.0;   //目的地方位
@@ -161,8 +161,8 @@ void loop() {
       double gps_direction_array[5]; // サンプルを入れる箱
       double gps_distance_array[5]; // サンプルを入れる箱
 
-      while (1)) { //gpsの値が正常になるまで取り続ける
-        gps=get_gps(gps);    //gpsの値をとる
+      while (1) { //gpsの値が正常になるまで取り続ける
+        gps = gps_get(gps);    //gpsの値をとる
         if (gps.flag == 1){
           break;
         }
