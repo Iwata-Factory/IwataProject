@@ -14,7 +14,7 @@
 // センテンスの解析。
 // $GPRMCの場合、引数変数に、緯度、経度を入れ、戻り値 1 を返す。
 // $GPRMC以外の場合、戻り値は 0 を返す。
-int AnalyzeLineString( char szLineString[], struct GPS* gps) {
+int AnalyzeLineString( char szLineString[], GPS gps) {
 
   // $GPRMC
   if ( 0 != strncmp( "$GPRMC", szLineString, 6 ) )
@@ -38,24 +38,24 @@ int AnalyzeLineString( char szLineString[], struct GPS* gps) {
   {
     return 0;
   }
-  gps->utc = atof(psz_utc);
-  gps->Speed = atof(psz_Speed);
-  gps->course = atof(psz_course);
+  gps.utc = atof(psz_utc);
+  gps.Speed = atof(psz_Speed);
+  gps.course = atof(psz_course);
 
   // dddmm.mmmm → ddd.dddddd
   float temp, deg, min;
   temp = atof(psz_lat);   //char → float
   deg = (int)(temp / 100); //度数
   min = temp - deg * 100;   //分
-  gps->latitude = deg + min / 60;   //分→度
+  gps.latitude = deg + min / 60;   //分→度
 
   temp = atof(psz_long);
   deg = (int)(temp / 100);
   min = temp - deg * 100;
-  gps->longtitude = deg + min / 60;
+  gps.longtitude = deg + min / 60;
 
   //緯度経度が明らかにおかしい場合はじく
-  if (LATITUDE_MINIMUM < gps->latitude && LATITUDE_MAXIMUM > gps-> latitude && LONGTITUDE_MINIMUM < gps->longtitude && LONGTITUDE_MAXIMUM > gps->longtitude) {
+  if (LATITUDE_MINIMUM < gps.latitude && LATITUDE_MAXIMUM > gps.latitude && LONGTITUDE_MINIMUM < gps.longtitude && LONGTITUDE_MAXIMUM > gps.longtitude) {
   } else {
     return 0;
   }
@@ -97,22 +97,25 @@ int ReadLineString( SoftwareSerial& serial,
   }
   return 0;
 }
-boolean gps_get(struct GPS* gps) {
+GPS gps_get(GPS gps) {
 
   char g_szReadBuffer[READBUFFERSIZE] = "";
   int  g_iIndexChar = 0;
   char szLineString[READBUFFERSIZE];
+
+  gps.flag=0; //フラグを初期化
+  
   if ( !ReadLineString( g_gps,
                         g_szReadBuffer, READBUFFERSIZE, g_iIndexChar,
                         szLineString, READBUFFERSIZE ) )
   { // 読み取り途中
-    return 0;
+    return gps;
   }
   // 読み取り完了
 
   if ( !AnalyzeLineString( szLineString, gps ) )
   {
-    return 0;
+    return gps;
   }
   //緯度経度が正常な値にあるか広めに検査
 
@@ -122,9 +125,9 @@ boolean gps_get(struct GPS* gps) {
   char sz_lat[16];
   char sz_long[16];
   //小数点6けたで表示する
-  dtostrf(gps->utc, 10, 6, sz_utc);
-  dtostrf(gps->latitude, 10, 6, sz_lat);
-  dtostrf(gps->longtitude, 10, 6, sz_long);
+  dtostrf(gps.utc, 10, 6, sz_utc);
+  dtostrf(gps.latitude, 10, 6, sz_lat);
+  dtostrf(gps.longtitude, 10, 6, sz_long);
 
   Serial.print("utc : ");
   Serial.println(sz_utc);
@@ -133,12 +136,12 @@ boolean gps_get(struct GPS* gps) {
   Serial.print("longtitude : ");
   Serial.println(sz_long);
   Serial.print("Speed : ");
-  Serial.println(gps->Speed);   //knot表示されます
+  Serial.println(gps.Speed);   //knot表示されます
   Serial.print("Course : ");
-  Serial.println(gps->course);
+  Serial.println(gps.course);
   float LatA = 35.710039, LongA = 139.810726;      //目的地
-  float LatB = gps->latitude;       //現在地の緯度経度
-  float LongB = gps->longtitude;
+  float LatB = gps.latitude;       //現在地の緯度経度
+  float LongB = gps.longtitude;
   float direct = 0, distance = 0;   //目的地までの距離方角
   //目的地への距離方角算出
   distance = sqrt(pow(LongA - LongB, 2) + pow(LatA - LatB, 2)) * 99096.44, 0;
@@ -150,8 +153,10 @@ boolean gps_get(struct GPS* gps) {
   Serial.print(distance);
   Serial.println("m");
   //以下loop関数に値渡しする
-  gps->Direction = direct;
-  gps->distance = distance;
+  gps.Direction = direct;
+  gps.distance = distance;
 
-  return 1;
+  gps.flag=1;
+
+  return gps;
 }

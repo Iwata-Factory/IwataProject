@@ -42,7 +42,7 @@ typedef struct { // 3次元のベクトル
   double z; //3次元ベクトルのz座標
 } Vector3D;
 
-struct GPS { // GPS関連    /* これだけ良くわからなかったのでtypedefしていません */
+typedef struct { // GPS関連    /* これだけ良くわからなかったのでtypedefしていません */
   double utc = 0.0;       //グリニッジ天文時
   double latitude = 0.0;   //経度
   double longtitude = 0.0;   //緯度
@@ -50,8 +50,9 @@ struct GPS { // GPS関連    /* これだけ良くわからなかったのでtyp
   double course = 0.0;    //移動方位
   double Direction = -1.0;   //目的地方位
   double distance = -1.0;     //目的地との距離
+  double flag=0;              //GPS取れたかのフラグ
   /*Speedとdistanceは小文字が予約語だったのでとりあえず大文字にしてあります*/
-};
+} GPS;
 
 typedef struct { // 加速度センサ
   double x = 0.0; // x軸方向
@@ -152,7 +153,7 @@ void loop() {
     //GPSから目的地までの距離と方角を得る
     while (1) {
 
-      struct GPS gps; // 構造体宣言
+      GPS gps; // 構造体宣言
 
       static int j = 0; // GPS受信の成功回数のカウント
       static int k = 0; // GPS受信の試行数のカウント
@@ -160,7 +161,11 @@ void loop() {
       double gps_direction_array[5]; // サンプルを入れる箱
       double gps_distance_array[5]; // サンプルを入れる箱
 
-      while (!gps_get(&gps)) { //
+      while (1)) { //gpsの値が正常になるまで取り続ける
+        gps=get_gps(gps);    //gpsの値をとる
+        if (gps.flag == 1){
+          break;
+        }
         delay(50);
       }
 
