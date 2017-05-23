@@ -30,8 +30,6 @@
 static unsigned long time; //タイマー起動
 static float last_distance = -1; // 目的地までの距離(m)。負の値で初期化。
 static const uint8_t length = 6;   //読み出しデータの個数
-char g_szReadBuffer[READBUFFERSIZE] = "";
-int  g_iIndexChar = 0;
 
 
 // 構造体を宣言
