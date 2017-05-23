@@ -174,15 +174,11 @@ void loop() {
     //GPSから目的地までの距離と方角を得る
     while (1) { //!!!
 
+      break;
+
 
       static int j = 0; // GPS受信の成功回数のカウント
-      if (j > 0) { // 初期化
-        j = 0;
-      }
       static int k = 0; // GPS受信の試行数のカウント
-      if (k > 0) { // 初期化
-        k = 0;
-      }
 
       double gps_direction_array[5]; // サンプルを入れる箱
       double gps_distance_array[5]; // サンプルを入れる箱
@@ -193,13 +189,12 @@ void loop() {
 
         while (!gps_get(&gps)) { //gpsの値が正常になるまで取り続ける
           delay(50);
-          Serial.print
         }
 
         if (gps.Direction >= 0 && gps.distance >= 0) {
           gps_direction_array[j] = gps.Direction;
           gps_distance_array[j] = gps.distance;
-          delay(10);
+          delay(1500);
           j += 1;
           k += 1;
 
@@ -207,7 +202,7 @@ void loop() {
           Serial.println("番目のサンプル取得");
 
         } else {
-          delay(10);
+          delay(1500);
           k += 1;
         }
       }
@@ -271,6 +266,7 @@ void loop() {
           } else {
             k += 1;
             delay(1500);
+
           }
         }
 
@@ -311,9 +307,9 @@ void loop() {
         double dst_args = atan2(dst_vector.y, dst_vector.x);
 
         if (dst_args - my_args >= 0) {
-          relative_args = rad2deg(dst_args - my_args);
+          relative_args = dst_args - my_args;
         } else {
-          relative_args = rad2deg(dst_args + 2 * pi - my_args); // M_PIはπ
+          relative_args = dst_args + 2 * pi - my_args; // M_PIはπ
         }
 
         Serial.print("相対偏角は");

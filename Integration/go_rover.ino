@@ -34,13 +34,13 @@ void go_rotate(double rotate) {
     turn.right2 = 1;
     turn.leght1 = 1;
     turn.leght2 = 0;
-    rotate_time = (rotate / 420) + 100;
+    rotate_time = (1000 * rotate) / 180;
   } else {
     turn.right1 = 1;
     turn.right2 = 0;
     turn.leght1 = 0;
     turn.leght2 = 1;
-    rotate_time = -1 * (rotate / 420) + 100;
+    rotate_time = -1 * (1000 * rotate) / 180;
   }
 
   // 回転を行う
