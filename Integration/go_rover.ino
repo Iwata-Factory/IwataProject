@@ -44,6 +44,7 @@ void go_rotate(double rotate) {
     turn.leght2 = 1;
     
     rotate_time = -1 * (rotate / 400) * 1000 + 120;
+
   }
 
   // 回転を行う

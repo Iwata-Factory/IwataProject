@@ -71,7 +71,7 @@ double value_ave(const int array_num, double* value) {
 double rad_ave(const int array_num, double* value) {
   double ave = 0;
   int i = 0;
-  
+
   Vector2D vector[array_num];
   Vector2D vector_sum;
   Vector2D vector_ave;
