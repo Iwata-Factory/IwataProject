@@ -30,6 +30,9 @@
 static unsigned long time; //タイマー起動
 static float last_distance = -1; // 目的地までの距離(m)。負の値で初期化。
 static const uint8_t length = 6;   //読み出しデータの個数
+char g_szReadBuffer[READBUFFERSIZE] = "";
+int  g_iIndexChar = 0;
+
 
 // 構造体を宣言
 typedef struct { // 2次元のベクトル
@@ -187,13 +190,13 @@ void loop() {
       double gps_direction_array[5]; // サンプルを入れる箱
       double gps_distance_array[5]; // サンプルを入れる箱
 
+      struct GPS gps; // 構造体宣言
+      
       while (j < 5) { // 成功サンプルを5個取得したい
 
-        struct GPS gps; // 構造体宣言
 
         while (!gps_get(&gps)) { //gpsの値が正常になるまで取り続ける
           delay(50);
-          Serial.print
         }
 
         if (gps.Direction >= 0 && gps.distance >= 0) {
@@ -238,7 +241,7 @@ void loop() {
 
     delay(1500);
 
-    static int m = 0;
+    int m = 0;
     while (m < 5) { //$$$
 
       //自分が向いている角度を取得

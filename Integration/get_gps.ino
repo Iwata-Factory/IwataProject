@@ -11,6 +11,9 @@
   Serial.println(gps.Direction);
   Serial.println(gps.distance);
   ------------------------------------------*/
+
+
+  
 // センテンスの解析。
 // $GPRMCの場合、引数変数に、緯度、経度を入れ、戻り値 1 を返す。
 // $GPRMC以外の場合、戻り値は 0 を返す。
@@ -99,8 +102,6 @@ int ReadLineString( SoftwareSerial& serial,
 }
 boolean gps_get(struct GPS* gps) {
 
-  char g_szReadBuffer[READBUFFERSIZE] = "";
-  int  g_iIndexChar = 0;
   char szLineString[READBUFFERSIZE];
 
 
