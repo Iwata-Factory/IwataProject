@@ -193,7 +193,6 @@ void loop() {
 
         while (!gps_get(&gps)) { //gpsの値が正常になるまで取り続ける
           delay(50);
-          Serial.print
         }
 
         if (gps.Direction >= 0 && gps.distance >= 0) {
