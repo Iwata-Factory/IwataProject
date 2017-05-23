@@ -24,6 +24,7 @@
 #define M1_2 9 // モーター制御用ピン
 #define M2_1 10 // モーター制御用ピン
 #define M2_2 11 // モーター制御用ピン
+#define pi 3.14159265359
 
 // グローバル変数の定義
 static unsigned long time; //タイマー起動
@@ -42,7 +43,7 @@ typedef struct { // 3次元のベクトル
   double z; //3次元ベクトルのz座標
 } Vector3D;
 
-typedef struct { // GPS関連    /* これだけ良くわからなかったのでtypedefしていません */
+struct GPS { // GPS関連    /* これだけ良くわからなかったのでtypedefしていません */
   double utc = 0.0;       //グリニッジ天文時
   double latitude = 0.0;   //経度
   double longitude = 0.0;   //緯度
@@ -50,9 +51,8 @@ typedef struct { // GPS関連    /* これだけ良くわからなかったの�
   double course = 0.0;    //移動方位
   double Direction = -1.0;   //目的地方位
   double distance = -1.0;     //目的地との距離
-  double flag=0;              //GPS取れたかのフラグ
   /*Speedとdistanceは小文字が予約語だったのでとりあえず大文字にしてあります*/
-} GPS;
+};
 
 typedef struct { // 加速度センサ
   double x = 0.0; // x軸方向
@@ -92,9 +92,16 @@ void setup() {
   pinMode(M1_2, OUTPUT);
   pinMode(M2_1, OUTPUT);
   pinMode(M2_2, OUTPUT);
+
+  Serial.println("setup完了");
+
 }
 
 void loop() {
+
+  Serial.println("loopスタート");
+  Serial.println("光センサ起動まで5秒待機します");
+
   delay(5000);
 
   // 光センサ始動(準備が整いしだい外部関数化)
@@ -110,10 +117,14 @@ void loop() {
     }
   }
 
+  Serial.println("放出判定をパス");
+  Serial.println("1秒待機します");
+
   // 投下中待機時間
   delay(1000); /* 現在適当な値 */
 
   while (1) { // 着陸の判定を行う
+    break;
     static int i = 0; // 判定の繰り返し回数を調べる
     if (determine_landing()) {
       delay(5000);
@@ -124,36 +135,47 @@ void loop() {
     }
   }
 
+  Serial.println("着陸判定をパス");
+  Serial.println("3秒後に2秒回転します。");
+
+  delay(3000);
+
   /* 着陸判定をパスしたら2秒回転します。 */
   digitalWrite(M1_1, 0);
   digitalWrite(M1_2, 1);
   digitalWrite(M2_1, 1);
   digitalWrite(M2_2, 0);
-  delay(200);
+  delay(2000);
   // 停止
   digitalWrite(M1_1, 1);
   digitalWrite(M1_2, 1);
   digitalWrite(M2_1, 1);
   digitalWrite(M2_2, 1);
 
+  Serial.println("回転終了");
 
   // need　ケーシングを開く処理を書く
 
   // need パラシュートから安全に離れる処理を書く
 
-  while (1) { // この部分をひたすらに繰り返す
+  Serial.println("Statusを地上1に移行します。");
+
+  while (1) { // この部分をひたすらに繰り返す //===
 
     static int i = 0; // 繰り返し数のカウント
 
-    static double my_direction = -1; //自分の向いている方位（北を0として時計回りに0~360の値を取る）
-    static double dst_direction = -1; //目的地の方位。負の値で初期化。
-    static double my_rotation = 500; //自分が回転すべき大きさ(-180~180までの値を取る)
+    double my_direction = -1; //自分の向いている方位（北を0として時計回りに0~360の値を取る）
+    double dst_direction = -1; //目的地の方位。負の値で初期化。
+    double my_rotation = 500; //自分が回転すべき大きさ(-180~180までの値を取る)
 
+    Serial.println("GPSにより目的地データを取得します。");
+    Serial.println("5サンプルを取得します。");
 
     //GPSから目的地までの距離と方角を得る
-    while (1) {
+    while (1) { //!!!
 
-      GPS gps; // 構造体宣言
+      break;
+
 
       static int j = 0; // GPS受信の成功回数のカウント
       static int k = 0; // GPS受信の試行数のカウント
@@ -161,59 +183,113 @@ void loop() {
       double gps_direction_array[5]; // サンプルを入れる箱
       double gps_distance_array[5]; // サンプルを入れる箱
 
-      while (1) { //gpsの値が正常になるまで取り続ける
-        gps = gps_get(gps);    //gpsの値をとる
-        if (gps.flag == 1){
-          break;
-        }
-        delay(50);
-      }
-
       while (j < 5) { // 成功サンプルを5個取得したい
+
+        struct GPS gps; // 構造体宣言
+
+        while (!gps_get(&gps)) { //gpsの値が正常になるまで取り続ける
+          delay(50);
+        }
+
         if (gps.Direction >= 0 && gps.distance >= 0) {
           gps_direction_array[j] = gps.Direction;
           gps_distance_array[j] = gps.distance;
-          delay(1000);
+          delay(1500);
           j += 1;
           k += 1;
+
+          Serial.print(j - 1);
+          Serial.println("番目のサンプル取得");
+
         } else {
-          delay(1000);
+          delay(1500);
           k += 1;
         }
       }
+
+      Serial.println("サンプルの処理を行います");
+      delay(1500);
 
       // gps_direction_arrayを投げて向きの平均を計算
       dst_direction = rad_ave(5, gps_direction_array); /*注意:引数の渡し方検討*/
       // gps_distance_arrayを投げて向きの平均を計算
       last_distance = value_ave(5, gps_distance_array); /*注意:引数の渡し方検討*/
-    }
+
+      Serial.print("dst_direction:");
+      Serial.println(dst_direction);
+      Serial.print("last_distance:");
+      Serial.println(last_distance);
+
+      break;
+    } //!!!
+
+    dst_direction = 100;
+    last_distance = 1000;
+
 
     // 5回以内の回転で位置補正
-    static int m = 0; // GPS受信の成功回数のカウント
-    while (m < 5) {
+
+    Serial.println("回転フローへ移行");
+
+    delay(1500);
+
+    static int m = 0;
+    while (m < 5) { //$$$
+
       //自分が向いている角度を取得
-      while (1) {
+      while (1) { //$%$
+
+        Serial.println("自身の方角を5サンプル取得します。");
+
         static int j = 0; // 方角取得の成功数をカウント
+        if (j > 0) { // 初期化
+          j = 0;
+        }
         static int k = 0; // 方角取得の試行数をカウント
+        if (k > 0) {
+          k = 0;
+        }
 
         double my_direction_array[5]; // 自身の方角を格納、中央値を使う
 
         while (j < 5) { // 5個の方位のサンプルを取得
           my_direction_array[j] = get_my_direction();
+
           if (my_direction_array[j] >= 0 && my_direction_array[j] <= 360) { // 正しく取れていればmy_directionは0~360
             j += 1;
             k += 1;
+            Serial.print(j);
+            Serial.print("個目のサンプルの値:");
+            Serial.println(my_direction_array[j - 1]);
+            delay(1500);
+
           } else {
             k += 1;
+            delay(1500);
+
           }
         }
+
         // my_direction_arrayの中央値を取得
         my_direction = value_ave(5, my_direction_array);
-      }
+
+        Serial.println("サンプル取得完了");
+        Serial.print("方向の平均値は");
+        Serial.println(my_direction);
+        delay(1500);
+
+        break;
+
+
+      } //$%$
+
 
       // 必要な回転量を計算する(-180~180で出力)
+      Serial.println("回転量を計算します。");
 
       while (1) {
+        delay(1500);
+
 
         //相対偏角
         double relative_args = 0; // 自分の位置が基準
@@ -233,12 +309,19 @@ void loop() {
         if (dst_args - my_args >= 0) {
           relative_args = dst_args - my_args;
         } else {
-          relative_args = dst_args + 2 * M_PI - my_args; // M_PIはπ
+          relative_args = dst_args + 2 * pi - my_args; // M_PIはπ
         }
+
+        Serial.print("相対偏角は");
+        Serial.println(relative_args);
 
         // 内積を計算(単位ベクトル同士だからこれがcosθ)
         double inner_product = my_vector.x * dst_vector.x + my_vector.y * dst_vector.y;
         my_rotation = rad2deg(acos(inner_product)); //(初期値は500だがこれによって0~180に収まる)
+
+        Serial.print("必要な回転量の絶対値は");
+        Serial.println(my_rotation);
+
 
         // ここでmy_rotationを-180~180に直す(どちら向きの回転が早いか)
         if (relative_args < 10 || 350 <= relative_args) { // 方角がほぼ問題ないなら回転しないようにする。
@@ -248,23 +331,44 @@ void loop() {
         } else if (180 <= relative_args && relative_args < 350) {
           my_rotation = -1 * my_rotation;
         }
+
+        Serial.print("計算を施して");
+        Serial.println(my_rotation);
+
         break; /*現状ではここをwhile文にする理由は無いが念のため*/
       }
+
+
       //ここに回転部分を書く
       if (!(my_rotation == 0)) { // 回転する人用があれば回転し、向きの取得から繰り返す
+        Serial.println("回転します");
+        delay(1500);
         go_rotate(my_rotation);
         m += 1;
+        Serial.print(m);
+        Serial.println("回目の回転を終えました。");
+        delay(1500);
       } else {
+        Serial.println("回転は不要です");
+        delay(1500);
         break; // 直進部分へ移行
       }
-    }
+    } //$$$
 
+    Serial.println("直進します。");
+    delay(1000);
     //直進する
     go_straight(5000); /* 引数は暫定です */
-  }
+    i += 1; // 繰り返し数を1増やす
+    Serial.println("直進完了です。");
+    Serial.println("whileの先頭に戻ります。");
+    delay(1500);
+
+
+  } //===
 
   // ここに来たらゴール近傍
-  
+
 }
 
 

@@ -22,6 +22,16 @@ double get_my_direction() {
     }
   }
 
+  Serial.print("ac.x");
+  Serial.println(ac.x);
+
+  Serial.print("ac.y");
+  Serial.println(ac.y);
+
+  Serial.print("ac.z");
+  Serial.println(ac.z);
+
+
   // 地磁気を取得
   TM tm;
   while (1) {
@@ -33,6 +43,15 @@ double get_my_direction() {
       i += 1;
     }
   }
+
+  Serial.print("tm.x");
+  Serial.println(tm.x);
+
+  Serial.print("tm.y");
+  Serial.println(tm.y);
+
+  Serial.print("tm.z");
+  Serial.println(tm.z);
 
   // 方角を算出
   double roll = 0; //ロール角

@@ -10,7 +10,7 @@ void rover_degital(DRIVE drive) {
   digitalWrite(M1_1, drive.right1);
   digitalWrite(M1_2, drive.right2);
   digitalWrite(M2_1, drive.leght1);
-  digitalWrite(M2_2, drive.leght1);
+  digitalWrite(M2_2, drive.leght2);
 }
 
 
