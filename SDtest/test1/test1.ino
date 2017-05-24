@@ -22,7 +22,7 @@
 const int chipSelect = 4;
 
 
-struct GPS { // GPS関連    /* これだけ良くわからなかったのでtypedefしていません */
+struct GPS { // GPS関連
   double utc = 0.0;       //グリニッジ天文時
   double latitude = 0.0;   //経度
   double longitude = 0.0;   //緯度
@@ -30,20 +30,21 @@ struct GPS { // GPS関連    /* これだけ良くわからなかったのでtyp
   double course = 0.0;    //移動方位
   double Direction = -1.0;   //目的地方位
   double distance = -1.0;     //目的地との距離
-  /*Speedとdistanceは小文字が予約語だったのでとりあえず大文字にしてあります*/
 };
 
 SoftwareSerial g_gps( PIN_GPS_Rx, PIN_GPS_Tx);
 
 void setup() {
+
   Wire.begin();           //I2C通信の初期化
   Serial.begin(SERIAL_BAUDRATE); //シリアル通信の初期化
   g_gps.begin(GPSBAUDRATE); //シリアル通信の初期化
-  pinMode(SS, OUTPUT);
 
+  // SDセットアップ
+  pinMode(SS, OUTPUT);
   if (!SD.begin(chipSelect)) {
     Serial.print("aa");
-    // Serial.println("Card failed, or not present");
+    Serial.println("Card failed, or not present");
     // 失敗、何もしない
     while (1);
   }
@@ -58,15 +59,21 @@ void setup() {
 
 void loop() {
 
+  // iにより書き込み回数を数える
   static int i = 0;
   i += 1;
   Serial.println(i);
-  if (i == 100) {
+  // 100回書き込んだら終わり
+  if (i == 101) {
+    // 無限ループ
     while (1);
   }
+  
   delay(1000);
   struct GPS gps; // 構造体宣言
-  gps_get(&gps);
+  
+  gps_get(&gps); // 適当に乱数を生成して値を代入
+  
   Serial.println(gps.utc);
   Serial.println(gps.latitude);
   Serial.println(gps.longitude);
@@ -74,8 +81,7 @@ void loop() {
   Serial.println(gps.distance);
 
   File dataFile = SD.open("datalog.txt", FILE_WRITE);
-
-  if (dataFile) {
+  if (dataFile) { // ファイルが開けたときの処理
     //    int value = analogRead(0);
     dataFile.print("number:::");
     dataFile.println(i);
@@ -85,9 +91,11 @@ void loop() {
     dataFile.println(gps.Direction);
     dataFile.println(gps.distance);
 
+    // 書き込み位置
     Serial.println(dataFile.position());
 
     dataFile.close();
+    
   } else {
     Serial.println("error opening datalog.txt");
   }
