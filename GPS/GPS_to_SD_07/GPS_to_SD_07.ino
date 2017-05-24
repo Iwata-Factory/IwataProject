@@ -198,19 +198,12 @@ void gps_log( struct GPS* gps, int num ) {
   File timeplace = SD.open( GPS_TEXT, FILE_WRITE );
   if (timeplace) {
     timeplace.print( num );
-    delay(25);
     timeplace.print( ",  UTC:  " );
-    delay(25);
     timeplace.print( gps->utc );
-    delay(25);
     timeplace.print( ",  Lat:  " );
-    delay(25);
     timeplace.print(  gps->latitude );
-    delay(25);
     timeplace.print( ",  Long:  " );
-    delay(25);
     timeplace.println( gps->longtitude);
-    delay(25);
     Serial.println( timeplace.position() );
     Serial.println( timeplace.size() );
     //Serial.println( "FILE OPENED" );
