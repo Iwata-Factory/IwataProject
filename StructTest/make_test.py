@@ -6,18 +6,30 @@ import random
 
 def go_suddenly(path, times):
     f = open(path, "a")
-    f.write("  DRIVE go;\n  go.right1 = 0;\n  go.right2 = 1;\n  go.leght1 = 0;\n  go.leght2 = 1;\n  rover_degital(go);\n")
+    f.write("  go.right1 = 0;\n  go.right2 = 1;\n  go.leght1 = 0;\n  go.leght2 = 1;\n  rover_degital(go);\n")
     f.write("  delay(")
     f.write(times)
     f.write(");\n  go.right1 = 1;\n  go.right2 = 1;\n  go.leght1 = 1;\n  go.leght2 = 1;\n  rover_degital(go);\n")
-
-
     f.write("  delay(2500);\n")
     f.close()
 
+def turn_right_suddenly(path, times):
+    f = open(path, "a")
+    f.write("  go.right1 = 0;\n  go.right2 = 1;\n  go.leght1 = 1;\n  go.leght2 = 0;\n  rover_degital(go);\n")
+    f.write("  delay(")
+    f.write(times)
+    f.write(");\n  go.right1 = 1;\n  go.right2 = 1;\n  go.leght1 = 1;\n  go.leght2 = 1;\n  rover_degital(go);\n")
+    f.write("  delay(2500);\n")
+    f.close()
 
-
-
+def turn_leght_suddenly(path, times):
+    f = open(path, "a")
+    f.write("  go.right1 = 1;\n  go.right2 = 0;\n  go.leght1 = 0;\n  go.leght2 = 1;\n  rover_degital(go);\n")
+    f.write("  delay(")
+    f.write(times)
+    f.write(");\n  go.right1 = 1;\n  go.right2 = 1;\n  go.leght1 = 1;\n  go.leght2 = 1;\n  rover_degital(go);\n")
+    f.write("  delay(2500);\n")
+    f.close()
 
 
 def main():
@@ -52,9 +64,26 @@ def main():
     f.write("void  setup() {\n  Serial.begin(SERIAL_BAUDRATE);\n")
     f.write("  pinMode(M1_1, OUTPUT);\n  pinMode(M1_2, OUTPUT);\n  pinMode(M2_1, OUTPUT);\n  pinMode(M2_2, OUTPUT);\n}\n")
     f.write("void loop() {\n")
+    f.write("  DRIVE go;\n  go.right1 = 1;\n  go.right2 = 1;\n  go.leght1 = 1;\n  go.leght2 = 1;\n")
     f.close()
     print("工程のセットアップ")
-    go_suddenly(f_path, "3456")
+
+    while True:
+        print("")
+        print("何をしますか？")
+        print("1:滑らかに発進→停止")
+        print("2:急に発進→停止")
+        print("3:滑らかに右旋回")
+        print("4:急に右旋回")
+        print("5:滑らかに左旋回")
+        print("6:急に左旋回")
+        print("7:もう何もしない。")
+        command = input("数字で入力して下さい。\n")
+        if command == "2":
+            t = input("何ミリ秒行いますか？\n")
+            go_suddenly(f_path, t)
+        elif command == "7":
+            break
 
 
 if __name__ == "__main__":
