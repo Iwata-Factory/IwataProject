@@ -93,8 +93,9 @@ double rad_ave(const int array_num, double* value) {
   //重心の角度を北から時計回りで出します
   ave = atan2(vector_ave.y, vector_ave.x);  //東から
   /*これってはatan2だからはじめからradだからrad2degで逆だよね？*/
-  //degで返す。180足して0~360にする
-  ave = rad2deg(ave) + 180.0;
+
+  ave = rad2deg(ave);
+  ave = (((int)ave + 360) % 360);
   return ave;
 }
 

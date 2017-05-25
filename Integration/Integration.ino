@@ -34,14 +34,14 @@ static const uint8_t length = 6;   //読み出しデータの個数
 
 // 構造体を宣言
 typedef struct { // 2次元のベクトル
-  double x; //2次元ベクトルのx座標
-  double y; //2次元ベクトルのy座標
+  double x = 0.0; //2次元ベクトルのx座標
+  double y = 0.0; //2次元ベクトルのy座標
 } Vector2D;
 
 typedef struct { // 3次元のベクトル
-  double x; //3次元ベクトルのx座標
-  double y; //3次元ベクトルのy座標
-  double z; //3次元ベクトルのz座標
+  double x = 0.0; //3次元ベクトルのx座標
+  double y = 0.0; //3次元ベクトルのy座標
+  double z = 0.0; //3次元ベクトルのz座標
 } Vector3D;
 
 struct GPS { // GPS関連    /* これだけ良くわからなかったのでtypedefしていません */
