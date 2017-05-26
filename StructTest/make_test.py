@@ -9,7 +9,7 @@ def go_smoothly(path, times):
     # 加速部
     f.write("  for (int i = 1; i < 256; i++) {\n")
     f.write("    go.right1 = 0;\n    go.right2 = i;\n    go.leght1 = 0;\n    go.leght2 = i;\n    rover_analog(go);\n")
-    f.write("    delay(40);\n  }\n")
+    f.write("    delay(5);\n  }\n")
     # 直進部
     f.write("  go.right1 = 0;\n  go.right2 = 1;\n  go.leght1 = 0;\n  go.leght2 = 1;\n  rover_degital(go);\n")
     f.write("  delay(")
@@ -18,7 +18,7 @@ def go_smoothly(path, times):
     # 減速部
     f.write("  for (int i = 255; i > 0; i--) {\n")
     f.write("    go.right1 = 0;\n    go.right2 = i;\n    go.leght1 = 0;\n    go.leght2 = i;\n    rover_analog(go);\n")
-    f.write("    delay(40);\n  }\n")
+    f.write("    delay(5);\n  }\n")
     # 停止部
     f.write("  go.right1 = 1;\n  go.right2 = 1;\n  go.leght1 = 1;\n  go.leght2 = 1;\n  rover_degital(go);\n")
     f.write("  delay(2500);\n")
@@ -40,7 +40,7 @@ def turn_right_smoothly(path, times):
     # 加速部
     f.write("  for (int i = 1; i < 256; i++) {\n")
     f.write("    go.right1 = 0;\n    go.right2 = i;\n    go.leght1 = i;\n    go.leght2 = 0;\n    rover_analog(go);\n")
-    f.write("    delay(40);\n  }\n")
+    f.write("    delay(5);\n  }\n")
     # 回転部
     f.write("  go.right1 = 0;\n  go.right2 = 1;\n  go.leght1 = 1;\n  go.leght2 = 0;\n  rover_degital(go);\n")
     f.write("  delay(")
@@ -49,7 +49,7 @@ def turn_right_smoothly(path, times):
     # 減速部
     f.write("  for (int i = 255; i > 0; i--) {\n")
     f.write("    go.right1 = 0;\n    go.right2 = i;\n    go.leght1 = i;\n    go.leght2 = 0;\n    rover_analog(go);\n")
-    f.write("    delay(40);\n  }\n")
+    f.write("    delay(5);\n  }\n")
     # 停止部
     f.write("  go.right1 = 1;\n  go.right2 = 1;\n  go.leght1 = 1;\n  go.leght2 = 1;\n  rover_degital(go);\n")
     f.write("  delay(2500);\n")
@@ -72,7 +72,7 @@ def turn_leght_smoothly(path, times):
     f.write("  for (int i = 1; i < 256; i++) {\n")
     f.write(
         "    go.right1 = i;\n    go.right2 = 0;\n    go.leght1 = 0;\n    go.leght2 = i;\n    rover_analog(go);\n")
-    f.write("    delay(40);\n  }\n")
+    f.write("    delay(5);\n  }\n")
     # 回転部
     f.write("  go.right1 = 1;\n  go.right2 = 0;\n  go.leght1 = 0;\n  go.leght2 = 1;\n  rover_degital(go);\n")
     f.write("  delay(")
@@ -82,7 +82,7 @@ def turn_leght_smoothly(path, times):
     f.write("  for (int i = 255; i > 0; i--) {\n")
     f.write(
         "    go.right1 = i;\n    go.right2 = 0;\n    go.leght1 = 0;\n    go.leght2 = i;\n    rover_analog(go);\n")
-    f.write("    delay(40);\n  }\n")
+    f.write("    delay(5);\n  }\n")
     # 停止部
     f.write("  go.right1 = 1;\n  go.right2 = 1;\n  go.leght1 = 1;\n  go.leght2 = 1;\n  rover_degital(go);\n")
     f.write("  delay(2500);\n")
