@@ -98,7 +98,8 @@ def turn_leght_suddenly(path, times):
     f.close()
 
 
-def get_second():
+
+def get_t():
     while True:
         t = input("何ミリ秒行いますか？\n")
         if t.isdigit() and int(t) > 0:
@@ -106,6 +107,7 @@ def get_second():
         else:
             print("不適切な値でした。")
             print("再度入力して下さい。")
+
             continue
 
 
@@ -166,31 +168,31 @@ def main():
             print("書き込み完了")
             print("")
         elif command == "2":
-            t = get_second()
+            t = get_t()
             go_suddenly(f_path, t)
             print("")
             print("書き込み完了")
             print("")
         elif command == "3":
-            t = get_second()
+            t = get_t()
             turn_right_smoothly(f_path, t)
             print("")
             print("書き込み完了")
             print("")
         elif command == "4":
-            t = get_second()
+            t = get_t()
             turn_right_suddenly(f_path, t)
             print("")
             print("書き込み完了")
             print("")
         elif command == "5":
-            t = get_second()
+            t = get_t()
             turn_leght_smoothly(f_path, t)
             print("")
             print("書き込み完了")
             print("")
         elif command == "6":
-            t = get_second()
+            t = get_t()
             turn_right_smoothly(f_path, t)
             print("")
             print("書き込み完了")
