@@ -6,6 +6,7 @@
 #include <Wire.h>
 #include <SoftwareSerial.h>
 #include <math.h>
+#include <avr/sleep.h>
 
 // 定数の定義
 #define READBUFFERSIZE  (256)
@@ -24,6 +25,8 @@
 #define M1_2 9 // モーター制御用ピン
 #define M2_1 10 // モーター制御用ピン
 #define M2_2 11 // モーター制御用ピン
+/*適当に1番にしてある*/
+#define LIGHT_PIN 1  //照度センサピン
 #define pi 3.14159265359
 
 // グローバル変数の定義
@@ -93,6 +96,7 @@ void setup() {
   pinMode(M1_2, OUTPUT);
   pinMode(M2_1, OUTPUT);
   pinMode(M2_2, OUTPUT);
+  pinMode(LIGHT_PIN, INPUT);
 
   Serial.println("setup完了");
 
