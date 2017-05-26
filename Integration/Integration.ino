@@ -28,6 +28,16 @@
 /*適当に1番にしてある*/
 #define LIGHT_PIN 1  //照度センサピン
 #define pi 3.14159265359
+#define BEAT 300   // 音の長さを指定
+#define TONE_PINNO 12   // 圧電スピーカを接続したピン番号
+#define C  262    //ド
+#define D  294    //レ
+#define E  330    //ミ
+#define F  349
+#define G  392
+#define A  440
+#define B  494
+#define HIGH_C  523
 
 // グローバル変数の定義
 static unsigned long time; //タイマー起動
