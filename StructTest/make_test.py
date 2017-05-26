@@ -3,7 +3,6 @@
 import os
 import random
 
-
 def go_smoothly(path, times):
     f = open(path, "a")
     # 加速部
@@ -99,6 +98,17 @@ def turn_leght_suddenly(path, times):
     f.close()
 
 
+def get_second():
+    while True:
+        t = input("何ミリ秒行いますか？\n")
+        if t.isdigit() and int(t) > 0:
+            return t
+        else:
+            print("不適切な値でした。")
+            print("再度入力して下さい。")
+            continue
+
+
 def main():
     c = os.getcwd()  # カレントディレクトリを取得
     source_str = 'abcdefghijklmnopqrstuvwxyz1234567890'
@@ -140,47 +150,47 @@ def main():
     while True:
         print("")
         print("何をしますか？")
-        print("1:滑らかに発進→停止")
-        print("2:急に発進→停止")
-        print("3:滑らかに右旋回")
-        print("4:急に右旋回")
-        print("5:滑らかに左旋回")
-        print("6:急に左旋回")
-        print("7:ランダムに動きを生成")
+        print("1:滑らかに発進→滑らかに停止")
+        print("2:急に発進→急停止")
+        print("3:滑らかに右旋回→滑らかに停止")
+        print("4:急に右旋回→急停止")
+        print("5:滑らかに左旋回→滑らかに停止")
+        print("6:急に左旋回→急停止")
+        print("7:ランダムに1~6の動きを生成")
         print("8:生成を終了して保存。")
         command = input("数字で入力して下さい。\n")
         if command == "1":
-            t = input("何ミリ秒行いますか？\n")
+            t = get_second()
             go_smoothly(f_path, t)
             print("")
             print("書き込み完了")
             print("")
         elif command == "2":
-            t = input("何ミリ秒行いますか？\n")
+            t = get_second()
             go_suddenly(f_path, t)
             print("")
             print("書き込み完了")
             print("")
         elif command == "3":
-            t = input("何ミリ秒行いますか？\n")
+            t = get_second()
             turn_right_smoothly(f_path, t)
             print("")
             print("書き込み完了")
             print("")
         elif command == "4":
-            t = input("何ミリ秒行いますか？\n")
+            t = get_second()
             turn_right_suddenly(f_path, t)
             print("")
             print("書き込み完了")
             print("")
         elif command == "5":
-            t = input("何ミリ秒行いますか？\n")
+            t = get_second()
             turn_leght_smoothly(f_path, t)
             print("")
             print("書き込み完了")
             print("")
         elif command == "6":
-            t = input("何ミリ秒行いますか？\n")
+            t = get_second()
             turn_right_smoothly(f_path, t)
             print("")
             print("書き込み完了")
@@ -219,6 +229,9 @@ def main():
         elif command == "8":
             print("")
             print("書き込みを終了して保存します。")
+            print("ファイルを確認してください。")
+            print("")
+            print("PROCESS-END")
             print("")
             f = open(f_path, "a")
             f.write("}\n")
