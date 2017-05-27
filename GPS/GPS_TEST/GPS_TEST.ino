@@ -29,20 +29,22 @@ void setup() {
 }
 void loop() {
   // put your main code here, to run repeatedly:
+  // Serial.println(Serial.available());
   if (sGps.available()) {
-    delay(3000);
-    Serial.write(sGps.read());
-    delay(1000);
+    Serial.println(sGps.read());
     File dataFile = SD.open("datalog.txt", FILE_WRITE);
     if (dataFile) { // ファイルが開けたときの処理
-      dataFile.println(sGps.read());
+      Serial.print("size:");
+      Serial.println(dataFile.size());
+      dataFile.seek(dataFile.size());
+      //   dataFile.println(sGps.read());
+      dataFile.println("aaaaa");
+      Serial.print("pos:");
       Serial.println(dataFile.position());
       dataFile.close();
-
-
-
+      delay(500);
+    } else {
+      Serial.println("death");
     }
-
-
   }
 }
