@@ -13,8 +13,8 @@
 
 #define READBUFFERSIZE  (256)
 #define DELIMITER   (",")  // 区切り文字定数
-#define PIN_GPS_Rx  52 // GPSのシリアル通信でデータを受信するピン
-#define PIN_GPS_Tx  50 // GPSのシリアル通信でデータを送信するピン
+#define PIN_GPS_Rx  11 // GPSのシリアル通信でデータを受信するピン
+#define PIN_GPS_Tx  12 // GPSのシリアル通信でデータを送信するピン
 #define SERIAL_BAUDRATE 9600 //シリアル通信のデータ送信レートを9600bpsに定義するための定数(ArduinoとPC)
 #define GPSBAUDRATE 9600 //シリアル通信のデータ送信レートを9600bpsに定義するための定数(GPSとArduino)
 #define SS 53
@@ -75,8 +75,9 @@ void loop() {
   delay(1000);
   struct GPS gps; // 構造体宣言
 
-  gps_get(&gps); // 適当に乱数を生成して値を代入
-
+  while (!gps_get(&gps)) { //gpsの値が正常になるまで取り続ける
+    delay(50);
+  }
   //  Serial.println(gps.utc);
   //  Serial.println(gps.latitude);
   //  Serial.println(gps.longitude);
