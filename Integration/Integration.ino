@@ -191,13 +191,15 @@ void loop() {
 
       double gps_direction_array[5]; // サンプルを入れる箱
       double gps_distance_array[5]; // サンプルを入れる箱
-
+      double distance_hold = -1;   //gosの距離の値の前回のやつを保持
 
       while (j < 5) { // 成功サンプルを5個取得したい
 
         struct GPS gps; // 構造体宣言
 
 
+   
+        
         while (!gps_get(&gps)) { //gpsの値が正常になるまで取り続ける
           delay(50);
         }
@@ -225,6 +227,8 @@ void loop() {
       dst_direction = rad_ave(5, gps_direction_array); /*注意:引数の渡し方検討*/
       // gps_distance_arrayを投げて向きの平均を計算
       last_distance = value_ave(5, gps_distance_array); /*注意:引数の渡し方検討*/
+
+      distance_hold = last_distance;
 
       Serial.print("dst_direction:");
       Serial.println(dst_direction);
