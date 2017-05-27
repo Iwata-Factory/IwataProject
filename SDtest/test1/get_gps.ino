@@ -106,19 +106,19 @@ boolean gps_get(struct GPS* gps) {
     char szLineString[READBUFFERSIZE];
 
 
-    //    if ( !ReadLineString( g_gps,
-    //                          g_szReadBuffer, READBUFFERSIZE, g_iIndexChar,
-    //                          szLineString, READBUFFERSIZE ) )
-    if (0)
+    if ( !ReadLineString( g_gps,
+                          g_szReadBuffer, READBUFFERSIZE, g_iIndexChar,
+                          szLineString, READBUFFERSIZE ) )
     { // 読み取り途中
+      delay(50);
       continue;
     }
     // 読み取り完了
 
-    //    if ( !AnalyzeLineString( szLineString, gps ) )
-    if (0)
+    if ( !AnalyzeLineString( szLineString, gps ) )
 
     {
+      delay(50);
       continue;
     }
     //緯度経度が正常な値にあるか広めに検査
@@ -129,42 +129,42 @@ boolean gps_get(struct GPS* gps) {
     char sz_lat[16];
     char sz_long[16];
     //小数点6けたで表示する
-    //    dtostrf(gps->utc, 10, 6, sz_utc);
-    //    dtostrf(gps->latitude, 10, 6, sz_lat);
-    //    dtostrf(gps->longitude, 10, 6, sz_long);
+    dtostrf(gps->utc, 10, 6, sz_utc);
+    dtostrf(gps->latitude, 10, 6, sz_lat);
+    dtostrf(gps->longitude, 10, 6, sz_long);
 
-    //    Serial.print("utc : ");
-    //    Serial.println(sz_utc);
-    //    Serial.print("latitude : ");
-    //    Serial.println(sz_lat);
-    //    Serial.print("longitude : ");
-    //    Serial.println(sz_long);
-    //    Serial.print("Speed : ");
-    //    Serial.println(gps->Speed);   //knot表示されます
-    //    Serial.print("Course : ");
-    //    Serial.println(gps->course);
-    //    float LatA = 35.710039, LongA = 139.810726;      //目的地
-    //    float LatB = gps->latitude;       //現在地の緯度経度
-    //    float LongB = gps->longitude;
-    //    float direct = 0, distance = 0;   //目的地までの距離方角
+    Serial.print("utc : ");
+    Serial.println(sz_utc);
+    Serial.print("latitude : ");
+    Serial.println(sz_lat);
+    Serial.print("longitude : ");
+    Serial.println(sz_long);
+    Serial.print("Speed : ");
+    Serial.println(gps->Speed);   //knot表示されます
+    Serial.print("Course : ");
+    Serial.println(gps->course);
+    float LatA = 35.710039, LongA = 139.810726;      //目的地
+    float LatB = gps->latitude;       //現在地の緯度経度
+    float LongB = gps->longitude;
+    float direct = 0, distance = 0;   //目的地までの距離方角
     //    //目的地への距離方角算出
-    //    distance = sqrt(pow(LongA - LongB, 2) + pow(LatA - LatB, 2)) * 99096.44, 0;
-    //    direct = (int)(atan2((LongA - LongB) * 1.23, (LatA - LatB)) * 57.3 + 360) % 360;
-    //
-    //    Serial.print("Direction = ");                               //目的地Aの方角(°）
-    //    Serial.print(direct);
-    //    Serial.print("deg:Distance = ");                             //目的地A迄の距離(m)
-    //    Serial.print(distance);
-    //    Serial.println("m");
-    //    //以下loop関数に値渡しする
-    //    gps->Direction = direct;
-    //    gps->distance = distance;
+    distance = sqrt(pow(LongA - LongB, 2) + pow(LatA - LatB, 2)) * 99096.44, 0;
+    direct = (int)(atan2((LongA - LongB) * 1.23, (LatA - LatB)) * 57.3 + 360) % 360;
 
-    gps->utc = random(100000);
-    gps->latitude = random(100000);
-    gps->longitude = random(100000);
-    gps->Direction = random(100000);
-    gps->distance = random(100000);
+    Serial.print("Direction = ");                               //目的地Aの方角(°）
+    Serial.print(direct);
+    Serial.print("deg:Distance = ");                             //目的地A迄の距離(m)
+    Serial.print(distance);
+    Serial.println("m");
+    //    //以下loop関数に値渡しする
+    gps->Direction = direct;
+    gps->distance = distance;
+
+//    gps->utc = random(100000);
+//    gps->latitude = random(100000);
+//    gps->longitude = random(100000);
+//    gps->Direction = random(100000);
+//    gps->distance = random(100000);
 
     return 1;
   }
