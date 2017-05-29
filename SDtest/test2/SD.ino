@@ -1,0 +1,97 @@
+/* SDカード周りの関数を書く
+
+記録系:write
+
+読み取る系:read
+
+*/
+
+
+
+
+// 加速度を記録
+int write_ac_sd(AC ac) {
+  int i = 0; // 試行回数記録用
+  Serial.println("加速度を記録します。");
+  while (i < 30) { // 30回SDカードを開けなかったら諦める
+    File dataFile = SD.open("aclog.txt", FILE_WRITE);
+    if (dataFile) { // ファイルが開けたときの処理
+      dataFile.seek(dataFile.size());
+      dataFile.println("**********"); // 記録の境目
+      dataFile.print("x:");
+      dataFile.println(ac.x);
+      dataFile.print("y:");
+      dataFile.println(ac.y);
+      dataFile.print("z:");
+      dataFile.println(ac.z);
+      dataFile.close();
+      return 1; // 成功を返す
+    } else {
+      Serial.println("ファイルオープンに失敗");
+      i += 1;
+    }
+  }
+  return 0; // 失敗を返す
+}
+
+
+// 加速度を記録
+int write_tm_sd(TM tm) {
+  int i = 0; // 試行回数記録用
+  Serial.println("地磁気を記録します。");
+  while (i < 30) { // 30回SDカードを開けなかったら諦める
+    File dataFile = SD.open("tmlog.txt", FILE_WRITE);
+    if (dataFile) { // ファイルが開けたときの処理
+      dataFile.seek(dataFile.size());
+      dataFile.println("**********"); // 記録の境目
+      dataFile.print("x:");
+      dataFile.println(tm.x);
+      dataFile.print("y:");
+      dataFile.println(tm.y);
+      dataFile.print("z:");
+      dataFile.println(tm.z);
+      dataFile.close();
+      return 1; // 成功を返す
+    } else {
+      Serial.println("ファイルオープンに失敗");
+      i += 1;
+    }
+  }
+  return 0; // 失敗を返す
+}
+
+// GPSを記録
+int write_gps_sd(GPS gps) {
+  int i = 0; // 試行回数記録用
+  Serial.println("GPSを記録します。");
+  while (i < 30) { // 30回SDカードを開けなかったら諦める
+    File dataFile = SD.open("gpslog.txt", FILE_WRITE);
+    if (dataFile) { // ファイルが開けたときの処理
+      dataFile.seek(dataFile.size());
+      dataFile.println("**********"); // 記録の境目
+      dataFile.print("utc:");
+      dataFile.println(gps.utc);
+      dataFile.print("latitude:");
+      dataFile.println(gps.latitude);
+      dataFile.print("longitude:");
+      dataFile.println(gps.longitude);
+      dataFile.print("Speed:");
+      dataFile.println(gps.Speed);
+      dataFile.print("course:");
+      dataFile.println(gps.course);
+      dataFile.print("Direction:");
+      dataFile.println(gps.Direction);
+      dataFile.print("distance:");
+      dataFile.println(gps.distance);
+      dataFile.close();
+      dataFile.close();
+      return 1; // 成功を返す
+    } else {
+      Serial.println("ファイルオープンに失敗");
+      i += 1;
+    }
+  }
+  return 0; // 失敗を返す
+}
+
+
