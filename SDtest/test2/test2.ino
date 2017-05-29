@@ -82,19 +82,54 @@ void setup() {
 static int pos = 1;
 
 void loop() {
-  AC ac;
-  ac.x = 12;
-  ac.y = 34;
-  ac.z = 12;
 
-  int a = write_ac_sd(ac);
+  //  static int i = 1;
+  //
+  //  static AC ac;
+  //
+  //  if (i == 1) {
+  //    ac.x = 0;
+  //    ac.y = 100;
+  //    ac.z = 50;
+  //  }
+  //
+  //  int a = write_ac_sd(ac);
+  //  Serial.println(a);
+  //
+  //  ac.x += 1;
+  //  ac.y += 2;
+  //  ac.z -= 1;
+  //
+  //  i += 1;
+  //
+  //  delay(3000);
+
+
+  // 配列を用意
+  // numは過去の何個分のデータが欲しいか
+  int num = 15;
+  AC ac[100];
+  int a = read_ac_sd(ac, num);
+
+  Serial.println(ac[0].x);
+  Serial.println(ac[0].y);
+  Serial.println(ac[0].z);
+  Serial.println(ac[1].x);
+  Serial.println(ac[1].y);
+  Serial.println(ac[1].z);
+  Serial.println(ac[2].x);
+  Serial.println(ac[2].y);
+  Serial.println(ac[2].z);
+  Serial.println(ac[3].x);
+  Serial.println(ac[3].y);
+  Serial.println(ac[3].z);
   Serial.println(a);
-
-  delay(3000);
-
-
+  delay(5000);
   
+
+  //Serial.println("111");
+
 }
 
 
- 
+
