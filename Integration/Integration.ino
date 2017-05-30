@@ -7,12 +7,14 @@
 #include <SoftwareSerial.h>
 #include <math.h>
 #include <avr/sleep.h>
+#include <SD.h>
 
 // 定数の定義
 #define READBUFFERSIZE  (256)
 #define DELIMITER   (",")  // 区切り文字定数
-#define PIN_GPS_Rx  53 // GPSのシリアル通信でデータを受信するピン
-#define PIN_GPS_Tx  51 // GPSのシリアル通信でデータを送信するピン
+// GPSのピンはSDと干渉しないように
+#define PIN_GPS_Rx  11 // GPSのシリアル通信でデータを受信するピン
+#define PIN_GPS_Tx  12 // GPSのシリアル通信でデータを送信するピン
 #define SERIAL_BAUDRATE 9600 //シリアル通信のデータ送信レートを9600bpsに定義するための定数(ArduinoとPC)
 #define GPSBAUDRATE 9600 //シリアル通信のデータ送信レートを9600bpsに定義するための定数(GPSとArduino)
 #define LATITUDE_MINIMUM 30  //緯度の最小値
@@ -394,6 +396,4 @@ void loop() {
   // ここに来たらゴール近傍
 
 }
-
-
 
