@@ -97,7 +97,7 @@ int read_ac_sd(AC ac[100], int num) {
   while (i < 30) { // 30回SDカードを開けなかったら諦める
     
     File dataFile = SD.open("aclog.txt", FILE_READ);
-    
+
     if (dataFile) { // ファイルが開けたときの処理
       int now_pos = dataFile.size(); // now_pos は自身の位置を表す
       static int back_num = 1; // 操作ごとに調べる位置をいくつ戻すか
@@ -155,6 +155,7 @@ int read_ac_sd(AC ac[100], int num) {
   }
   return 0;
 }
+
 
 // 地磁気を読み取る
 // 第一引数:値を入れる構造体の配列
@@ -324,5 +325,6 @@ int read_gps_sd(struct GPS *gps, int num) {
   }
   return 0;
 }
+
 
 
