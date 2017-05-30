@@ -1,4 +1,10 @@
-/* SDカード周りの関数を書く
+/* SDカード周りの関数
+ * write_ac_sd
+ * write_tm_sd 
+ * write_gps_sd
+ * read_ac_sd
+ * read_tm_sd
+ * read_gps_sd
 
   記録系:write
 
