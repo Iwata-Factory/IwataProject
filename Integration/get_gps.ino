@@ -53,13 +53,7 @@ int AnalyzeLineString( char szLineString[], struct GPS* gps) {
   deg = (int)(temp / 100);
   min = temp - deg * 100;
   gps->longitude = deg + min / 60;
-/*
-  //緯度経度が明らかにおかしい場合はじく
-  if (LATITUDE_MINIMUM < gps->latitude && LATITUDE_MAXIMUM > gps->latitude &&  LONGITUDE_MINIMUM < gps->longitude && LONGITUDE_MAXIMUM > gps->longitude) {
-  } else {
-    return 0;
-  }
-*/
+
   return 1;
 }
 // １行文字列の読み込み
@@ -108,16 +102,22 @@ boolean gps_get(struct GPS* gps) {
                         g_szReadBuffer, READBUFFERSIZE, g_iIndexChar,
                         szLineString, READBUFFERSIZE ) )
   { // 読み取り途中
-    return 0;
+    return 2;
   }
   // 読み取り完了
 
   if ( !AnalyzeLineString( szLineString, gps ) )
   {
-    return 0;
+    return 3;
   }
-  //緯度経度が正常な値にあるか広めに検査
 
+  //緯度経度が明らかにおかしい場合はじく
+  if (LATITUDE_MINIMUM < (gps->latitude) && LATITUDE_MAXIMUM > (gps->latitude)){//緯度の検査域にいるか
+    if(  LONGITUDE_MINIMUM < (gps->longitude) && LONGITUDE_MAXIMUM > (gps->longitude)) {//経度の検査域にいるか
+    } else {
+      return 4;
+    }
+  }
   // 緯度、経度を読み取れた。
   // float to string
   char sz_utc[16];
@@ -132,8 +132,10 @@ boolean gps_get(struct GPS* gps) {
   Serial.println(sz_utc);
   Serial.print("latitude : ");
   Serial.println(sz_lat);
+  Serial.println(gps->latitude);
   Serial.print("longitude : ");
   Serial.println(sz_long);
+  Serial.println(gps->longitude);
   Serial.print("Speed : ");
   Serial.println(gps->Speed);   //knot表示されます
   Serial.print("Course : ");

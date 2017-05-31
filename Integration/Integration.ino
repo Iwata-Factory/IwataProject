@@ -13,7 +13,8 @@
 #define READBUFFERSIZE  (256)
 #define DELIMITER   (",")  // 区切り文字定数
 // GPSのピンはSDと干渉しないように
-#define PIN_GPS_Rx  11 // GPSのシリアル通信でデータを受信するピン
+//speekerとも干渉しないように
+#define PIN_GPS_Rx  10 // GPSのシリアル通信でデータを受信するピン
 #define PIN_GPS_Tx  12 // GPSのシリアル通信でデータを送信するピン
 #define SERIAL_BAUDRATE 9600 //シリアル通信のデータ送信レートを9600bpsに定義するための定数(ArduinoとPC)
 #define GPSBAUDRATE 9600 //シリアル通信のデータ送信レートを9600bpsに定義するための定数(GPSとArduino)
@@ -100,10 +101,10 @@ SoftwareSerial g_gps( PIN_GPS_Rx, PIN_GPS_Tx);
 void setup() {
   Wire.begin();           //I2C通信の初期化
   Serial.begin(SERIAL_BAUDRATE); //シリアル通信の初期化
-  g_gps.begin(GPSBAUDRATE); //シリアル通信の初期化
+ /* g_gps.begin(GPSBAUDRATE); //シリアル通信の初期化
   writeI2c(0x02, 0x00, HMC5883L); //HMC5883Lの初期設定0x02レジスタに0x00書き込み
   writeI2c(0x31, 0x00, ADXL345);  //上と同様
-  writeI2c(0x2d, 0x08, ADXL345);  //上と同様
+  writeI2c(0x2d, 0x08, ADXL345);  //上と同様 */
   pinMode(M1_1, OUTPUT);
   pinMode(M1_2, OUTPUT);
   pinMode(M2_1, OUTPUT);
@@ -209,11 +210,25 @@ void loop() {
 
         struct GPS gps; // 構造体宣言
 
-
-   
         
-        while (!gps_get(&gps)) { //gpsの値が正常になるまで取り続ける
-          delay(50);
+        while (1) { //gpsの値が正常になるまで取り続ける
+          int gps_flag = 0;   //gps_getの返り値保存
+          gps_flag = gps_get(&gps);
+          delay(10);
+
+          //gpsの値が取れない間どこで引っかかっているのか識別できるようになりました
+
+          if (gps_flag == 1){ //値が取れたら抜ける
+            break;
+          } else if (gps_flag == 2){
+            //gpsとの通信が来ていない
+          } else if (gps_flag == 3){
+            //gpsとの通信はできているが値が変or GPRMCでない
+          } else if (gps_flag == 4){
+            //通信ができて値も解析されたが緯度経度の値がバグってる
+            
+          }
+          
         }
 
         if (gps.Direction >= 0 && gps.distance >= 0) {
@@ -255,7 +270,6 @@ void loop() {
 
 
     // 5回以内の回転で位置補正
-
     Serial.println("回転フローへ移行");
 
     delay(1500);

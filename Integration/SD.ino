@@ -9,9 +9,7 @@
   記録系:write
 
   読み取る系:read
-
 */
-
 // 加速度を記録
 int write_ac_sd(AC ac) {
   int i = 0; // 試行回数記録用
@@ -331,7 +329,6 @@ int read_gps_sd(struct GPS *gps, int num) {
   }
   return 0;
 }
-
 
 
 
