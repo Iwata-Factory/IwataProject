@@ -41,6 +41,10 @@
 #define B  494
 #define HIGH_C  523
 
+//距離用の定義
+#define DISTANCE A12
+#define DIS_SAMPLE 50
+
 // グローバル変数の定義
 static unsigned long time; //タイマー起動
 static float last_distance = -1; // 目的地までの距離(m)。負の値で初期化。
@@ -110,6 +114,8 @@ void setup() {
   pinMode(M2_2, OUTPUT);
   pinMode(LIGHT_PIN, INPUT);
 
+  pinMode(DISTANCE, INPUT);  //距離センサ用のアナログピン
+  
   Serial.println("setup完了");
 
 }
