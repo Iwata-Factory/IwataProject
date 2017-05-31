@@ -42,8 +42,8 @@
 #define HIGH_C  523
 
 //距離用の定義
-#define DISTANCE A12
-#define DIS_SAMPLE 50
+#define DISTANCE A12  //測距センサの距離読み取り用ピン
+#define DIS_SAMPLE 50  //距離のサンプリング数
 
 // グローバル変数の定義
 static unsigned long time; //タイマー起動
