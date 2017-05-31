@@ -1,3 +1,5 @@
+
+
 /*
   メインプログラム
 */
@@ -40,11 +42,22 @@
 #define A  440
 #define B  494
 #define HIGH_C  523
+/*要調整*/
+#define Kp 2    //比例制御の係数
+#define Ki 5    //積分制御の係数
+#define Kd 1    //微分制御の係数
+#define DELTA_T  4  //デルタt
+#define Setpoint 0  //角度用のpid制御の目標値
+
 
 // グローバル変数の定義
 static unsigned long time; //タイマー起動
 static float last_distance = -1; // 目的地までの距離(m)。負の値で初期化。
 static const uint8_t length = 6;   //読み出しデータの個数
+static double diff[2];   //PID用の配列
+static double integral;  //pidの積分
+
+
 
 
 // 構造体を宣言
@@ -109,7 +122,7 @@ void setup() {
   pinMode(M2_1, OUTPUT);
   pinMode(M2_2, OUTPUT);
   pinMode(LIGHT_PIN, INPUT);
-
+  
   Serial.println("setup完了");
 
 }
