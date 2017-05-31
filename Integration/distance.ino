@@ -1,4 +1,6 @@
 //defineについてはいntegrationを参照のこと。
+//距離センサからの電圧をデータシートの関数に基づいて距離に変換しています。
+//測定範囲外の値についての扱いは適当です。。
 
 double get_distance() {
   float distance;       //cmで距離を表示
@@ -26,7 +28,7 @@ double get_distance() {
   volt = value_ave( DIS_SAMPLE, dis_data );
   Serial.print("average is  ");
   Serial.println(volt);
-  if ( 1.35  < volt & volt < 2.7 ) {            //有効測距範囲内
+  if ( 1.40  < volt & volt < 2.7 ) {            //有効測距範囲内
     distance = 140.0 / ( volt - 1.10 ) ;
     Serial.print( "success reading! Distance is  " );
     Serial.println( distance );
