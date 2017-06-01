@@ -10,7 +10,7 @@ void send_xbee(struct GPS* gps){
   //小数点6けたで表示する
   dtostrf(gps->utc,10,6,xbee_utc);
   dtostrf(gps->latitude, 10, 6, xbee_lat);
-  dtostrf(gps->longtitude, 10, 6, xbee_long);
+  dtostrf(gps->longitude, 10, 6, xbee_long);
   
   sprintf( xbee_gps, "%s,%s,%s\r", xbee_utc, xbee_lat, xbee_long );
   xbee_uart( dev, xbee_gps );  //送信
