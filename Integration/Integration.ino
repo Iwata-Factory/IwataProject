@@ -121,7 +121,7 @@ void loop() {
   Serial.println("光センサ起動まで5秒待機します");
 
   delay(5000);
-  
+
   // 光センサ始動(準備が整いしだい外部関数化)
   while (1) {
     break; /* 今は即breakさせています */
@@ -179,14 +179,14 @@ void loop() {
   Serial.println("Statusを地上1に移行します。");
 
   while (1) { // この部分をひたすらに繰り返す //===
-    
+
     /*何回やるかわからないけど多いほうがいいかなと思って一応unsigned long にした*/
     static unsigned long i = 0; // 繰り返し数のカウント
     unsigned long gps_count = 0;  //gpsの取得回数
     double latitude_hold = 0;   //前回のgps.latitudeの値を保持する
     double longitude_hold = 0;   //前回のgps.longitudeの値を保持する
     double gps_only_direction = 0;   //gpsの値のみから今の進行方向をしるやつ
-    
+
     double my_direction = -1; //自分の向いている方位（北を0として時計回りに0~360の値を取る）
     double dst_direction = -1; //目的地の方位。負の値で初期化。
     double my_rotation = 500; //自分が回転すべき大きさ(-180~180までの値を取る)
@@ -213,12 +213,12 @@ void loop() {
       double gps_latitude_array[5];   //サンプルの箱
       double gps_longitude_array[5];
       double latitude_median = 0;   //サンプルの中央値
-      double longitude_median = 0; 
+      double longitude_median = 0;
 
       while (j < 5) { // 成功サンプルを5個取得したい
 
         struct GPS gps; // 構造体宣言
-        
+
         while (!gps_get(&gps)) { //gpsの値が正常になるまで取り続ける
           delay(50);
         }
@@ -248,26 +248,20 @@ void loop() {
       dst_direction = rad_ave(5, gps_direction_array); /*注意:引数の渡し方検討*/
       // gps_distance_arrayを投げて向きの平均を計算
       last_distance = value_ave(5, gps_distance_array); /*注意:引数の渡し方検討*/
-      
-      if (gps_count % GPS_NUM == 0){
+
+      if (gps_count % GPS_NUM == 0) {
         //  gps_latitude_arrayをなげ中央値
         latitude_median = value_median(5, gps_latitude_array);
         //gps_longitude_arrayをなげて中央値
         longitude_median = value_median(5, gps_longitude_array);
-      }
-
-      if (gps_count % GPS_NUM == 0){//gpsの値のみから自己の方角を計算
+        //gpsの値のみから自己の方角を計算
         gps_only_direction = (int)(atan2((longitude_median - longitude_hold) * 1.23, (latitude_median - latitude_hold)) * 57.3 + 360) % 360;
-      }
-      
-      //今回の値を保持
-
-      if (gps_count % GPS_NUM == 0){//5回ごとに値をとる
+        // 値の更新
         latitude_hold = latitude_median;
         longitude_hold = longitude_median;
+
       }
 
-        
       distance_hold = last_distance;
 
       Serial.print("dst_direction:");
@@ -277,9 +271,6 @@ void loop() {
 
       break;
     } //!!!
-
-    dst_direction = 100;
-    last_distance = 1000;
 
     gps_count += 1;  //gpsカウンター一個増える
     // 5回以内の回転で位置補正
