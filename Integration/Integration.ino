@@ -9,6 +9,8 @@
 #include <avr/sleep.h>
 #include <SD.h>
 
+#include <xbee.h>  //このライブラリはslackを参照して各自PCに入れてください。
+
 // 定数の定義
 #define READBUFFERSIZE  (256)
 #define DELIMITER   (",")  // 区切り文字定数
@@ -46,6 +48,7 @@ static unsigned long time; //タイマー起動
 static float last_distance = -1; // 目的地までの距離(m)。負の値で初期化。
 static const uint8_t length = 6;   //読み出しデータの個数
 
+byte dev[] = {0x00, 0x13, 0xA2, 0x00, 0x40, 0xCA, 0x9A, 0x3D}; //XBEE親機アドレス
 
 // 構造体を宣言
 typedef struct { // 2次元のベクトル
@@ -104,6 +107,15 @@ void setup() {
   writeI2c(0x02, 0x00, HMC5883L); //HMC5883Lの初期設定0x02レジスタに0x00書き込み
   writeI2c(0x31, 0x00, ADXL345);  //上と同様
   writeI2c(0x2d, 0x08, ADXL345);  //上と同様
+
+  xbee_init(0);  //初期化
+  xbee_atcb(4);  //ネットワーク初期化
+  xbee_atnj(0);  //孫機のジョイン拒否
+  while (xbee_atai() > 0x01) { //ネットワーク参加状況を確認
+    delay(3000);
+    xbee_atcb(1);  //ネットワーク参加ボタン押下
+  }
+
   pinMode(M1_1, OUTPUT);
   pinMode(M1_2, OUTPUT);
   pinMode(M2_1, OUTPUT);
@@ -210,8 +222,8 @@ void loop() {
         struct GPS gps; // 構造体宣言
 
 
-   
-        
+
+
         while (!gps_get(&gps)) { //gpsの値が正常になるまで取り続ける
           delay(50);
         }
