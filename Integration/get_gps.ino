@@ -91,10 +91,9 @@ int ReadLineString( SoftwareSerial& serial,
   }
   return 0;
 }
-boolean gps_get(struct GPS* gps) {
 
-  char g_szReadBuffer[READBUFFERSIZE] = "";
-  int  g_iIndexChar = 0;
+int gps_get(struct GPS* gps) {
+
   char szLineString[READBUFFERSIZE];
 
 
@@ -117,6 +116,8 @@ boolean gps_get(struct GPS* gps) {
     } else {
       return 4;
     }
+  } else {
+      return 4;
   }
   // 緯度、経度を読み取れた。
   // float to string

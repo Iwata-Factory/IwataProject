@@ -7,17 +7,17 @@ digital pin  pin mapping 使用するピン
 0 TX  Xbee RX
 1 RX  Xbee TX
 2 PWM スリープ解除ピン
-3 PWM 
+3 PWM speeker
 4 PWM MOTOR
 5 PWM MOTOR
 6 PWM MOTOR
 7 PWM MOTOR
-8 PWM 
+8 PWM 圧電スピーカー
 9 PWM 
 10  PWM(software serial)  GPS RX
 11  PWM(software serial)  
 12  PWM(software serial)  GPS TX
-13  PWM(software serial)  
+13  PWM(software serial)  speeker
 14  TX3 
 15  RX3 
 16  TX2 
@@ -94,7 +94,7 @@ analog pin
 #include <Wire.h>
 #include <SoftwareSerial.h>
 #include <math.h>
-#include <avr/sleep.h>
+//#include <avr/sleep.h>
 #include <SD.h>
 
 // 定数の定義
@@ -112,15 +112,15 @@ analog pin
 #define LONGITUDE_MAXIMUM 140  //経度の最大値
 #define HMC5883L 0x1E   //HMC5883L(地磁気センサ)のスレーブアドレス
 #define ADXL345 0x53  //ADXL345(加速度センサ)のスレーブアドレス
-#define M1_1 8 // モーター制御用ピン
-#define M1_2 9 // モーター制御用ピン
-#define M2_1 10 // モーター制御用ピン
-#define M2_2 11 // モーター制御用ピン
-/*適当に1番にしてある*/
-#define LIGHT_PIN 1  //照度センサピン
+#define M1_1 4 // モーター制御用ピン
+#define M1_2 5 // モーター制御用ピン
+#define M2_1 6 // モーター制御用ピン
+#define M2_2 7 // モーター制御用ピン
+/*適当に20番にしてある*/
+#define LIGHT_PIN 20  //照度センサピン
 #define pi 3.14159265359
 #define BEAT 300   // 音の長さを指定
-#define TONE_PINNO 12   // 圧電スピーカを接続したピン番号
+#define TONE_PINNO 8   // 圧電スピーカを接続したピン番号
 #define C  262    //ド
 #define D  294    //レ
 #define E  330    //ミ
@@ -134,7 +134,8 @@ analog pin
 static unsigned long time; //タイマー起動
 static float last_distance = -1; // 目的地までの距離(m)。負の値で初期化。
 static const uint8_t length = 6;   //読み出しデータの個数
-
+char g_szReadBuffer[READBUFFERSIZE] = "";
+int  g_iIndexChar = 0;
 
 // 構造体を宣言
 typedef struct { // 2次元のベクトル
@@ -189,7 +190,7 @@ SoftwareSerial g_gps( PIN_GPS_Rx, PIN_GPS_Tx);
 void setup() {
   Wire.begin();           //I2C通信の初期化
   Serial.begin(SERIAL_BAUDRATE); //シリアル通信の初期化
- /* g_gps.begin(GPSBAUDRATE); //シリアル通信の初期化
+  g_gps.begin(GPSBAUDRATE); //シリアル通信の初期化
   writeI2c(0x02, 0x00, HMC5883L); //HMC5883Lの初期設定0x02レジスタに0x00書き込み
   writeI2c(0x31, 0x00, ADXL345);  //上と同様
   writeI2c(0x2d, 0x08, ADXL345);  //上と同様 */
@@ -308,12 +309,18 @@ void loop() {
 
           if (gps_flag == 1){ //値が取れたら抜ける
             break;
-          } else if (gps_flag == 2){
+          } 
+          if (gps_flag == 2){
             //gpsとの通信が来ていない
-          } else if (gps_flag == 3){
+            Serial.println("gpsとの通信できていない");
+          } 
+          if (gps_flag == 3){
             //gpsとの通信はできているが値が変or GPRMCでない
-          } else if (gps_flag == 4){
+            Serial.println("gpsの値がおかしい or GPRMCではない");
+          } 
+          if (gps_flag == 4){
             //通信ができて値も解析されたが緯度経度の値がバグってる
+            Serial.println("緯度経度がおかしい");
             
           }
           
