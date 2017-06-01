@@ -2,6 +2,94 @@
   メインプログラム
 */
 
+/*
+digital pin  pin mapping 使用するピン
+0 TX  Xbee RX
+1 RX  Xbee TX
+2 PWM スリープ解除ピン
+3 PWM 
+4 PWM MOTOR
+5 PWM MOTOR
+6 PWM MOTOR
+7 PWM MOTOR
+8 PWM 
+9 PWM 
+10  PWM(software serial)  GPS RX
+11  PWM(software serial)  
+12  PWM(software serial)  GPS TX
+13  PWM(software serial)  
+14  TX3 
+15  RX3 
+16  TX2 
+17  RX2 
+18  TX1 
+19  RX1 
+20  SDA I2C for sensor
+21  SCL I2C for sensor
+22  digital 
+23  digital 
+24  digital 
+25  digital 
+26  digital 
+27  digital 
+28  digital 
+29  digital 
+30  digital 
+31  digital 
+32  digital 
+33  digital 
+34  digital 
+35  digital 
+36  digital 
+37  digital 
+38  digital 
+39  digital 
+40  digital 
+41  digital 
+42  digital 
+43  digital 圧電ブザー
+44  digital 
+45  digital 
+46  digital 
+47  digital 
+48  digital 
+49  digital 
+50  digital SD MISO
+51  digital SD MOSI
+52  digital SD CLK
+53  digital SD CS
+    
+    
+analog pin    
+0 analog in 
+1 analog in 
+2 analog in 
+3 analog in 
+4 analog in 
+5 analog in 
+6 analog in 
+7 analog in 
+8 analog in 
+9 analog in 
+10  analog in 
+11  analog in 
+12  analog in distance
+13  analog in 
+14  analog in 
+15  analog in 
+*/
+
+
+
+
+
+
+
+
+
+
+
+
 // include文
 #include <Wire.h>
 #include <SoftwareSerial.h>
