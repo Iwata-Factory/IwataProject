@@ -7,14 +7,14 @@
 #include <SoftwareSerial.h>
 #include <math.h>
 #include <avr/sleep.h>
-#include <SD.h>
+//#include <SD.h>
 
 // 定数の定義
 #define READBUFFERSIZE  (256)
 #define DELIMITER   (",")  // 区切り文字定数
 // GPSのピンはSDと干渉しないように
-#define PIN_GPS_Rx  11 // GPSのシリアル通信でデータを受信するピン
-#define PIN_GPS_Tx  12 // GPSのシリアル通信でデータを送信するピン
+#define PIN_GPS_Rx  53 // GPSのシリアル通信でデータを受信するピン
+#define PIN_GPS_Tx  51 // GPSのシリアル通信でデータを送信するピン
 #define SERIAL_BAUDRATE 9600 //シリアル通信のデータ送信レートを9600bpsに定義するための定数(ArduinoとPC)
 #define GPSBAUDRATE 9600 //シリアル通信のデータ送信レートを9600bpsに定義するための定数(GPSとArduino)
 #define LATITUDE_MINIMUM 30  //緯度の最小値
@@ -210,13 +210,16 @@ void loop() {
         struct GPS gps; // 構造体宣言
 
 
-   
-        
+
+
         while (!gps_get(&gps)) { //gpsの値が正常になるまで取り続ける
           delay(50);
         }
 
         if (gps.Direction >= 0 && gps.distance >= 0) {
+
+
+
           gps_direction_array[j] = gps.Direction;
           gps_distance_array[j] = gps.distance;
           delay(10);
@@ -225,6 +228,11 @@ void loop() {
 
           Serial.print(j - 1);
           Serial.println("番目のサンプル取得");
+//          if (write_gps_sd(gps)) {
+//            Serial.println("記録成功");
+//          } else {
+//            Serial.println("記録失敗");
+//          }
 
         } else {
           delay(10);
@@ -235,10 +243,10 @@ void loop() {
       Serial.println("サンプルの処理を行います");
       delay(1500);
 
-      // gps_direction_arrayを投げて向きの平均を計算
-      dst_direction = rad_ave(5, gps_direction_array); /*注意:引数の渡し方検討*/
-      // gps_distance_arrayを投げて向きの平均を計算
-      last_distance = value_ave(5, gps_distance_array); /*注意:引数の渡し方検討*/
+      // gps_direction_arrayを投げて向きの平均を計算(外れ値を弾く)
+      dst_direction = rad_out(5, gps_direction_array); /*注意:引数の渡し方検討*/
+      // gps_distance_arrayを投げて向きの平均を計算(外れ値を弾く)
+      last_distance = value_median(5, gps_distance_array); /*注意:引数の渡し方検討*/
 
       distance_hold = last_distance;
 
@@ -296,8 +304,8 @@ void loop() {
           }
         }
 
-        // my_direction_arrayの中央値を取得
-        my_direction = value_ave(5, my_direction_array);
+        // my_direction_arrayの中央値を取得(外れ値を一つ弾く)
+        my_direction = rad_out(5, my_direction_array);
 
         Serial.println("サンプル取得完了");
         Serial.print("方向の平均値は");
