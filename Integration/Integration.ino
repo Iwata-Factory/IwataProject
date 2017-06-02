@@ -117,7 +117,7 @@ analog pin
 #define M2_1 6 // モーター制御用ピン
 #define M2_2 7 // モーター制御用ピン
 /*適当に20番にしてある*/
-#define LIGHT_PIN 20  //照度センサピン
+#define LIGHT_PIN 2  //照度センサピン
 #define pi 3.14159265359
 #define BEAT 300   // 音の長さを指定
 #define TONE_PINNO 8   // 圧電スピーカを接続したピン番号
@@ -191,7 +191,7 @@ void setup() {
   Wire.begin();           //I2C通信の初期化
   Serial.begin(SERIAL_BAUDRATE); //シリアル通信の初期化
   g_gps.begin(GPSBAUDRATE); //シリアル通信の初期化
-  writeI2c(0x02, 0x00, HMC5883L); //HMC5883Lの初期設定0x02レジスタに0x00書き込み
+/*  writeI2c(0x02, 0x00, HMC5883L); //HMC5883Lの初期設定0x02レジスタに0x00書き込み
   writeI2c(0x31, 0x00, ADXL345);  //上と同様
   writeI2c(0x2d, 0x08, ADXL345);  //上と同様 */
   pinMode(M1_1, OUTPUT);
@@ -209,7 +209,7 @@ void loop() {
   Serial.println("loopスタート");
   Serial.println("光センサ起動まで5秒待機します");
 
-  delay(5000);
+  //delay(5000);
 
   // 光センサ始動(準備が整いしだい外部関数化)
   while (1) {
@@ -223,12 +223,12 @@ void loop() {
       continue;
     }
   }
-
+/*
   Serial.println("放出判定をパス");
   Serial.println("1秒待機します");
 
   // 投下中待機時間
-  delay(1000); /* 現在適当な値 */
+  delay(1000); /* 現在適当な値 *//*
 
   while (1) { // 着陸の判定を行う
     break;
@@ -247,7 +247,7 @@ void loop() {
 
   delay(3000);
 
-  /* 着陸判定をパスしたら2秒回転します。 */
+  /* 着陸判定をパスしたら2秒回転します。 *//*
   digitalWrite(M1_1, 0);
   digitalWrite(M1_2, 1);
   digitalWrite(M2_1, 1);
@@ -263,7 +263,7 @@ void loop() {
 
   // need　ケーシングを開く処理を書く
 
-  // need パラシュートから安全に離れる処理を書く
+  // need パラシュートから安全に離れる処理を書く*/
 
   Serial.println("Statusを地上1に移行します。");
 
@@ -363,7 +363,7 @@ void loop() {
     dst_direction = 100;
     last_distance = 1000;
 
-
+/*
     // 5回以内の回転で位置補正
     Serial.println("回転フローへ移行");
 
@@ -470,7 +470,7 @@ void loop() {
         Serial.print("計算を施して");
         Serial.println(my_rotation);
 
-        break; /*現状ではここをwhile文にする理由は無いが念のため*/
+        break; /*現状ではここをwhile文にする理由は無いが念のため*//*
       }
 
 
@@ -493,11 +493,11 @@ void loop() {
     Serial.println("直進します。");
     delay(1000);
     //直進する
-    go_straight(5000); /* 引数は暫定です */
+    go_straight(5000); /* 引数は暫定です *//*
     i += 1; // 繰り返し数を1増やす
     Serial.println("直進完了です。");
     Serial.println("whileの先頭に戻ります。");
-    delay(1500);
+    delay(1500);*/
 
 
   } //===
