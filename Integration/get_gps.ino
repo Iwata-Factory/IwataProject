@@ -26,7 +26,7 @@ int AnalyzeLineString( char szLineString[], struct GPS* gps) {
   // $GPRMC,085120.307,A,3541.1493,N,13945.3994,E,000.0,240.3,181211,,,A*6A
   strtok( szLineString, DELIMITER );  // $GPRMCを抽出
   char* psz_utc = strtok( NULL, DELIMITER );  // UTC時刻を抽出
-  strtok( NULL, DELIMITER );  // ステータスを抽出
+  char* gps_status = strtok( NULL, DELIMITER );  // ステータスを抽出
   char* psz_lat = strtok( NULL, DELIMITER ); // 緯度(dddmm.mmmm)
   strtok( NULL, DELIMITER );  // 北緯か南緯か
   char* psz_long = strtok( NULL, DELIMITER );  // 経度(dddmm.mmmm)
@@ -37,6 +37,13 @@ int AnalyzeLineString( char szLineString[], struct GPS* gps) {
   if ( NULL == psz_long )
   {
     return 0;
+  }
+  /*
+   * 通信ができていても生データが通信状況悪いとVになります
+   * これが出る場合は屋外とか通信状況よくなるようにしてください
+   */
+  if ( strncmp(*gps_status, 'V', 1 ) == 0){
+    Serial.println("通信状況が悪いから歩こう");
   }
   gps->utc = atof(psz_utc);
   gps->Speed = atof(psz_Speed);
