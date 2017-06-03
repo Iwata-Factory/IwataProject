@@ -115,7 +115,7 @@ void loop() {
   Serial.println(gps.course);
   Serial.println(gps.Direction);
   Serial.println(gps.distance);
-  while ( !eep_gpswrite(adress, gps) ) {
+  while ( !eep_gpswrite(adress, gps) ) {  //実験結果27byte使用
     delay(10);
   }
   eep_flagwrite(flag[0], flag[1]);
