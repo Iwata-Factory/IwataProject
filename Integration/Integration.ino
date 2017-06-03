@@ -80,16 +80,6 @@
 */
 
 
-
-
-
-
-
-
-
-
-
-
 // include文
 #include <Wire.h>
 #include <SoftwareSerial.h>
@@ -175,6 +165,8 @@ typedef struct { // モーター制御
 
 // グローバル変数の定義
 static unsigned long time; //タイマー起動
+static unsigned long last_timer_time = 0;
+
 static const uint8_t length = 6;   //読み出しデータの個数
 // 50,51をArduinoとGPS間のシリアル通信用に
 SoftwareSerial g_gps( PIN_GPS_Rx, PIN_GPS_Tx);
@@ -196,9 +188,7 @@ void setup() {
   pinMode(M2_1, OUTPUT);
   pinMode(M2_2, OUTPUT);
   pinMode(LIGHT_PIN, INPUT);
-
   Serial.println("setup完了");
-
 }
 
 void loop() {
@@ -210,8 +200,10 @@ void loop() {
 
   // 光センサ始動(準備が整いしだい外部関数化)
   while (1) {
-    break; /* 今は即breakさせています */
     time = millis(); //現在の時間を取得
+    last_timer_time = time;
+    break; /* 今は即breakさせています */
+
     if (1) { //投下の判定
       delay(1000);
       break; //パスしたらループを抜ける
@@ -220,23 +212,23 @@ void loop() {
       continue;
     }
   }
-  /*
-    Serial.println("放出判定をパス");
-    Serial.println("1秒待機します");
 
-    // 投下中待機時間
-    delay(1000); /* 現在適当な値 *//*
+  Serial.println("放出判定をパス");
+  Serial.println("1秒待機します");
+
+  // 投下中待機時間
+  delay(1000); /* 現在適当な値 */
 
   while (1) { // 着陸の判定を行う
-  break;
-  static int i = 0; // 判定の繰り返し回数を調べる
-  if (determine_landing()) {
-  delay(5000);
-  break;
-  } else {
-  i += 1;
-  delay(5000);
-  }
+    break;
+    static int i = 0; // 判定の繰り返し回数を調べる
+    if (determine_landing()) {
+      delay(5000);
+      break;
+    } else {
+      i += 1;
+      delay(5000);
+    }
   }
 
   Serial.println("着陸判定をパス");
@@ -244,7 +236,7 @@ void loop() {
 
   delay(3000);
 
-  /* 着陸判定をパスしたら2秒回転します。 *//*
+  /* 着陸判定をパスしたら2秒回転します。 */
   digitalWrite(M1_1, 0);
   digitalWrite(M1_2, 1);
   digitalWrite(M2_1, 1);
@@ -260,7 +252,7 @@ void loop() {
 
   // need　ケーシングを開く処理を書く
 
-  // need パラシュートから安全に離れる処理を書く*/
+  // need パラシュートから安全に離れる処理を書く
 
   Serial.println("Statusを地上1に移行します。");
 
@@ -271,6 +263,7 @@ void loop() {
     time = millis(); //現在の時間を取得
     Serial.print("timer:");
     Serial.println(time);
+    last_timer_time = time;
 
     static int i = 0; // 繰り返し数のカウント
     double my_direction = -1; //自分の向いている方位（北を0として時計回りに0~360の値を取る）
@@ -309,16 +302,19 @@ void loop() {
             break;
           }
           if (gps_flag == 2) {
+            ;
             //gpsとの通信が来ていない
-            Serial.println("gpsとの通信できていない");
+            //Serial.println("gpsとの通信できていない");
           }
           if (gps_flag == 3) {
+            ;
             //gpsとの通信はできているが値が変or GPRMCでない
-            Serial.println("gpsの値がおかしい or GPRMCではない");
+            //Serial.println("gpsの値がおかしい or GPRMCではない");
           }
           if (gps_flag == 4) {
+            ;
             //通信ができて値も解析されたが緯度経度の値がバグってる
-            Serial.println("緯度経度がおかしい");
+            //Serial.println("緯度経度がおかしい");
           }
         }
 
@@ -356,6 +352,7 @@ void loop() {
       time = millis(); //現在の時間を取得
       Serial.print("timer:");
       Serial.println(time);
+      last_timer_time = time;
 
       break;
     } //!!!
@@ -396,9 +393,20 @@ void loop() {
             Serial.print("個目のサンプルの値:");
             Serial.println(my_direction_array[j - 1]);
             delay(500);
-          } else {
+          } else if (my_direction_array[j] = -1) {
+            Serial.println("加速度取れてないよ");
             k += 1;
-            delay(500);
+            delay(50);
+            /* 値がちゃんと取れていないときも-1が返ってきてここに来る。kの数をカウントすることで色々な処理をする。 */
+            /* 加速度が取れない時は-1、と時期が取れないときは-2を返すようにした。これでセンサーが壊れたとか判別出来る。 */
+          } else if (my_direction_array[j] = -2) {
+            Serial.println("地磁気取れてないよ");
+            k += 1;
+            delay(50);
+          } else {
+            Serial.println("何かがおかしいよ");
+            k += 1;
+            delay(50);
           }
         }
 
@@ -426,6 +434,7 @@ void loop() {
 
       // Vector2D型のベクトルを定義
       Vector2D my_vector;
+      // 方角をベクトルに落とし込む
       my_vector.x = cos(rad2deg(my_direction));
       my_vector.y = sin(rad2deg(my_direction));
       Vector2D dst_vector;
@@ -467,6 +476,7 @@ void loop() {
       time = millis(); //現在の時間を取得
       Serial.print("timer:");
       Serial.println(time);
+      last_timer_time = time;
 
       //ここに回転部分を書く
       if (!(my_rotation == 0)) { // 回転する人用があれば回転し、向きの取得から繰り返す
