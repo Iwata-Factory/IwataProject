@@ -71,6 +71,13 @@ typedef struct { // 地磁気センサ
   double z = 0.0; // z軸方向
 } TM;
 
+struct EEP_GPS {
+  char sentence = "gps log";
+  double utc = 0;
+  double latitude = 0;
+  double longitude = 0;
+};
+
 int phase = 0;
 byte flag[4] = {
   0x00, 0x01, 0x03, 0x07
@@ -79,12 +86,14 @@ byte flag[4] = {
 // 50,51をArduinoとGPS間のシリアル通信用に
 SoftwareSerial g_gps( PIN_GPS_Rx, PIN_GPS_Tx);
 
+char g_szReadBuffer[READBUFFERSIZE] = "";
+int  g_iIndexChar = 0;
 
 void setup() {
   // put your setup code here, to run once:
   Wire.begin();           //I2C通信の初期化
   Serial.begin(SERIAL_BAUDRATE); //シリアル通信の初期化
-  Serial.begin(SERIAL_BAUDRATE);
+  g_gps.begin(SERIAL_BAUDRATE);
   eep_clear();
   Serial.println("setup done.");
 }
@@ -96,13 +105,20 @@ void loop() {
   Serial.println("looping...");
   Serial.println(phase);
   Serial.println("create new flag...");
-  while ( !gps_get(&gps) ) {
+  while (!(gps_get(&gps) == 1 )) {
     delay(10);
   }
+  Serial.println(gps.utc);
+  Serial.println(gps.latitude);
+  Serial.println(gps.longitude);
+  Serial.println(gps.Speed);
+  Serial.println(gps.course);
+  Serial.println(gps.Direction);
+  Serial.println(gps.distance);
   while ( !eep_gpswrite(adress, gps) ) {
     delay(10);
   }
-  eep_flagwrite(flag[0],flag[1]);
+  eep_flagwrite(flag[0], flag[1]);
   Serial.println("writeing eeprom done!!");
-  while(1);
+  while (1);
 }
