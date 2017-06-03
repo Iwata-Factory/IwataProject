@@ -11,6 +11,8 @@
 
 #include <xbee.h>  //このライブラリはslackを参照して各自PCに入れてください。
 
+#include <EEPROM.h>
+
 // 定数の定義
 #define READBUFFERSIZE  (256)
 #define DELIMITER   (",")  // 区切り文字定数
@@ -42,6 +44,21 @@
 #define A  440
 #define B  494
 #define HIGH_C  523
+
+/*
+   このブランチでの定数の定義
+*/
+#define EEP_LENGTH 4096  //EEPROMはMegaは4096byte、Unoは1024byteの容量です。
+#define SERIAL_BAUDRATE 9600 //シリアル通信のデータ送信レートを9600bpsに定義するための定数(ArduinoとPC)
+#define EEP_FLAG 0  //flagの記録場所は現在は０です。
+#define DESTINATION_HEAD 1  //以下のアドレスは実験によって確定させます。
+#define DESTINATION_END  16
+#define START_HEAD 17
+#define START_END  32
+#define STOP_HEAD 33
+#define STOP_END  48
+#define AVESPEED_HEAD 49
+#define AVESPEED_END  56
 
 // グローバル変数の定義
 static unsigned long time; //タイマー起動
@@ -92,6 +109,12 @@ typedef struct { // モーター制御
   int leght2 = 0; // 11番ピン対応
 } DRIVE;
 
+//flag配列SDへの書き込みが１byte単位なので書き込む値は最大１バイトまでにしたい。
+byte flag[8] = {
+  0x00, 0x01, 0x02, 0x03,
+  0x04, 0x05, 0x06, 0x07
+};
+
 // 50,51をArduinoとGPS間のシリアル通信用に
 SoftwareSerial g_gps( PIN_GPS_Rx, PIN_GPS_Tx);
 
@@ -115,6 +138,10 @@ void setup() {
     delay(3000);
     xbee_atcb(1);  //ネットワーク参加ボタン押下
   }
+
+
+  eep_clear();   //EEPROMのリセット。４KB全てに書き込むので時間かかる。
+  //EEPROM.write(EEP_FLAG,0);  //flagの部分のみ初期化。
 
   pinMode(M1_1, OUTPUT);
   pinMode(M1_2, OUTPUT);
