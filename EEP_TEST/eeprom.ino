@@ -25,7 +25,7 @@ boolean eep_flagwrite(byte oldflag, byte newflag) {
   }
 }
 
-int eep_gpswrite( int adr, GPS gps ){
+int eep_gpswrite( int adr, struct GPS gps ){
   EEPROM.put( adr, gps );
   Serial.println("success writeing gps in EEP.");
   adr += sizeof(gps);   //必要なさ

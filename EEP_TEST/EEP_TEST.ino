@@ -60,9 +60,9 @@ struct GPS { // GPS関連    /* これだけ良くわからなかったのでtyp
 };
 
 typedef struct { // 加速度センサ
-  double x = 2.56; // x軸方向
-  double y = 3.14; // y軸方向
-  double z = 4.44; // z軸方向
+  double x = 0.0; // x軸方向
+  double y = 0.0; // y軸方向
+  double z = 0.0; // z軸方向
 } AC;
 
 typedef struct { // 地磁気センサ
@@ -90,20 +90,19 @@ void setup() {
 }
 
 void loop() {
-  AC ac;
+  struct GPS gps;
+  int adress = 1;
   // put your main code here, to run repeatedly:
   Serial.println("looping...");
-  if ((int)millis > ((phase + 1)*INTERVAL*100)) {
-    Serial.println(phase);
-    Serial.println("create new flag...");
-    get_ac();
-    eep_acwrite( 1, ac);
-    eep_flagwrite( flag[phase], flag[phase + 1] );
-    Serial.println(EEPROM.read(EEP_FLAG));
-    phase++;
-    if ( phase > 2) {
-      while (1);
-    }
+  Serial.println(phase);
+  Serial.println("create new flag...");
+  while ( !gps_get(&gps) ) {
+    delay(10);
   }
-  delay(100);
+  while ( !eep_gpswrite(adress, gps) ) {
+    delay(10);
+  }
+  eep_flagwrite(flag[0],flag[1]);
+  Serial.println("writeing eeprom done!!");
+  while(1);
 }
