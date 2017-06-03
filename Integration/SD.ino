@@ -10,6 +10,7 @@
 
   読み取る系:read
 */
+
 // 加速度を記録
 int write_ac_sd(AC ac) {
   int i = 0; // 試行回数記録用
@@ -34,7 +35,7 @@ int write_ac_sd(AC ac) {
 }
 
 
-// 加速度を記録
+// 地磁気を記録
 int write_tm_sd(TM tm) {
   int i = 0; // 試行回数記録用
   Serial.println("地磁気を記録します。");

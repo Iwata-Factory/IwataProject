@@ -6,8 +6,6 @@
 int stack(double last_distance, double distance_hold){
   double difference_distance=0;
 
-
-
   //distanceの値がまだ取れてないときはエラー
   if(last_distance == -1  ||  distance_hold == -1){
     return 0;
@@ -21,9 +19,6 @@ int stack(double last_distance, double distance_hold){
   } else {
     Serial.println("no stack");
   }
-
-
-  
 
   return 0;
 }

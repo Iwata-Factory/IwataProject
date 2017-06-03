@@ -11,9 +11,15 @@
   Serial.println(gps.Direction);
   Serial.println(gps.distance);
   ------------------------------------------*/
+
+// 区切り文字定数
 // センテンスの解析。
 // $GPRMCの場合、引数変数に、緯度、経度を入れ、戻り値 1 を返す。
 // $GPRMC以外の場合、戻り値は 0 を返す。
+
+//static const int READBUFFERSIZE = 256;
+//static const char DELIMITER = ",";
+
 int AnalyzeLineString( char szLineString[], struct GPS* gps) {
 
   // $GPRMC
@@ -39,10 +45,10 @@ int AnalyzeLineString( char szLineString[], struct GPS* gps) {
     return 0;
   }
   /*
-   * 通信ができていても生データが通信状況悪いとVになります
-   * これが出る場合は屋外とか通信状況よくなるようにしてください
-   */
-  if ( strncmp(*gps_status, 'V', 1 ) == 0){
+     通信ができていても生データが通信状況悪いとVになります
+     これが出る場合は屋外とか通信状況よくなるようにしてください
+  */
+  if ( strncmp(*gps_status, 'V', 1 ) == 0) {
     Serial.println("通信状況が悪いから歩こう");
   }
   gps->utc = atof(psz_utc);
@@ -101,9 +107,10 @@ int ReadLineString( SoftwareSerial& serial,
 
 int gps_get(struct GPS* gps) {
 
+//  char g_szReadBuffer[READBUFFERSIZE] = "";
+//  int  g_iIndexChar = 0;
   char szLineString[READBUFFERSIZE];
-
-
+  
   if ( !ReadLineString( g_gps,
                         g_szReadBuffer, READBUFFERSIZE, g_iIndexChar,
                         szLineString, READBUFFERSIZE ) )
@@ -118,13 +125,13 @@ int gps_get(struct GPS* gps) {
   }
 
   //緯度経度が明らかにおかしい場合はじく
-  if (LATITUDE_MINIMUM < (gps->latitude) && LATITUDE_MAXIMUM > (gps->latitude)){//緯度の検査域にいるか
-    if(  LONGITUDE_MINIMUM < (gps->longitude) && LONGITUDE_MAXIMUM > (gps->longitude)) {//経度の検査域にいるか
+  if (LATITUDE_MINIMUM < (gps->latitude) && LATITUDE_MAXIMUM > (gps->latitude)) { //緯度の検査域にいるか
+    if (  LONGITUDE_MINIMUM < (gps->longitude) && LONGITUDE_MAXIMUM > (gps->longitude)) { //経度の検査域にいるか
     } else {
       return 4;
     }
   } else {
-      return 4;
+    return 4;
   }
   // 緯度、経度を読み取れた。
   // float to string
@@ -140,10 +147,8 @@ int gps_get(struct GPS* gps) {
   Serial.println(sz_utc);
   Serial.print("latitude : ");
   Serial.println(sz_lat);
-  Serial.println(gps->latitude);
   Serial.print("longitude : ");
   Serial.println(sz_long);
-  Serial.println(gps->longitude);
   Serial.print("Speed : ");
   Serial.println(gps->Speed);   //knot表示されます
   Serial.print("Course : ");

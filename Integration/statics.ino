@@ -1,4 +1,3 @@
-// 統計的処理を書く
 
 /*
    受け取った配列を昇順に並び替える
@@ -49,10 +48,11 @@ double value_median(const int array_num, double* value) {
 */
 double value_ave(const int array_num, double* value) {
 
-  double ave = 0;
-  int i = 0;
 
-  descending_sort(array_num, value);    //並び替え
+  //descending_sort(array_num, value);    //並び替え
+  
+  int i = 0;
+  double ave = 0;
 
   //平均値を出す
   for (i = 0; i < array_num; i++) {
