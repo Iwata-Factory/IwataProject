@@ -92,8 +92,8 @@
 #define READBUFFERSIZE  (256)
 #define DELIMITER   (",")  // 区切り文字定数
 // speekerとも干渉しないように
-#define PIN_GPS_Rx  10 // GPSのシリアル通信でデータを受信するピン
-#define PIN_GPS_Tx  12 // GPSのシリアル通信でデータを送信するピン
+#define PIN_GPS_Rx  53 // GPSのシリアル通信でデータを受信するピン
+#define PIN_GPS_Tx  51 // GPSのシリアル通信でデータを送信するピン
 #define SERIAL_BAUDRATE 9600 //シリアル通信のデータ送信レートを9600bpsに定義するための定数(ArduinoとPC)
 #define GPSBAUDRATE 9600 //シリアル通信のデータ送信レートを9600bpsに定義するための定数(GPSとArduino)
 #define LATITUDE_MINIMUM 30  //緯度の最小値
@@ -102,10 +102,10 @@
 #define LONGITUDE_MAXIMUM 140  //経度の最大値
 #define HMC5883L 0x1E   //HMC5883L(地磁気センサ)のスレーブアドレス
 #define ADXL345 0x53  //ADXL345(加速度センサ)のスレーブアドレス
-#define M1_1 4 // モーター制御用ピン
-#define M1_2 5 // モーター制御用ピン
-#define M2_1 6 // モーター制御用ピン
-#define M2_2 7 // モーター制御用ピン
+#define M1_1 8 // モーター制御用ピン
+#define M1_2 9 // モーター制御用ピン
+#define M2_1 10 // モーター制御用ピン
+#define M2_2 11 // モーター制御用ピン
 /*適当に20番にしてある*/
 #define LIGHT_PIN 2  //照度センサピン
 #define pi 3.14159265359
@@ -232,23 +232,23 @@ void loop() {
   }
 
   Serial.println("着陸判定をパス");
-  Serial.println("3秒後に2秒回転します。");
-
-  delay(3000);
-
-  /* 着陸判定をパスしたら2秒回転します。 */
-  digitalWrite(M1_1, 0);
-  digitalWrite(M1_2, 1);
-  digitalWrite(M2_1, 1);
-  digitalWrite(M2_2, 0);
-  delay(2000);
-  // 停止
-  digitalWrite(M1_1, 1);
-  digitalWrite(M1_2, 1);
-  digitalWrite(M2_1, 1);
-  digitalWrite(M2_2, 1);
-
-  Serial.println("回転終了");
+//  Serial.println("3秒後に2秒回転します。");
+//
+//  delay(3000);
+//
+//  /* 着陸判定をパスしたら2秒回転します。 */
+//  digitalWrite(M1_1, 0);
+//  digitalWrite(M1_2, 1);
+//  digitalWrite(M2_1, 1);
+//  digitalWrite(M2_2, 0);
+//  delay(2000);
+//  // 停止
+//  digitalWrite(M1_1, 1);
+//  digitalWrite(M1_2, 1);
+//  digitalWrite(M2_1, 1);
+//  digitalWrite(M2_2, 1);
+//
+//  Serial.println("回転終了");
 
   // need　ケーシングを開く処理を書く
 
@@ -497,7 +497,7 @@ void loop() {
     Serial.println("直進します。");
     delay(500);
     //直進する
-    go_straight(5000); /* 引数は暫定です */
+    go_straight(3000); /* 引数は暫定です */
     i += 1; // 繰り返し数を1増やす
     Serial.println("直進完了です。");
 

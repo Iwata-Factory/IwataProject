@@ -13,6 +13,17 @@ void rover_degital(DRIVE drive) {
   digitalWrite(M2_2, drive.leght2);
 }
 
+/*-----------rover_analog(DRIVE)--------------------
+  DRIVE型の引数
+  analog write　の時
+  ------------------------------------------*/
+void rover_analog(DRIVE drive) {
+  analogWrite(M1_1, drive.right1);
+  analogWrite(M1_2, drive.right2);
+  analogWrite(M2_1, drive.leght1);
+  analogWrite(M2_2, drive.leght2);
+}
+
 
 /*-----------機体旋回--------------------
    rotate: 回転角
@@ -42,7 +53,7 @@ void go_rotate(double rotate) {
     turn.right2 = 0;
     turn.leght1 = 0;
     turn.leght2 = 1;
-    
+
     rotate_time = -1 * (rotate / 400) * 1000 + 120;
 
   }
@@ -68,24 +79,56 @@ void go_rotate(double rotate) {
 /*-----------機体直進--------------------
    go_time: 進む時間
   ------------------------------------------*/
+
 void go_straight(int go_time) {
   DRIVE go; //DRIVE型の宣言
   // 初期化
-  go.right1 = 0;
-  go.right2 = 1;
-  go.leght1 = 0;
-  go.leght2 = 1;
-  // 直進
-  rover_degital(go);
-  delay(go_time);
-
-  // 停止
+  int wait_time = go_time - 1024;
   go.right1 = 1;
   go.right2 = 1;
   go.leght1 = 1;
   go.leght2 = 1;
-  // 停止
+  for (int i = 1; i < 256; i++) {
+    go.right1 = 0;
+    go.right2 = i;
+    go.leght1 = 0;
+    go.leght2 = i;
+    rover_analog(go);
+    delay(2);
+  }
+  go.right1 = 0;
+  go.right2 = 1;
+  go.leght1 = 0;
+  go.leght2 = 1;
   rover_degital(go);
-  delay(1000);
+  delay(wait_time);
+  for (int i = 255; i > 0; i--) {
+    go.right1 = 0;
+    go.right2 = i;
+    go.leght1 = 0;
+    go.leght2 = i;
+    rover_analog(go);
+    delay(2);
+  }
 }
+//void go_straight(int go_time) {
+//  DRIVE go; //DRIVE型の宣言
+//  // 初期化
+//  go.right1 = 0;
+//  go.right2 = 1;
+//  go.leght1 = 0;
+//  go.leght2 = 1;
+//  // 直進
+//  rover_degital(go);
+//  delay(go_time);
+//
+//  // 停止
+//  go.right1 = 1;
+//  go.right2 = 1;
+//  go.leght1 = 1;
+//  go.leght2 = 1;
+//  // 停止
+//  rover_degital(go);
+//  delay(1000);
+//}
 
