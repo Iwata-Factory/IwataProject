@@ -270,7 +270,7 @@ void loop() {
     double my_direction = -1; //自分の向いている方位（北を0として時計回りに0~360の値を取る）
     double dst_direction = -1; //目的地の方位。負の値で初期化。
     double my_rotation = 500; //自分が回転すべき大きさ(-180~180までの値を取る)
-    double distance_hold = -1;   //gosの距離の値の前回のやつを保持
+    int finish_flag = 0;
 
     Serial.println("GPSにより目的地データを取得します。");
     Serial.println("5サンプルを取得します。");
@@ -351,8 +351,16 @@ void loop() {
       // gps_distance_arrayを投げて向きの平均を計算(外れ値を弾く)
       last_distance = value_median(5, gps_distance_array); /*注意:引数の渡し方検討*/
 
-      distance_hold = last_distance;
 
+      //目標との距離が十分(5m)に近づいたらflagに+1,flagが三回連続でたまったら、距離センサのシーケンスに移行
+      if (last_distance <= 5){
+        finish_flag++;
+      } else {
+        finish_flag = 0;     //外れたら一応0に戻す
+      }
+
+
+      
       Serial.print("dst_direction:");
       Serial.println(dst_direction);
       Serial.print("last_distance:");
@@ -365,6 +373,11 @@ void loop() {
 
       break;
     } //!!!
+
+     if (finish_flag >= 3){
+      //ここに距離センサのシーケンス
+     }
+
 
     // 5回以内の回転で位置補正
     Serial.println("回転フローへ移行");
