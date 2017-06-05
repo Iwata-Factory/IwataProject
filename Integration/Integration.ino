@@ -274,6 +274,7 @@ void loop() {
     double my_direction = -1; //自分の向いている方位（北を0として時計回りに0~360の値を取る）
     double dst_direction = -1; //目的地の方位。負の値で初期化。
     double my_rotation = 500; //自分が回転すべき大きさ(-180~180までの値を取る)
+    int finish_flag = 0;
 
     Serial.println("GPSにより目的地データを取得します。");
     Serial.println("5サンプルを取得します。");
@@ -352,6 +353,15 @@ void loop() {
 
       distance_hold = last_distance;
 
+      //目標との距離が十分(5m)に近づいたらflagに+1,flagが三回連続でたまったら、距離センサのシーケンスに移行
+      if (last_distance <= 5){
+        finish_flag++;
+      } else {
+        finish_flag = 0;     //外れたら一応0に戻す
+      }
+
+
+      
       Serial.print("dst_direction:");
       Serial.println(dst_direction);
       Serial.print("last_distance:");
@@ -362,6 +372,10 @@ void loop() {
 
     dst_direction = 100;
     last_distance = 1000;
+
+     if (finish_flag >= 3){
+      //ここに距離センサのシーケンス
+     }
 
 /*
     // 5回以内の回転で位置補正
