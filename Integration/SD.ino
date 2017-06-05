@@ -357,6 +357,3 @@ int read_gps_sd(struct GPS *gps, int num) {
 }
 
 
-
-
-

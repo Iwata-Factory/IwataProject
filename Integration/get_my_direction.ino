@@ -81,6 +81,12 @@ double get_my_direction() {
   Serial.print("ac.z:");
   Serial.println(ac.z);
 
+  //  if (write_ac_sd(ac)) {
+  //    Serial.println("記録成功");
+  //  } else {
+  //    Serial.println("記録失敗");
+  //  }
+
   // 地磁気を取得
   TM tm;
   int tm_counter = 0; // 試行回数をカウント(冗長化に使う)
@@ -105,6 +111,13 @@ double get_my_direction() {
 
   Serial.print("tm.z:");
   Serial.println(tm.z);
+
+  //  if (write_tm_sd(tm)) {
+  //    Serial.println("記録成功");
+  //  } else {
+  //    Serial.println("記録失敗");
+  //  }
+  //
 
   // 方角を算出
   double roll = 0; //ロール角
