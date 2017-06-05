@@ -25,21 +25,31 @@ boolean eep_flagwrite(byte oldflag, byte newflag) {
   }
 }
 
-int eep_gpswrite( int adr, struct GPS gps ){
+int eep_gpswrite( int adr, GPS gps ){
   EEPROM.put( adr, gps );
   Serial.println("success writeing gps in EEP.");
-  adr += sizeof(gps);   //必要なさ
+  adr += sizeof(gps);   //実験してしまえば必要なさ？？
   return adr;
 }
 
-void eep_speedwrite( int adr, double Speed ){
+int eep_doublewrite( int adr, double Speed ){
   EEPROM.put(adr, Speed );
+  adr += sizeof(Speed);
   Serial.println("success writing (double)!!");
+  return adr;
 }
 
-void eep_acwrite( int adr, AC ac ){
+int eep_acwrite( int adr, AC ac ){
   EEPROM.put(adr, ac);
+  adr += sizeof(ac);
   Serial.println("success writing ac!!");
+  return adr;
 }
 
+int eep_tmwrite( int adr, TM tm ){
+  EEPROM.put(adr, tm);
+  adr += sizeof(tm);
+  Serial.println("success writing tm!!");
+  return adr;
+}
 

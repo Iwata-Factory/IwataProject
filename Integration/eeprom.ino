@@ -28,14 +28,24 @@ int eep_gpswrite( int adr, GPS gps ){
   return adr;
 }
 
-void eep_doublewrite( int adr, double Speed ){
+int eep_doublewrite( int adr, double Speed ){
   EEPROM.put(adr, Speed );
+  adr += sizeof(Speed);
   Serial.println("success writing (double)!!");
+  return adr;
 }
 
-void eep_acwrite( int adr, AC ac ){
+int eep_acwrite( int adr, AC ac ){
   EEPROM.put(adr, ac);
+  adr += sizeof(ac);
   Serial.println("success writing ac!!");
+  return adr;
 }
 
+int eep_tmwrite( int adr, TM tm ){
+  EEPROM.put(adr, tm);
+  adr += sizeof(tm);
+  Serial.println("success writing tm!!");
+  return adr;
+}
 
