@@ -8,12 +8,14 @@
 #include <math.h>
 #include <avr/sleep.h>
 #include <SD.h>
+#include <PID_v1.h>
 
 // 定数の定義
 #define READBUFFERSIZE  (256)
 #define DELIMITER   (",")  // 区切り文字定数
 // GPSのピンはSDと干渉しないように
-#define PIN_GPS_Rx  11 // GPSのシリアル通信でデータを受信するピン
+//speekerとも干渉しないように
+#define PIN_GPS_Rx  10 // GPSのシリアル通信でデータを受信するピン
 #define PIN_GPS_Tx  12 // GPSのシリアル通信でデータを送信するピン
 #define SERIAL_BAUDRATE 9600 //シリアル通信のデータ送信レートを9600bpsに定義するための定数(ArduinoとPC)
 #define GPSBAUDRATE 9600 //シリアル通信のデータ送信レートを9600bpsに定義するための定数(GPSとArduino)
@@ -23,15 +25,15 @@
 #define LONGITUDE_MAXIMUM 140  //経度の最大値
 #define HMC5883L 0x1E   //HMC5883L(地磁気センサ)のスレーブアドレス
 #define ADXL345 0x53  //ADXL345(加速度センサ)のスレーブアドレス
-#define M1_1 8 // モーター制御用ピン
-#define M1_2 9 // モーター制御用ピン
-#define M2_1 10 // モーター制御用ピン
-#define M2_2 11 // モーター制御用ピン
-/*適当に1番にしてある*/
-#define LIGHT_PIN 1  //照度センサピン
+#define M1_1 4 // モーター制御用ピン
+#define M1_2 5 // モーター制御用ピン
+#define M2_1 6 // モーター制御用ピン
+#define M2_2 7 // モーター制御用ピン
+/*適当に20番にしてある*/
+#define LIGHT_PIN 2  //照度センサピン
 #define pi 3.14159265359
 #define BEAT 300   // 音の長さを指定
-#define TONE_PINNO 12   // 圧電スピーカを接続したピン番号
+#define TONE_PINNO 8   // 圧電スピーカを接続したピン番号
 #define C  262    //ド
 #define D  294    //レ
 #define E  330    //ミ
@@ -41,11 +43,18 @@
 #define B  494
 #define HIGH_C  523
 #define GPS_NUM  5
+#define Kp     2
+#define Ki     5
+#define Kd     1
 
 // グローバル変数の定義
 static unsigned long time; //タイマー起動
 static float last_distance = -1; // 目的地までの距離(m)。負の値で初期化。
 static const uint8_t length = 6;   //読み出しデータの個数
+char g_szReadBuffer[READBUFFERSIZE] = "";
+int  g_iIndexChar = 0;
+double Setpoint, Input, Output;
+PID myPID(&Input, &Output, &Setpoint, Kp, Ki, Kd, DIRECT);
 
 
 // 構造体を宣言
@@ -110,6 +119,11 @@ void setup() {
   pinMode(M2_1, OUTPUT);
   pinMode(M2_2, OUTPUT);
   pinMode(LIGHT_PIN, INPUT);
+  myPID.SetOutputLimits(0, 255);     //PIDの最小最大
+  myPID.SetSampleTime(1000);           //PIDの計算間隔
+  Input = 0;
+  Setpoint = 0;
+  myPID.SetMode(AUTOMATIC);
 
   Serial.println("setup完了");
 
@@ -278,42 +292,42 @@ void loop() {
     Serial.println("回転フローへ移行");
 
     delay(1500);
-
-    int m = 0;
-    while (m < 5) { //$$$
-
-      //自分が向いている角度を取得
-      while (1) { //$%$
-
-        Serial.println("自身の方角を5サンプル取得します。");
-
-        static int j = 0; // 方角取得の成功数をカウント
-        if (j > 0) { // 初期化
-          j = 0;
-        }
-        static int k = 0; // 方角取得の試行数をカウント
-        if (k > 0) {
-          k = 0;
-        }
-
-        double my_direction_array[5]; // 自身の方角を格納、中央値を使う
-
-        while (j < 5) { // 5個の方位のサンプルを取得
-          my_direction_array[j] = get_my_direction();
-
-          if (my_direction_array[j] >= 0 && my_direction_array[j] <= 360) { // 正しく取れていればmy_directionは0~360
-            j += 1;
-            k += 1;
-            Serial.print(j);
-            Serial.print("個目のサンプルの値:");
-            Serial.println(my_direction_array[j - 1]);
-            delay(1500);
-
-          } else {
-            k += 1;
-            delay(1500);
+  /*
+      int m = 0;
+      while (m < 5) { //$$$
+  
+        //自分が向いている角度を取得
+        while (1) { //$%$
+  
+          Serial.println("自身の方角を5サンプル取得します。");
+  
+          static int j = 0; // 方角取得の成功数をカウント
+          if (j > 0) { // 初期化
+            j = 0;
           }
-        }
+          static int k = 0; // 方角取得の試行数をカウント
+          if (k > 0) {
+            k = 0;
+          }
+  
+          double my_direction_array[5]; // 自身の方角を格納、中央値を使う
+  
+          while (j < 5) { // 5個の方位のサンプルを取得
+            my_direction_array[j] = get_my_direction();
+  
+            if (my_direction_array[j] >= 0 && my_direction_array[j] <= 360) { // 正しく取れていればmy_directionは0~360
+              j += 1;
+              k += 1;
+              Serial.print(j);
+              Serial.print("個目のサンプルの値:");
+              Serial.println(my_direction_array[j - 1]);
+              delay(1500);
+  
+            } else {
+              k += 1;
+              delay(1500);
+            }
+          }
 
         // my_direction_arrayの中央値を取得
         my_direction = value_ave(5, my_direction_array);
@@ -327,10 +341,12 @@ void loop() {
 
 
       } //$%$
+      */
 
 
       // 必要な回転量を計算する(-180~180で出力)
       Serial.println("回転量を計算します。");
+      int sign_direction = 0;     //relative_argsの符号を保持
 
       while (1) {
         delay(1500);
@@ -341,8 +357,8 @@ void loop() {
 
         // Vector2D型のベクトルを定義
         Vector2D my_vector;
-        my_vector.x = cos(rad2deg(my_direction));
-        my_vector.y = sin(rad2deg(my_direction));
+        my_vector.x = cos(rad2deg( gps_only_direction));
+        my_vector.y = sin(rad2deg( gps_only_direction));
         Vector2D dst_vector;
         dst_vector.x = cos(rad2deg(dst_direction));
         dst_vector.y = sin(rad2deg(dst_direction));
@@ -366,17 +382,23 @@ void loop() {
 
         Serial.print("必要な回転量の絶対値は");
         Serial.println(my_rotation);
-
-
+        
+        
+        
         // ここでmy_rotationを-180~180に直す(どちら向きの回転が早いか)
         if (relative_args < 10 || 350 <= relative_args) { // 方角がほぼ問題ないなら回転しないようにする。
           my_rotation = 0;
+          sign_direction = 0;
         } else if (10 <= relative_args && relative_args < 180) { //この時は正方向(右向き)　の回転が早い
           my_rotation = my_rotation;
+          sign_direction = 1;
         } else if (180 <= relative_args && relative_args < 350) {
-          my_rotation = -1 * my_rotation;
+          my_rotation = -1* my_rotation;   //0~180にした
+          sign_direction = -1;
         }
 
+        Input = my_rotation;    //PID入力
+        myPID.Compute();        //PID計算
         Serial.print("計算を施して");
         Serial.println(my_rotation);
 
@@ -384,6 +406,24 @@ void loop() {
       }
 
 
+      /*
+       * 回転は基本的にしない(緯度経度が静止状態では自己の方向を測定不能なので)
+       * 代わりにタイヤを回し続け、PID制御によるPWMの左右調整によって、進行方向を調整する
+       */
+
+
+      //GPSだけの場合の方向調整
+      /*ピンどっちがどっちかわからないので適当です*/
+      if (sign_direction == 0){//方向転換不要
+        
+      } else if (sign_direction == 1){  //右に行きたい
+        analogWrite( M1_1, 255 - Output);
+      } else if (sign_direction == -1){//左にいきたい
+        analogWrite( M2_1, 255 - Output);
+      }
+        
+
+     /* 
       //ここに回転部分を書く
       if (!(my_rotation == 0)) { // 回転する人用があれば回転し、向きの取得から繰り返す
         Serial.println("回転します");
@@ -399,16 +439,17 @@ void loop() {
         break; // 直進部分へ移行
       }
     } //$$$
-
+    */
+/*
     Serial.println("直進します。");
     delay(1000);
     //直進する
-    go_straight(5000); /* 引数は暫定です */
+    go_straight(5000); /* 引数は暫定です *//*
     i += 1; // 繰り返し数を1増やす
     Serial.println("直進完了です。");
     Serial.println("whileの先頭に戻ります。");
     delay(1500);
-
+*/
 
   } //===
 
