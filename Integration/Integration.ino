@@ -1,5 +1,3 @@
-#include <Printers.h>
-#include <XBee.h>
 
 /*
   メインプログラム
@@ -90,7 +88,7 @@
 #include <SD.h>
 #include <avr/sleep.h>
 
-///#include <xbee.h>  //このライブラリはslackを参照して各自PCに入れてください。
+#include <xbee.h>  //このライブラリはslackを参照して各自PCに入れてください。
 
 #include <EEPROM.h>
 
@@ -138,6 +136,10 @@
 #define STOP_END  48
 #define AVESPEED_HEAD 49
 #define AVESPEED_END  56
+//距離用の定義
+#define DISTANCE A12  //測距センサの距離読み取り用ピン
+#define DIS_SAMPLE 50  //距離のサンプリング数
+
 
 // 構造体を宣言
 typedef struct { // 2次元のベクトル
@@ -221,6 +223,7 @@ void setup() {
   pinMode(M2_1, OUTPUT);
   pinMode(M2_2, OUTPUT);
   pinMode(LIGHT_PIN, INPUT);
+  pinMode(DISTANCE, INPUT);  //距離センサ用のアナログピン
   Serial.println("setup完了");
 }
 
@@ -265,23 +268,23 @@ void loop() {
   }
 
   Serial.println("着陸判定をパス");
-//  Serial.println("3秒後に2秒回転します。");
-//
-//  delay(3000);
-//
-//  /* 着陸判定をパスしたら2秒回転します。 */
-//  digitalWrite(M1_1, 0);
-//  digitalWrite(M1_2, 1);
-//  digitalWrite(M2_1, 1);
-//  digitalWrite(M2_2, 0);
-//  delay(2000);
-//  // 停止
-//  digitalWrite(M1_1, 1);
-//  digitalWrite(M1_2, 1);
-//  digitalWrite(M2_1, 1);
-//  digitalWrite(M2_2, 1);
-//
-//  Serial.println("回転終了");
+  //  Serial.println("3秒後に2秒回転します。");
+  //
+  //  delay(3000);
+  //
+  //  /* 着陸判定をパスしたら2秒回転します。 */
+  //  digitalWrite(M1_1, 0);
+  //  digitalWrite(M1_2, 1);
+  //  digitalWrite(M2_1, 1);
+  //  digitalWrite(M2_2, 0);
+  //  delay(2000);
+  //  // 停止
+  //  digitalWrite(M1_1, 1);
+  //  digitalWrite(M1_2, 1);
+  //  digitalWrite(M2_1, 1);
+  //  digitalWrite(M2_2, 1);
+  //
+  //  Serial.println("回転終了");
 
   // need　ケーシングを開く処理を書く
 
@@ -363,11 +366,11 @@ void loop() {
 
           Serial.print(j - 1);
           Serial.println("番目のサンプル取得");
-//          if (write_gps_sd(gps)) {
-//            Serial.println("記録成功");
-//          } else {
-//            Serial.println("記録失敗");
-//          }
+          //          if (write_gps_sd(gps)) {
+          //            Serial.println("記録成功");
+          //          } else {
+          //            Serial.println("記録失敗");
+          //          }
 
         } else {
           delay(10);
@@ -385,14 +388,14 @@ void loop() {
 
 
       //目標との距離が十分(5m)に近づいたらflagに+1,flagが三回連続でたまったら、距離センサのシーケンスに移行
-      if (last_distance <= 5){
+      if (last_distance <= 5) {
         finish_flag++;
       } else {
         finish_flag = 0;     //外れたら一応0に戻す
       }
 
 
-      
+
       Serial.print("dst_direction:");
       Serial.println(dst_direction);
       Serial.print("last_distance:");
@@ -406,9 +409,9 @@ void loop() {
       break;
     } //!!!
 
-     if (finish_flag >= 3){
+    if (finish_flag >= 3) {
       //ここに距離センサのシーケンス
-     }
+    }
 
 
     // 5回以内の回転で位置補正
