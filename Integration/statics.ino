@@ -1,4 +1,3 @@
-// 統計的処理を書く
 
 /*
    受け取った配列を昇順に並び替える
@@ -7,12 +6,10 @@
 double descending_sort(const int array_num, double* value ) {
   int i = 0;
   int j = 0;
-
   double temp = 0; //値の一時保持
-
   //データの並び替え
-  for (i = 1; i < array_num; i++) {
-    for (j = 0; j < array_num; j++) {
+  for (i = 0; i < array_num; i++) {
+    for (j = 0; j < (array_num - 1); j++) {
       if (value[j] > value[j + 1]) {
         temp = value[j];
         value[j] = value[j + 1];
@@ -49,10 +46,11 @@ double value_median(const int array_num, double* value) {
 */
 double value_ave(const int array_num, double* value) {
 
-  double ave = 0;
-  int i = 0;
 
   descending_sort(array_num, value);    //並び替え
+
+  int i = 0;
+  double ave = 0;
 
   //平均値を出す
   for (i = 0; i < array_num; i++) {

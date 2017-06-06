@@ -11,9 +11,15 @@
   Serial.println(gps.Direction);
   Serial.println(gps.distance);
   ------------------------------------------*/
+
+// 区切り文字定数
 // センテンスの解析。
 // $GPRMCの場合、引数変数に、緯度、経度を入れ、戻り値 1 を返す。
 // $GPRMC以外の場合、戻り値は 0 を返す。
+
+//static const int READBUFFERSIZE = 256;
+//static const char DELIMITER = ",";
+
 int AnalyzeLineString( char szLineString[], struct GPS* gps) {
 
   // $GPRMC
@@ -26,7 +32,7 @@ int AnalyzeLineString( char szLineString[], struct GPS* gps) {
   // $GPRMC,085120.307,A,3541.1493,N,13945.3994,E,000.0,240.3,181211,,,A*6A
   strtok( szLineString, DELIMITER );  // $GPRMCを抽出
   char* psz_utc = strtok( NULL, DELIMITER );  // UTC時刻を抽出
-  strtok( NULL, DELIMITER );  // ステータスを抽出
+  char* gps_status = strtok( NULL, DELIMITER );  // ステータスを抽出
   char* psz_lat = strtok( NULL, DELIMITER ); // 緯度(dddmm.mmmm)
   strtok( NULL, DELIMITER );  // 北緯か南緯か
   char* psz_long = strtok( NULL, DELIMITER );  // 経度(dddmm.mmmm)
@@ -37,6 +43,13 @@ int AnalyzeLineString( char szLineString[], struct GPS* gps) {
   if ( NULL == psz_long )
   {
     return 0;
+  }
+  /*
+     通信ができていても生データが通信状況悪いとVになります
+     これが出る場合は屋外とか通信状況よくなるようにしてください
+  */
+  if ( strncmp(*gps_status, 'V', 1 ) == 0) {
+    Serial.println("通信状況が悪いから歩こう");
   }
   gps->utc = atof(psz_utc);
   gps->Speed = atof(psz_Speed);
@@ -53,13 +66,7 @@ int AnalyzeLineString( char szLineString[], struct GPS* gps) {
   deg = (int)(temp / 100);
   min = temp - deg * 100;
   gps->longitude = deg + min / 60;
-/*
-  //緯度経度が明らかにおかしい場合はじく
-  if (LATITUDE_MINIMUM < gps->latitude && LATITUDE_MAXIMUM > gps->latitude &&  LONGITUDE_MINIMUM < gps->longitude && LONGITUDE_MAXIMUM > gps->longitude) {
-  } else {
-    return 0;
-  }
-*/
+
   return 1;
 }
 // １行文字列の読み込み
@@ -97,27 +104,35 @@ int ReadLineString( SoftwareSerial& serial,
   }
   return 0;
 }
-boolean gps_get(struct GPS* gps) {
 
-  char g_szReadBuffer[READBUFFERSIZE] = "";
-  int  g_iIndexChar = 0;
+int gps_data_get(struct GPS* gps) {
+
+//  char g_szReadBuffer[READBUFFERSIZE] = "";
+//  int  g_iIndexChar = 0;
   char szLineString[READBUFFERSIZE];
-
-
+  
   if ( !ReadLineString( g_gps,
                         g_szReadBuffer, READBUFFERSIZE, g_iIndexChar,
                         szLineString, READBUFFERSIZE ) )
   { // 読み取り途中
-    return 0;
+    return 2;
   }
   // 読み取り完了
 
   if ( !AnalyzeLineString( szLineString, gps ) )
   {
-    return 0;
+    return 3;
   }
-  //緯度経度が正常な値にあるか広めに検査
 
+  //緯度経度が明らかにおかしい場合はじく
+  if (LATITUDE_MINIMUM < (gps->latitude) && LATITUDE_MAXIMUM > (gps->latitude)) { //緯度の検査域にいるか
+    if (  LONGITUDE_MINIMUM < (gps->longitude) && LONGITUDE_MAXIMUM > (gps->longitude)) { //経度の検査域にいるか
+    } else {
+      return 4;
+    }
+  } else {
+    return 4;
+  }
   // 緯度、経度を読み取れた。
   // float to string
   char sz_utc[16];
@@ -138,7 +153,8 @@ boolean gps_get(struct GPS* gps) {
   Serial.println(gps->Speed);   //knot表示されます
   Serial.print("Course : ");
   Serial.println(gps->course);
-  float LatA = 35.710039, LongA = 139.810726;      //目的地
+  float LatA = 35.713860, LongA = 139.759570;      //目的地
+//  float LatA = 35.710039, LongA = 139.810726;      //目的地
   float LatB = gps->latitude;       //現在地の緯度経度
   float LongB = gps->longitude;
   float direct = 0, distance = 0;   //目的地までの距離方角
@@ -157,3 +173,31 @@ boolean gps_get(struct GPS* gps) {
 
   return 1;
 }
+int gps_get(GPS* gps){
+  while (1) { //gpsの値が正常になるまで取り続ける
+    int gps_flag = 0;   //gps_getの返り値保存
+    gps_flag = gps_data_get(gps);
+    delay(10);
+    //gpsの値が取れない間どこで引っかかっているのか識別できるようになりました
+    if (gps_flag == 1) { //値が取れたら抜ける
+      break;
+    }
+    if (gps_flag == 2) {
+      ;
+      //gpsとの通信が来ていない
+      //Serial.println("gpsとの通信できていない");
+    }
+    if (gps_flag == 3) {
+      ;
+      //gpsとの通信はできているが値が変or GPRMCでない
+      //Serial.println("gpsの値がおかしい or GPRMCではない");
+    }
+    if (gps_flag == 4) {
+      ;
+      //通信ができて値も解析されたが緯度経度の値がバグってる
+      //Serial.println("緯度経度がおかしい");
+    }
+  }
+
+}
+
