@@ -14,10 +14,10 @@ int stack(double last_distance, double distance_hold){
   difference_distance = fabs(last_distance - distance_hold);  //差の絶対値をとる
   //difference_distanceが一定より小さければスタックしたと判定する
   if (difference_distance <= 1){  //1m以内
-    Serial.println("stack");
+    xbee_uart( dev,"stack\r");
     //ここにスタックぬける関数おいてください
   } else {
-    Serial.println("no stack");
+    xbee_uart( dev,"no stack\r");
   }
 
   return 0;

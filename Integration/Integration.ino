@@ -1,5 +1,10 @@
 /*
   メインプログラム
+  変更点
+  serial.printのxbee_uart化
+  文章の英語か
+  timerのxbee送信関数化
+  get_gpsのserialからxbee化
 */
 
 /*
@@ -86,6 +91,7 @@
 #include <math.h>
 //#include <avr/sleep.h>
 #include <SD.h>
+#include <xbee.h>
 
 // 定数の定義
 // GPSのピンはSDと干渉しないように
@@ -173,6 +179,11 @@ SoftwareSerial g_gps( PIN_GPS_Rx, PIN_GPS_Tx);
 
 char g_szReadBuffer[READBUFFERSIZE] = "";
 int  g_iIndexChar = 0;
+
+
+byte dev[] = {0x00, 0x13, 0xA2, 0x00, 0x40, 0xCA, 0x9A, 0x3D}; //XBEE親機アドレス
+char xbee_char[63];   //sprintfによって代入した後にuartで送信するための入れ物
+
 /*
    セットアップ
 */
@@ -188,13 +199,12 @@ void setup() {
   pinMode(M2_1, OUTPUT);
   pinMode(M2_2, OUTPUT);
   pinMode(LIGHT_PIN, INPUT);
-  Serial.println("setup完了");
+  xbee_uart( dev, "setup done\r");
 }
 
 void loop() {
 
-  Serial.println("loopスタート");
-  Serial.println("光センサ起動まで5秒待機します");
+  xbee_uart( dev, "loop start\rWaiting for photosensor...\r");
 
   //delay(5000);
 
@@ -213,8 +223,7 @@ void loop() {
     }
   }
 
-  Serial.println("放出判定をパス");
-  Serial.println("1秒待機します");
+  xbee_uart( dev, "Passing Release decision!\rWait 1 second...\r");
 
   // 投下中待機時間
   delay(1000); /* 現在適当な値 */
@@ -231,39 +240,37 @@ void loop() {
     }
   }
 
-  Serial.println("着陸判定をパス");
-//  Serial.println("3秒後に2秒回転します。");
-//
-//  delay(3000);
-//
-//  /* 着陸判定をパスしたら2秒回転します。 */
-//  digitalWrite(M1_1, 0);
-//  digitalWrite(M1_2, 1);
-//  digitalWrite(M2_1, 1);
-//  digitalWrite(M2_2, 0);
-//  delay(2000);
-//  // 停止
-//  digitalWrite(M1_1, 1);
-//  digitalWrite(M1_2, 1);
-//  digitalWrite(M2_1, 1);
-//  digitalWrite(M2_2, 1);
-//
-//  Serial.println("回転終了");
+  xbee_uart( dev, "Passing landing decision!\r");
+  //  xbee_uart( dev,"Rotate for 2 seconds after 3 seconds.\r");  //コメントアウト外すときは前の文と結合させてください。
+  //
+  //  delay(3000);
+  //
+  //  /* 着陸判定をパスしたら2秒回転します。 */
+  //  digitalWrite(M1_1, 0);
+  //  digitalWrite(M1_2, 1);
+  //  digitalWrite(M2_1, 1);
+  //  digitalWrite(M2_2, 0);
+  //  delay(2000);
+  //  // 停止
+  //  digitalWrite(M1_1, 1);
+  //  digitalWrite(M1_2, 1);
+  //  digitalWrite(M2_1, 1);
+  //  digitalWrite(M2_2, 1);
+  //
+  //  xbee_uart( dev,"Finish rotating.\r");
 
   // need　ケーシングを開く処理を書く
 
   // need パラシュートから安全に離れる処理を書く
 
-  Serial.println("Statusを地上1に移行します。");
+  xbee_uart( dev, "change status to Ground1\r");
+  delay(1000);
 
   static float last_distance = -1; // 目的地までの距離(m)。負の値で初期化。
 
   while (1) { // この部分をひたすらに繰り返す //===
 
-    time = millis(); //現在の時間を取得
-    Serial.print("timer:");
-    Serial.println(time);
-    last_timer_time = time;
+    last_timer_time = xbee_timer();
 
     static int i = 0; // 繰り返し数のカウント
     double my_direction = -1; //自分の向いている方位（北を0として時計回りに0~360の値を取る）
@@ -271,8 +278,7 @@ void loop() {
     double my_rotation = 500; //自分が回転すべき大きさ(-180~180までの値を取る)
     double distance_hold = -1;   //gosの距離の値の前回のやつを保持
 
-    Serial.println("GPSにより目的地データを取得します。");
-    Serial.println("5サンプルを取得します。");
+    xbee_uart( dev, "Getting Destination data from GPS\rGet 5 samples.\r");
 
     //GPSから目的地までの距離と方角を得る
     while (1) { //!!!
@@ -304,17 +310,17 @@ void loop() {
           if (gps_flag == 2) {
             ;
             //gpsとの通信が来ていない
-            //Serial.println("gpsとの通信できていない");
+            //xbee_uart( dev,"Can't communicate with GPS\r");
           }
           if (gps_flag == 3) {
             ;
             //gpsとの通信はできているが値が変or GPRMCでない
-            //Serial.println("gpsの値がおかしい or GPRMCではない");
+            //xbee_uart( dev,"invalid gps or not GPRMC\r");
           }
           if (gps_flag == 4) {
             ;
             //通信ができて値も解析されたが緯度経度の値がバグってる
-            //Serial.println("緯度経度がおかしい");
+            //xbee_uart( dev,"invalid lat or long\r");
           }
         }
 
@@ -325,8 +331,8 @@ void loop() {
           j += 1;
           k += 1;
 
-          Serial.print(j - 1);
-          Serial.println("番目のサンプル取得");
+          sprintf( xbee_char, "get %dth sample\r", j - 1 );
+          xbee_uart( dev, xbee_char );
 
         } else {
           delay(10);
@@ -334,7 +340,7 @@ void loop() {
         }
       }
 
-      Serial.println("サンプルの処理を行います");
+      xbee_uart( dev, "processing samples...\r");
       delay(500);
 
       // gps_direction_arrayを投げて向きの平均を計算
@@ -344,21 +350,16 @@ void loop() {
 
       distance_hold = last_distance;
 
-      Serial.print("dst_direction:");
-      Serial.println(dst_direction);
-      Serial.print("last_distance:");
-      Serial.println(last_distance);
+      xbee_uart( dev, "dst_direction, last_distance, no meaning data 0.00\r");
+      xbee_send_3doubles( dst_direction, last_distance, 0.00);
 
-      time = millis(); //現在の時間を取得
-      Serial.print("timer:");
-      Serial.println(time);
-      last_timer_time = time;
+      last_timer_time = xbee_timer();
 
       break;
     } //!!!
 
     // 5回以内の回転で位置補正
-    Serial.println("回転フローへ移行");
+    xbee_uart( dev, "Change to rotation flow...\r");
 
     delay(500);
 
@@ -369,7 +370,7 @@ void loop() {
       //自分が向いている角度を取得
       while (1) { //$%$
 
-        Serial.println("自身の方角を5サンプル取得します。");
+        xbee_uart( dev, "get 5 samples of own direction...\r");
 
         static int j = 0; // 方角取得の成功数をカウント
         if (j > 0) { // 初期化
@@ -389,22 +390,22 @@ void loop() {
           if (my_direction_array[j] >= 0 && my_direction_array[j] <= 360) { // 正しく取れていればmy_directionは0~360
             j += 1;
             k += 1;
-            Serial.print(j);
-            Serial.print("個目のサンプルの値:");
-            Serial.println(my_direction_array[j - 1]);
+
+            sprintf( xbee_char, "%d個目の値: %s\r", j, my_direction_array[j - 1] );
+            xbee_uart( dev, xbee_char );
             delay(500);
           } else if (my_direction_array[j] = -1) {
-            Serial.println("加速度取れてないよ");
+            xbee_uart( dev, "fail to get AC!\r");
             k += 1;
             delay(50);
             /* 値がちゃんと取れていないときも-1が返ってきてここに来る。kの数をカウントすることで色々な処理をする。 */
             /* 加速度が取れない時は-1、と時期が取れないときは-2を返すようにした。これでセンサーが壊れたとか判別出来る。 */
           } else if (my_direction_array[j] = -2) {
-            Serial.println("地磁気取れてないよ");
+            xbee_uart( dev, "fail to get TM!\r");
             k += 1;
             delay(50);
           } else {
-            Serial.println("何かがおかしいよ");
+            xbee_uart( dev, "Something wrong\r");
             k += 1;
             delay(50);
           }
@@ -414,9 +415,8 @@ void loop() {
 
         my_direction = value_ave(5, my_direction_array);
 
-        Serial.println("サンプル取得完了");
-        Serial.print("方向の平均値は");
-        Serial.println(my_direction);
+        sprintf(xbee_char, "success getting samples\raverage direction: %s\r",my_direction );
+        xbee_uart( dev, xbee_char);
         delay(500);
 
         break;
@@ -425,7 +425,7 @@ void loop() {
 
 
       // 必要な回転量を計算する(-180~180で出力)
-      Serial.println("回転量を計算します。");
+      xbee_uart( dev, "Calculating rotation...\r");
 
       delay(500);
 
@@ -451,8 +451,8 @@ void loop() {
         relative_args = rad2deg(dst_args + 2 * pi - my_args); // M_PIはπ
       }
 
-      Serial.print("相対偏角は");
-      Serial.println(relative_args);
+      sprintf( xbee_char, "relative arguments: %s\r", relative_args );
+      xbee_uart( dev,xbee_char );
 
       // 内積を計算(単位ベクトル同士だからこれがcosθ)
       double inner_product = my_vector.x * dst_vector.x + my_vector.y * dst_vector.y;
@@ -461,51 +461,46 @@ void loop() {
       // ここでmy_rotationを-180~180に直す(どちら向きの回転が早いか)
       if (relative_args < 10 || 350 <= relative_args) { // 方角がほぼ問題ないなら回転しないようにする。
         my_rotation = 0;
-        Serial.print("必要な回転量は");
-        Serial.println(my_rotation);
+        sprintf( xbee_char, "need %s rotations...\r", my_rotation );
+        xbee_uart( dev, xbee_char);
       } else if (10 <= relative_args && relative_args < 180) { //この時は正方向(右向き)　の回転が早い
         my_rotation = my_rotation;
-        Serial.print("必要な回転量は");
-        Serial.println(my_rotation);
+        sprintf( xbee_char, "need %s rotations...\r", my_rotation );
+        xbee_uart( dev, xbee_char);
       } else if (180 <= relative_args && relative_args < 350) {
         my_rotation = -1 * my_rotation;
-        Serial.print("必要な回転量は");
-        Serial.println(my_rotation);
+        sprintf( xbee_char, "need %s rotations...\r", my_rotation );
+        xbee_uart( dev, xbee_char);
       }
 
-      time = millis(); //現在の時間を取得
-      Serial.print("timer:");
-      Serial.println(time);
-      last_timer_time = time;
+      last_timer_time = xbee_timer();
 
       //ここに回転部分を書く
       if (!(my_rotation == 0)) { // 回転する人用があれば回転し、向きの取得から繰り返す
-        Serial.println("回転します");
+        xbee_uart( dev, "Rotate\r");
         delay(500);
         go_rotate(my_rotation);
         m += 1;
-        Serial.print(m);
-        Serial.println("回目の回転を終えました。");
+        sprintf(xbee_char, "finish %dth rotation!!\r", m);
+        xbee_uart( dev, xbee_char);
         delay(500);
       } else {
-        Serial.println("回転は不要です");
+        xbee_uart( dev, "don't need rotation.\r");
         delay(500);
         break; // 直進部分へ移行
       }
     } //$$$
 
-    Serial.println("直進します。");
+    xbee_uart( dev, "GO straight...\r");
     delay(500);
     //直進する
     go_straight(3000); /* 引数は暫定です */
     i += 1; // 繰り返し数を1増やす
-    Serial.println("直進完了です。");
+    xbee_uart( dev, "finisf going straight!\r");
 
-    time = millis(); //現在の時間を取得
-    Serial.print("timer:");
-    Serial.println(time);
+    xbee_timer();
 
-    Serial.println("whileの先頭に戻ります。");
+    xbee_uart( dev, "return to the head of while\r");
     delay(1500);
 
   } //===

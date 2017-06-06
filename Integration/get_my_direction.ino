@@ -72,15 +72,9 @@ double get_my_direction() {
     }
   }
 
-  Serial.print("ac.x:");
-  Serial.println(ac.x);
-
-  Serial.print("ac.y:");
-  Serial.println(ac.y);
-
-  Serial.print("ac.z:");
-  Serial.println(ac.z);
-
+  xbee_uart(dev, "getting AC data...\r");
+  xbee_send_3doubles( ac.x, ac.y, ac.z);
+  
   // 地磁気を取得
   TM tm;
   int tm_counter = 0; // 試行回数をカウント(冗長化に使う)
@@ -97,15 +91,9 @@ double get_my_direction() {
     }
   }
 
-  Serial.print("tm.x:");
-  Serial.println(tm.x);
-
-  Serial.print("tm.y:");
-  Serial.println(tm.y);
-
-  Serial.print("tm.z:");
-  Serial.println(tm.z);
-
+  xbee_uart(dev, "getting TM data...\r" );
+  xbee_send_3doubles( tm.x, tm.y, tm.z );
+  
   // 方角を算出
   double roll = 0; //ロール角
   double pitch = 0; //ピッチ角

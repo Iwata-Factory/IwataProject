@@ -1,15 +1,15 @@
 /*-----------GPS関連--------------------
    ここの欄は後で補完
   //こっから下は確認用+使い方、あとで消していいよ
-  Serial.println('\n');
-  Serial.println('以下gps構造体の中身表示');
-  Serial.println(gps.latitude);
-  Serial.println(gps.longitude);
-  Serial.println(gps.utc);
-  Serial.println(gps.Speed);
-  Serial.println(gps.course);
-  Serial.println(gps.Direction);
-  Serial.println(gps.distance);
+  xbee_uart( dev,'\n');
+  xbee_uart( dev,'以下gps構造体の中身表示');
+  xbee_uart( dev,gps.latitude);
+  xbee_uart( dev,gps.longitude);
+  xbee_uart( dev,gps.utc);
+  xbee_uart( dev,gps.Speed);
+  xbee_uart( dev,gps.course);
+  xbee_uart( dev,gps.Direction);
+  xbee_uart( dev,gps.distance);
   ------------------------------------------*/
 
 // 区切り文字定数
@@ -49,7 +49,7 @@ int AnalyzeLineString( char szLineString[], struct GPS* gps) {
      これが出る場合は屋外とか通信状況よくなるようにしてください
   */
   if ( strncmp(*gps_status, 'V', 1 ) == 0) {
-    Serial.println("通信状況が悪いから歩こう");
+    xbee_uart( dev,"BAD COMUNICATION CONDITION...");
   }
   gps->utc = atof(psz_utc);
   gps->Speed = atof(psz_Speed);
@@ -143,16 +143,10 @@ int gps_get(struct GPS* gps) {
   dtostrf(gps->latitude, 10, 6, sz_lat);
   dtostrf(gps->longitude, 10, 6, sz_long);
 
-  Serial.print("utc : ");
-  Serial.println(sz_utc);
-  Serial.print("latitude : ");
-  Serial.println(sz_lat);
-  Serial.print("longitude : ");
-  Serial.println(sz_long);
-  Serial.print("Speed : ");
-  Serial.println(gps->Speed);   //knot表示されます
-  Serial.print("Course : ");
-  Serial.println(gps->course);
+  xbee_uart(dev, "get gps: utc\rLat, Long, Speed\rCrs, Dir, Dis\r" );
+  xbee_uart(dev, sz_utc);
+  xbee_send_3doubles( gps->latitude, gps->longitude, gps->Speed );
+  
   float LatA = 35.713860, LongA = 139.759570;      //目的地
 //  float LatA = 35.710039, LongA = 139.810726;      //目的地
   float LatB = gps->latitude;       //現在地の緯度経度
@@ -162,14 +156,11 @@ int gps_get(struct GPS* gps) {
   distance = sqrt(pow(LongA - LongB, 2) + pow(LatA - LatB, 2)) * 99096.44, 0;
   direct = (int)(atan2((LongA - LongB) * 1.23, (LatA - LatB)) * 57.3 + 360) % 360;
 
-  Serial.print("Direction = ");                               //目的地Aの方角(°）
-  Serial.print(direct);
-  Serial.print("deg:Distance = ");                             //目的地A迄の距離(m)
-  Serial.print(distance);
-  Serial.println("m");
   //以下loop関数に値渡しする
   gps->Direction = direct;
   gps->distance = distance;
+
+  xbee_send_3doubles( gps->course, gps->Direction, gps->distance );
 
   return 1;
 }
