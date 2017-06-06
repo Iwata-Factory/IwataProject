@@ -128,16 +128,10 @@ boolean gps_get(struct GPS* gps) {
   dtostrf(gps->latitude, 10, 6, sz_lat);
   dtostrf(gps->longitude, 10, 6, sz_long);
 
-  Serial.print("utc : ");
-  Serial.println(sz_utc);
-  Serial.print("latitude : ");
-  Serial.println(sz_lat);
-  Serial.print("longitude : ");
-  Serial.println(sz_long);
-  Serial.print("Speed : ");
-  Serial.println(gps->Speed);   //knot表示されます
-  Serial.print("Course : ");
-  Serial.println(gps->course);
+  xbee_uart(dev, "get gps: utc\rLat, Long, Speed\rCrs, Dir, Dis\r" );
+  xbee_uart(dev, sz_utc);
+  xbee_send_3doubles( gps->latitude, gps->longitude, gps->Speed );
+  
   float LatA = 35.710039, LongA = 139.810726;      //目的地
   float LatB = gps->latitude;       //現在地の緯度経度
   float LongB = gps->longitude;
@@ -146,14 +140,16 @@ boolean gps_get(struct GPS* gps) {
   distance = sqrt(pow(LongA - LongB, 2) + pow(LatA - LatB, 2)) * 99096.44, 0;
   direct = (int)(atan2((LongA - LongB) * 1.23, (LatA - LatB)) * 57.3 + 360) % 360;
 
-  Serial.print("Direction = ");                               //目的地Aの方角(°）
-  Serial.print(direct);
-  Serial.print("deg:Distance = ");                             //目的地A迄の距離(m)
-  Serial.print(distance);
-  Serial.println("m");
+//  Serial.print("Direction = ");                               //目的地Aの方角(°）
+//  Serial.print(direct);
+//  Serial.print("deg:Distance = ");                             //目的地A迄の距離(m)
+//  Serial.print(distance);
+//  Serial.println("m");
   //以下loop関数に値渡しする
   gps->Direction = direct;
   gps->distance = distance;
+
+  xbee_send_3doubles( gps->course, gps->Direction, gps->distance );
 
   return 1;
 }

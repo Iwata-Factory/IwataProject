@@ -1,5 +1,9 @@
 /*
   メインプログラム
+
+  
+  ※xbee.hをincludeしているのでSerial.~~は使えません！！
+  xbee仕様にシリアルを書き換えています。
 */
 
 // include文
@@ -102,7 +106,7 @@ SoftwareSerial g_gps( PIN_GPS_Rx, PIN_GPS_Tx);
 */
 void setup() {
   Wire.begin();           //I2C通信の初期化
-  Serial.begin(SERIAL_BAUDRATE); //シリアル通信の初期化
+  Serial.begin(SERIAL_BAUDRATE); //シリアル通信の初期化.このファイルでは使用不可
   g_gps.begin(GPSBAUDRATE); //シリアル通信の初期化
   writeI2c(0x02, 0x00, HMC5883L); //HMC5883Lの初期設定0x02レジスタに0x00書き込み
   writeI2c(0x31, 0x00, ADXL345);  //上と同様
@@ -122,14 +126,13 @@ void setup() {
   pinMode(M2_2, OUTPUT);
   pinMode(LIGHT_PIN, INPUT);
 
-  Serial.println("setup完了");
+  xbee_uart(dev,"setup done");
 
 }
 
 void loop() {
 
-  Serial.println("loopスタート");
-  Serial.println("光センサ起動まで5秒待機します");
+  xbee_uart(dev,"loop start\rwaiting for photosensor...");
 
   delay(5000);
 
