@@ -111,6 +111,38 @@ void go_straight(int go_time) {
     delay(2);
   }
 }
+
+void go_back(int go_time) {
+  DRIVE go; //DRIVE型の宣言
+  // 初期化
+  int wait_time = go_time - 1024;
+  go.right1 = 1;
+  go.right2 = 1;
+  go.leght1 = 1;
+  go.leght2 = 1;
+  for (int i = 1; i < 256; i++) {
+    go.right1 = i;
+    go.right2 = 0;
+    go.leght1 = i;
+    go.leght2 = 0;
+    rover_analog(go);
+    delay(2);
+  }
+  go.right1 = 1;
+  go.right2 = 0;
+  go.leght1 = 1;
+  go.leght2 = 0;
+  rover_degital(go);
+  delay(wait_time);
+  for (int i = 255; i > 0; i--) {
+    go.right1 = i;
+    go.right2 = 0;
+    go.leght1 = i;
+    go.leght2 = 0;
+    rover_analog(go);
+    delay(2);
+  }
+}
 //void go_straight(int go_time) {
 //  DRIVE go; //DRIVE型の宣言
 //  // 初期化
