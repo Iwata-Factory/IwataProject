@@ -87,9 +87,7 @@
 #include <math.h>
 #include <SD.h>
 #include <avr/sleep.h>
-
 #include <xbee.h>  //このライブラリはslackを参照して各自PCに入れてください。
-
 #include <EEPROM.h>
 
 // 定数の定義
