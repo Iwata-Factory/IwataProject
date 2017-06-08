@@ -116,6 +116,8 @@ void setup() {
   pinMode(LIGHT_PIN, INPUT);
   //距離センサ用のピン
   pinMode(DISTANCE, INPUT);
+  //サーボモーター用のピン
+  servo1.attach(26);
   Serial.println("setup完了");
 }
 
