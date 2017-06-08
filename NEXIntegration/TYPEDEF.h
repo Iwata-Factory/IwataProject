@@ -4,18 +4,25 @@
 // 構造体を宣言
 
 typedef struct {  // 機体自身の情報を定義
-  double laditude = -1.0;  // 緯度
-  double longitude = -1.0;  // 経度
-  double Direction = -1.0;  // ターゲットの方角
+  
+  double laditude = -1.0;  // 自身の緯度
+  double longitude = -1.0;  // 自身の経度
+  double My_Direction = -1.0;  // 自身が向いているの方角
+  
+  double Target_Direction = -1.0;  // ターゲットの方角
   double distance = -1.0;  //ターゲットまでの距離
+  
   long time_from_start = 0.0;  // 機体の現在時刻
+  
   int status_number = 0;  // 自分の現在のシーケンスを把握
+  
   int gpa1_arive = 1;  // 1個目のgpsが生きているか（1:生存、0:死亡）
   int gps2_arive = 1;
   int tm_arive = 1;
   int ac_arive = 1;
   int ill_arive = 1;
   int distance_arive = 1;
+  
 } ROVER;
 
 typedef struct { // 2次元のベクトル

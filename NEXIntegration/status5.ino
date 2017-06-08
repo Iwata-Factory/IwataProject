@@ -1,6 +1,8 @@
+// ターゲットに近いところを目指す
+int status5(ROVER *rover) {
+  do {
 
-//// これに関しては特殊で引数を戻り値はROVER
-//ROVER status5(ROVER rover) {  // Status5 地上の関数
-//  return rover;
-//}
+    
+  } while (0 <= rover->distance && rover->distance < 5);
+}
 
