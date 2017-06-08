@@ -28,9 +28,9 @@
   25  digital
   26  digital
   27  digital
-  28  digital
+  28  digital  ニクロム線１
   29  digital
-  30  digital
+  30  digital   ニクロム線２
   31  digital
   32  digital
   33  digital

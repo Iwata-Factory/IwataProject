@@ -1,7 +1,7 @@
 /*
- * status4をコンパイルするようです
- * 後で消してください
- */
+   status4をコンパイルするようです
+   後で消してください
+*/
 int status4() {  // Status4 着陸の関数
   // 加速度とGPSから判断することになりそう
 
@@ -83,6 +83,7 @@ int casing() {
 
   //とりあえずケーシング展開できていないと困るので動いて刺激与える
   /*本当はケーシングが開いたかの判定を何らかのセンサを用いてしたいけど難しそう*/
+  /*いい方法思いついたら教えてください*/
   go_rotate(1000);
   go_rotate(-1000);
 
@@ -94,16 +95,28 @@ int casing() {
   double volt = 0;
   int distance_flag = 0;
   double my_direction = 0;
+  double angle_servo = 0;  //servoモーターの角度
+  int count_para = 0;     //何回パラシュートがあるかの判定をしたかのカウンター
+
   while (1) {
+    count_para++;
+    my_direction = get_my_direction();  //現在の方角を取得
     volt = analogRead( DISTANCE ) * 5 / 1023.0;
     Serial.println( volt );  //電圧換算表示
 
     //0.9~5mくらいなら取れる
-    if ( 1.35 < volt & volt < 2.7 ) {            //有効測距範囲内
-      para_distance = 140.0 / ( volt - 1.10 ) ;
-      Serial.print( "success reading! Distance is  " );
-      Serial.println( para_distance );
-      distance_flag = 1;
+    //servoモーターは90°が機体正面としています
+
+    //サーボモーターで6０～１２０°まで安全確認
+    for (angle_servo = 60; angle_servo <= 130; angle_servo += 10 ) {
+      servo1.write(angle_servo);    //
+      delay(1000);    //回転時間
+      if ( 1.35 < volt & volt < 2.7 ) {            //有効測距範囲内
+        para_distance = 140.0 / ( volt - 1.10 ) ;
+        Serial.print( "success reading! Distance is  " );
+        Serial.println( para_distance );
+        distance_flag = 1;     //一方向でも危険物があるとパラシュートとみなしアウト
+      }
     }
     delay( 500 );
 
@@ -111,17 +124,21 @@ int casing() {
       //前方にパラシュートが存在
       //回転する
       go_rotate(1000);
-
+      /*本当は90°直角に回りたいけどいまそこら辺の制御どうなっているかわからないのでとりあえずこれで*/
     } else {
       //前方にパラシュートがない or 近すぎて判別できない
-      my_direction = get_my_direction();  //現在位置を把握
+      my_direction = get_my_direction();  //現在方角を把握
       break;
-    }
   }
+  //距離センサの以上orパラシュートがかぶさっているなどなんともしがたい状況になっている
+  if (count_para >=10){//その時のいい方法も思い浮かばないので一旦運げで走らせることにした
+    break;
+  }
+}
 
-  //先ほど取得した方向へ、しばらく進む
-  /*本当は地磁気で角度を取得しながら正確に奏功したいがそれが今どうなっているかわからないのでとうまに任せます*/
-  go_straight(10000);
+//先ほど取得した方向へ、しばらく進む
+/*本当は地磁気で角度を取得しながら正確に直進したいがそれが今どうなっているかわからないのでとうまに任せます*/
+go_straight(10000);
 
 
   //脱出成功
