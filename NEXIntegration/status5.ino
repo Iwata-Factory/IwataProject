@@ -2,11 +2,7 @@
 int status5(ROVER *rover) {
 
   do {
-    // gpsのデータを取る。
-    // double Target_Direction = -1.0;  // ターゲットの方角
-    // double distance = -1.0;  //ターゲットまでの距離
-    // の値を得る
-    //
+
     GPS gps;
     while (1) { //gpsの値が正常になるまで取り続ける
       int gps_flag = 0;   //gps_getの返り値保存
@@ -34,18 +30,21 @@ int status5(ROVER *rover) {
     }
 
     // GPSが取得した値を自身のステータスに反映する。
-    rover->latitude = gps.latitude;
-    rover->longitude = gps.longitude;
-    rover->Target_Direction = gps.Direction;
-    rover->distance = gps.distance;
+    rover->latitude = gps.latitude;  // 緯度
+    rover->longitude = gps.longitude;  //経度
+    rover->Target_Direction = gps.Direction;  //ターゲットの方向
+    rover->distance = gps.distance;  // ターゲットまでの距離
 
-    // My_directionとTarget_Directionを揃える
+    if (rover->distance < 5){
+      return 1;
+    }
 
+    // 目的の方向を目指して回転を行う。rover->My_Directionは書き換えていく。
     int turn_result = turn_target_direction(rover->Target_Direction, &rover->My_Direction);
 
+    // 2秒直進
+    go_straight(2000);
 
-    
-   
-  } while (0 <= rover->distance && rover->distance < 5);
+  } while (1);
 }
 

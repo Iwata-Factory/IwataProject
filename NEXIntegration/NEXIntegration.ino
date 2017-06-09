@@ -85,14 +85,14 @@ void loop() {
         } else {
           continue;
         }
-//
-//      case 6:
-//        if (status6(&rover) == 1) {
-//          rover.status_number += 1;
-//          continue;
-//        } else {
-//          continue;
-//        }
+
+      case 6:
+        if (status6(&rover) == 1) {
+          rover.status_number += 1;
+          continue;
+        } else {
+          continue;
+        }
     }
   } while (0 < rover.status_number < 7);
 

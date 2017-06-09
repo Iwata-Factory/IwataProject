@@ -232,6 +232,7 @@ int turn_target_direction(double target_direction, double *my_Direction) {
 
   do {
     i += 1;
+    
     *my_Direction = get_my_direction(); // 自身の方向を取得(deg)。target_directionもdeg
 
     if (*my_Direction == -1) {
@@ -254,11 +255,9 @@ int turn_target_direction(double target_direction, double *my_Direction) {
       rotate_angle = 360 + a_difference;  // 左回転
     }
 
-    // 回転量が決まった
+    go_rotate(rotate_angle);  // 回転を行う
 
-    //
-
-  } while (1);
-
+  } while (i < 10); // 10回回転してもダメだったら失敗
+  return 0;
 }
 
