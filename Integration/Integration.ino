@@ -94,6 +94,8 @@
 
 #include <EEPROM.h>
 
+#include <EEPROM.h>  //EEPOM include
+
 // 定数の定義
 // GPSのピンはSDと干渉しないように
 #define READBUFFERSIZE  (256)
@@ -142,6 +144,34 @@
 #define DISTANCE A12  //測距センサの距離読み取り用ピン
 #define DIS_SAMPLE 50  //距離のサンプリング数
 
+/*
+ * flag,statusの定義。今の所それぞれに１バイトを振っている。
+ * 書き込むときはbitごとのOR（書き込み）、AND（消去）を使う仕様
+ * 詳しくはeeprom, flag_statusをみて
+ * 例えばFALL->LANDの移行時にflagを書きするとき
+ * flag_statusのtrans_phase関数を用いて
+ * trans_phase(3);
+ * その後EEP内のphaseを取得するのであれば
+ * EEPROM.read(EEP_FLAG);
+ * の１行を使えばBYTE型で戻ります。
+ */
+#define EEP_FLAG 0  //eeprom内のフラグアドレス
+#define FLAG_START 0x01
+#define FLAG_LAUNCH 0x02
+#define FLAG_FALL 0x04
+#define FLAG_LAND 0x08
+#define FLAG_GND1 0x10
+#define FLAG_GND2 0x20
+#define EEP_STATUS 1  //eeprom内のセンサステータスのアドレス
+#define STATUS_GPS 0x01
+#define STATUS_AC 0x02
+#define STATUS_TM 0x04
+#define STATUS_LIGHT 0x08
+#define STATUS_TONE 0x10
+#define STATUS_SD 0x20
+#define STATUS_DIS 0x40
+#define STATUS_XBEE 0x80
+#define SD_FLAG ("mis_flag.byt")
 
 // 構造体を宣言
 typedef struct { // 2次元のベクトル
@@ -199,6 +229,11 @@ byte flag[8] = { //flag配列SDへの書き込みが１byte単位なので書き
 
 SoftwareSerial g_gps( PIN_GPS_Rx, PIN_GPS_Tx); // ArduinoとGPS間のシリアル通信用に
 
+byte flag_phase[8] = {
+  FLAG_START, FLAG_LAUNCH, FLAG_FALL,
+  FLAG_LAND, FLAG_GND1, FLAG_GND2
+};
+
 /*
    セットアップ
 */
@@ -225,7 +260,13 @@ void setup() {
   pinMode(M2_1, OUTPUT);
   pinMode(M2_2, OUTPUT);
   pinMode(LIGHT_PIN, INPUT);
+
   pinMode(DISTANCE, INPUT);  //距離センサ用のアナログピン
+  
+  EEPROM.write( EEP_FLAG, 0x01 );
+  EEPROM.write( EEP_STATUS, 0xff);  //eepのflag類の初期化
+  //eep_clear();  //eepの全アドレスを初期化。時間かかる
+  
   Serial.println("setup完了");
 }
 
