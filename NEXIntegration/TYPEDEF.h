@@ -5,7 +5,7 @@
 
 typedef struct {  // 機体自身の情報を定義
   
-  double laditude = -1.0;  // 自身の緯度
+  double latitude = -1.0;  // 自身の緯度
   double longitude = -1.0;  // 自身の経度
   double My_Direction = -1.0;  // 自身が向いているの方角
   
