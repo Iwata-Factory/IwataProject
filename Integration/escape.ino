@@ -71,30 +71,7 @@ int escape(double distance_hold) {
     //次にとりあえず走ってみる
     go_straight(4000);
 
-    while (1) { //gpsの値が正常になるまで取り続ける
-      int gps_flag = 0;   //gps_getの返り値保存
-      gps_flag = gps_get(&gps_stack);
-      delay(10);
-      //gpsの値が取れない間どこで引っかかっているのか識別できるようになりました
-      if (gps_flag == 1) { //値が取れたら抜ける
-        break;
-      }
-      if (gps_flag == 2) {
-        ;
-        //gpsとの通信が来ていない
-        //Serial.println("gpsとの通信できていない");
-      }
-      if (gps_flag == 3) {
-        ;
-        //gpsとの通信はできているが値が変or GPRMCでない
-        //Serial.println("gpsの値がおかしい or GPRMCではない");
-      }
-      if (gps_flag == 4) {
-        ;
-        //通信ができて値も解析されたが緯度経度の値がバグってる
-        //Serial.println("緯度経度がおかしい");
-      }
-    }
+    gps_get(&gps_stack);
 
     distance[1] = gps_stack.distance;
 
@@ -134,59 +111,13 @@ int wadachi() {
   go_straight(5000);
   go_rotate(1000);
 
-  while (1) { //gpsの値が正常になるまで取り続ける
-    int gps_flag = 0;   //gps_getの返り値保存
-    gps_flag = gps_get(&gps);
-    delay(10);
-    //gpsの値が取れない間どこで引っかかっているのか識別できるようになりました
-    if (gps_flag == 1) { //値が取れたら抜ける
-      break;
-    }
-    if (gps_flag == 2) {
-      ;
-      //gpsとの通信が来ていない
-      //Serial.println("gpsとの通信できていない");
-    }
-    if (gps_flag == 3) {
-      ;
-      //gpsとの通信はできているが値が変or GPRMCでない
-      //Serial.println("gpsの値がおかしい or GPRMCではない");
-    }
-    if (gps_flag == 4) {
-      ;
-      //通信ができて値も解析されたが緯度経度の値がバグってる
-      //Serial.println("緯度経度がおかしい");
-    }
-  }
-
+  
+  gps_get(&gps);
 
   distance_hold = gps.distance;   //distance保持
   go_straight(5000);
 
-  while (1) { //gpsの値が正常になるまで取り続ける
-    int gps_flag = 0;   //gps_getの返り値保存
-    gps_flag = gps_get(&gps);
-    delay(10);
-    //gpsの値が取れない間どこで引っかかっているのか識別できるようになりました
-    if (gps_flag == 1) { //値が取れたら抜ける
-      break;
-    }
-    if (gps_flag == 2) {
-      ;
-      //gpsとの通信が来ていない
-      //Serial.println("gpsとの通信できていない");
-    }
-    if (gps_flag == 3) {
-      ;
-      //gpsとの通信はできているが値が変or GPRMCでない
-      //Serial.println("gpsの値がおかしい or GPRMCではない");
-    }
-    if (gps_flag == 4) {
-      ;
-      //通信ができて値も解析されたが緯度経度の値がバグってる
-      //Serial.println("緯度経度がおかしい");
-    }
-  }
+  gps_get(&gps);
 
   diff_distance = fabs(distance_hold - gps.distance);    //轍回避行動後に
 

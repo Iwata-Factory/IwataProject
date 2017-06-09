@@ -90,6 +90,10 @@
 #include <xbee.h>  //このライブラリはslackを参照して各自PCに入れてください。
 #include <EEPROM.h>
 
+#include <xbee.h>  //このライブラリはslackを参照して各自PCに入れてください。
+
+#include <EEPROM.h>
+
 // 定数の定義
 // GPSのピンはSDと干渉しないように
 #define READBUFFERSIZE  (256)
@@ -327,30 +331,7 @@ void loop() {
 
         struct GPS gps; // 構造体宣言
 
-        while (1) { //gpsの値が正常になるまで取り続ける
-          int gps_flag = 0;   //gps_getの返り値保存
-          gps_flag = gps_get(&gps);
-          delay(10);
-          //gpsの値が取れない間どこで引っかかっているのか識別できるようになりました
-          if (gps_flag == 1) { //値が取れたら抜ける
-            break;
-          }
-          if (gps_flag == 2) {
-            ;
-            //gpsとの通信が来ていない
-            //Serial.println("gpsとの通信できていない");
-          }
-          if (gps_flag == 3) {
-            ;
-            //gpsとの通信はできているが値が変or GPRMCでない
-            //Serial.println("gpsの値がおかしい or GPRMCではない");
-          }
-          if (gps_flag == 4) {
-            ;
-            //通信ができて値も解析されたが緯度経度の値がバグってる
-            //Serial.println("緯度経度がおかしい");
-          }
-        }
+        gps_get(&gps);
 
         if (gps.Direction >= 0 && gps.distance >= 0) {
 
@@ -498,6 +479,7 @@ void loop() {
       // 偏角を計算
       double my_args = atan2(my_vector.y, my_vector.x);
       double dst_args = atan2(dst_vector.y, dst_vector.x);
+
 
       if (dst_args - my_args >= 0) {
         relative_args = rad2deg(dst_args - my_args);

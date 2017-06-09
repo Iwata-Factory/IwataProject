@@ -105,7 +105,7 @@ int ReadLineString( SoftwareSerial& serial,
   return 0;
 }
 
-int gps_get(struct GPS* gps) {
+int gps_data_get(struct GPS* gps) {
 
 //  char g_szReadBuffer[READBUFFERSIZE] = "";
 //  int  g_iIndexChar = 0;
@@ -173,3 +173,32 @@ int gps_get(struct GPS* gps) {
 
   return 1;
 }
+
+int gps_get(GPS* gps){
+  while (1) { //gpsの値が正常になるまで取り続ける
+    int gps_flag = 0;   //gps_getの返り値保存
+    gps_flag = gps_data_get(gps);
+    delay(10);
+    //gpsの値が取れない間どこで引っかかっているのか識別できるようになりました
+    if (gps_flag == 1) { //値が取れたら抜ける
+      break;
+    }
+    if (gps_flag == 2) {
+      ;
+      //gpsとの通信が来ていない
+      //Serial.println("gpsとの通信できていない");
+    }
+    if (gps_flag == 3) {
+      ;
+      //gpsとの通信はできているが値が変or GPRMCでない
+      //Serial.println("gpsの値がおかしい or GPRMCではない");
+    }
+    if (gps_flag == 4) {
+      ;
+      //通信ができて値も解析されたが緯度経度の値がバグってる
+      //Serial.println("緯度経度がおかしい");
+    }
+  }
+
+}
+
