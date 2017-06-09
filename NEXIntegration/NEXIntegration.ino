@@ -41,6 +41,7 @@ void setup() {
 }
 
 void loop() {
+  
   ROVER rover;  // 自身の情報を初期化
   rover.status_number = 1;  // 現在ステータスを1に更新
   rover.time_from_start = time;  // 機体時間を取得

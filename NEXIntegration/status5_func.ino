@@ -1,4 +1,15 @@
 /*-----------GPS関連--------------------
+   ここの欄は後で補完
+  //こっから下は確認用+使い方、あとで消していいよ
+  Serial.println('\n');
+  Serial.println('以下gps構造体の中身表示');
+  Serial.println(gps.latitude);
+  Serial.println(gps.longitude);
+  Serial.println(gps.utc);
+  Serial.println(gps.Speed);
+  Serial.println(gps.course);
+  Serial.println(gps.Direction);
+  Serial.println(gps.distance);
   ------------------------------------------*/
 
 // 区切り文字定数
@@ -9,7 +20,7 @@
 //static const int READBUFFERSIZE = 256;
 //static const char DELIMITER = ",";
 
-int AnalyzeLineString( char szLineString[], GPS *gps) {
+int AnalyzeLineString( char szLineString[], GPS* gps) {
 
   // $GPRMC
   if ( 0 != strncmp( "$GPRMC", szLineString, 6 ) )
@@ -94,7 +105,7 @@ int ReadLineString( SoftwareSerial& serial,
   return 0;
 }
 
-int gps_get(GPS *gps) {
+int gps_data_get(GPS* gps) {
 
   //  char g_szReadBuffer[READBUFFERSIZE] = "";
   //  int  g_iIndexChar = 0;
@@ -163,6 +174,34 @@ int gps_get(GPS *gps) {
   return 1;
 }
 
+int gps_get(GPS* gps) {
+  while (1) { //gpsの値が正常になるまで取り続ける
+    int gps_flag = 0;   //gps_getの返り値保存
+    gps_flag = gps_data_get(gps);
+    delay(10);
+    //gpsの値が取れない間どこで引っかかっているのか識別できるようになりました
+    if (gps_flag == 1) { //値が取れたら抜ける
+      break;
+    }
+    if (gps_flag == 2) {
+      ;
+      //gpsとの通信が来ていない
+      //Serial.println("gpsとの通信できていない");
+    }
+    if (gps_flag == 3) {
+      ;
+      //gpsとの通信はできているが値が変or GPRMCでない
+      //Serial.println("gpsの値がおかしい or GPRMCではない");
+    }
+    if (gps_flag == 4) {
+      ;
+      //通信ができて値も解析されたが緯度経度の値がバグってる
+      //Serial.println("緯度経度がおかしい");
+    }
+  }
+
+}
+
 
 // 自身の方向取得関数を書くファイル
 /*-----------get_tm()--------------------
@@ -203,15 +242,17 @@ double get_my_direction() {
 
   for (int i = 0; i < 10; i++) {
     error_c = 0;
-    while (tm.x == 100 || tm.y == 100 || tm.z == 100) {
+    do {
       tm.x = 100; tm.y = 100; tm.z = 100;
       tm = get_tm();
-      direction_array[i] = atan((tm.y - tm_y_offset) / (tm.x - tm_x_offset)); // 自身の方向を計算
+      //      direction_array[i] = (atan2((tm.x + 20 - tm_x_offset), (tm.y + 20 - tm_y_offset) * (-1)) * RAD_TO_DEG + 180 - TM_DIFFERENCE);
+      direction_array[i] = (atan2((tm.x - tm_x_offset), (tm.y * xy_magnification - tm_y_offset) * (-1)) * RAD_TO_DEG + 180 - TM_DIFFERENCE);
+
       error_c += 1;
       if (error_c = 100) {  // 100回連続で取得失敗したら失敗を返す
         return -1;
       }
-    }
+    } while (tm.x == 100 || tm.y == 100 || tm.z == 100);
   }
   my_direction = rad_out(10, direction_array);  // 10サンプルから平均を計算
   my_direction = rad2deg(my_direction);  // radからdegへ
@@ -231,12 +272,16 @@ int turn_target_direction(double target_direction, double *my_Direction) {
   int i = 0;  // 回転の試行回数をカウントしていく
 
   do {
-    i += 1;
-    
-    *my_Direction = get_my_direction(); // 自身の方向を取得(deg)。target_directionもdeg
 
-    if (*my_Direction == -1) {
-      return 0; // 方向が取得出来ていないときの処理
+    delay(1000);
+    i += 1;
+
+    double dir_result = get_my_direction(); // 自身の方向を取得(deg)。target_directionもdeg
+    
+    if (dir_result != -1) {
+      *my_Direction = dir_result;
+    } else {
+      return 0;
     }
 
     double rotate_angle = 0;  // 回転量
@@ -260,4 +305,89 @@ int turn_target_direction(double target_direction, double *my_Direction) {
   } while (i < 10); // 10回回転してもダメだったら失敗
   return 0;
 }
+
+/*-----------tm_calibration()--------------------
+   地磁気のキャリブレーション
+   戻り値
+   1:成功
+   0:失敗
+  ------------------------------------------*/
+
+
+int tm_calibration() {
+
+  delay(500);
+
+  // 値を定義しておく
+  DRIVE turn; // DRIVE型の宣言
+  // 初期化
+  turn.right1 = 0;
+  turn.right2 = 1;
+  turn.leght1 = 1;
+  turn.leght2 = 0;
+
+  double min_x;
+  double max_x;
+  double min_y;
+  double max_y;
+  double min_z;
+  double max_z;
+
+  TM tm;
+
+  rover_degital(turn); // 回転開始
+
+  for (int i = 0; i < 1000; i++) {
+
+    delay(10);
+
+    tm = get_tm();
+
+    if (i == 0) {
+      min_x = tm.x;
+      max_x = tm.x;
+      min_y = tm.y;
+      max_y = tm.y;
+      min_z = tm.z;
+      max_z = tm.z;
+    } else {
+      if (tm.x < min_x) {
+        min_x = tm.x;
+      } else if (max_x < tm.x) {
+        max_x = tm.x;
+      }
+      if (tm.y < min_y) {
+        min_y = tm.y;
+      } else if (max_y < tm.y) {
+        max_y = tm.y;
+      }
+      if (tm.z < min_z) {
+        min_z = tm.z;
+      } else if (max_z < tm.z) {
+        max_z = tm.z;
+      }
+    }
+  }
+
+  turn.right1 = 1;
+  turn.right2 = 1;
+  turn.leght1 = 1;
+  turn.leght2 = 1;
+
+  rover_degital(turn); // 回転終了
+
+  // 最大値と最小値の差を求める
+  double x_def = max_x - min_x;
+  double y_def = max_y - min_y;
+  // どれだけ潰せばいいかを求める
+  xy_magnification = x_def / y_def;
+  // オフセットを計算
+  tm_x_offset = x_def / 2;
+  tm_y_offset = y_def / 2;
+
+  delay(500);
+
+  return 1;
+}
+
 

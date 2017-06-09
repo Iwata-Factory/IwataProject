@@ -16,6 +16,7 @@
 
 //地磁気センサ関連
 #define HMC5883L 0x1E   //HMC5883L(地磁気センサ)のスレーブアドレス
+#define TM_DIFFERENCE -7.2
 
 //加速度センサ関連
 #define ADXL345 0x53  //ADXL345(加速度センサ)のスレーブアドレス
@@ -71,8 +72,11 @@ byte flag[8] = { //flag配列SDへの書き込みが１byte単位なので書き
   0x00, 0x01, 0x02, 0x03,
   0x04, 0x05, 0x06, 0x07
 };
+
+// 地磁気のキャリブレーションに関するやつ
 double tm_x_offset = 0.0;
 double tm_y_offset = 0.0;
+double xy_magnification = 0.0; // yの値をどれだけ潰すか
 
 SoftwareSerial g_gps( PIN_GPS_Rx, PIN_GPS_Tx); // ArduinoとGPS間のシリアル通信用に
 
