@@ -1,6 +1,4 @@
-/*
-   着陸判定後パラシュートからの脱出までです
-*/
+
 int status4() {  // Status4 着陸の関数
   // 加速度とGPSから判断することになりそう
 
@@ -77,6 +75,7 @@ int casing() {
   digitalWrite(NICROM_1, LOW);
 
   //ここから、パラシュートをよけるプロセス
+
   GPS gps;
   gps_get(&gps);    //ここで取得したデータをSDなりに保管して以後近づかないようにしてください
 
@@ -144,7 +143,5 @@ int casing() {
   return 0;
 
 }
-
-
 
 

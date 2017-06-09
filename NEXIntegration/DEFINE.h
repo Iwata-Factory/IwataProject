@@ -78,6 +78,7 @@ byte flag[8] = { //flag配列SDへの書き込みが１byte単位なので書き
   0x04, 0x05, 0x06, 0x07
 };
 
+
 // 地磁気のキャリブレーションに関するやつ
 double tm_x_offset = 0.0;
 double tm_y_offset = 0.0;
@@ -87,3 +88,4 @@ SoftwareSerial g_gps( PIN_GPS_Rx, PIN_GPS_Tx); // ArduinoとGPS間のシリア�
 Servo servo1;
 
 #endif
+
