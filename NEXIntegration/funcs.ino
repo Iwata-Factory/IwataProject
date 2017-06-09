@@ -202,6 +202,26 @@ int gps_get(GPS* gps) {
 
 }
 
+/*-----------get_ac()--------------------
+   加速度センサーの値を取得
+   返り値はAC型
+  ------------------------------------------*/
+AC get_ac() {
+  byte ac_axis_buff[6]; //ADXL345のデータ格納バッファ(各軸あたり2つずつ)
+  AC ac; // 初期化
+  ac.x = 100; // 失敗時は(100, 100, 100)を返す
+  ac.y = 100;
+  ac.z = 100;
+
+  if (readI2c(0x32, length, ac_axis_buff, ADXL345)) { //ADXL345のデータ(加速度)取得
+    ac.x = double((((int)ac_axis_buff[1]) << 8) | ac_axis_buff[0]);     //MSBとLSBの順番も逆になっている
+    ac.y = double((((int)ac_axis_buff[3]) << 8) | ac_axis_buff[2]);
+    ac.z = double((((int)ac_axis_buff[5]) << 8) | ac_axis_buff[4]);
+  } else {
+    ; // 何もしない
+  }
+  return ac;
+}
 
 // 自身の方向取得関数を書くファイル
 /*-----------get_tm()--------------------
@@ -277,7 +297,7 @@ int turn_target_direction(double target_direction, double *my_Direction) {
     i += 1;
 
     double dir_result = get_my_direction(); // 自身の方向を取得(deg)。target_directionもdeg
-    
+
     if (dir_result != -1) {
       *my_Direction = dir_result;
     } else {

@@ -36,7 +36,7 @@ typedef struct { // 3次元のベクトル
   double z = 0.0; //3次元ベクトルのz座標
 } Vector3D;
 
-typedef struct { // GPS関連    /* これだけ良くわからなかったのでtypedefしていません */
+typedef struct{ // GPS関連    /* これだけ良くわからなかったのでtypedefしていません */
   double utc = 0.0;       //グリニッジ天文時
   double latitude = 0.0;   //経度
   double longitude = 0.0;   //緯度

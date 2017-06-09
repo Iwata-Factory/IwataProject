@@ -58,6 +58,11 @@
 #define AVESPEED_HEAD 49
 #define AVESPEED_END  56
 
+//ニクロム線
+#define NICROM_1 28
+#define NICROM_2 30
+
+
 // その他
 #define SERIAL_BAUDRATE 9600 //シリアル通信のデータ送信レートを9600bpsに定義するための定数(ArduinoとPC)
 #define pi 3.14159265359
@@ -79,6 +84,6 @@ double tm_y_offset = 0.0;
 double xy_magnification = 0.0; // yの値をどれだけ潰すか
 
 SoftwareSerial g_gps( PIN_GPS_Rx, PIN_GPS_Tx); // ArduinoとGPS間のシリアル通信用に
-
+Servo servo1;
 
 #endif
