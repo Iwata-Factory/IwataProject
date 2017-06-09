@@ -227,7 +227,7 @@ void setup() {
   pinMode(LIGHT_PIN, INPUT);
   
   EEPROM.write( EEP_FLAG, 0 );
-  EEPROM.write( EEP_STATUS, 0);  //eepのflag類の初期化
+  EEPROM.write( EEP_STATUS, 0xff);  //eepのflag類の初期化
   //eep_clear();  //eepの全アドレスを初期化。時間かかる
   
   Serial.println("setup完了");

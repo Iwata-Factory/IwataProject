@@ -26,7 +26,7 @@ byte renew_status( byte stat, int TF ) {
     return new_status;
   }
   if ( TF == 0) {  //消去 選択されたステータスの部分を0に
-    new_status = !stat & EEPROM.read(EEP_STATUS);
+    new_status = ~stat & EEPROM.read(EEP_STATUS);
     EEPROM.write(EEP_STATUS, new_status);
     return new_status;
   }
