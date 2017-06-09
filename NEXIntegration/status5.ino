@@ -22,6 +22,7 @@ int status5(ROVER *rover) {
     
     time = millis(); //現在の時間を取得
     rover->time_from_start = time;
+    write_timelog_sd(time, 5);
 
     if (rover->distance < 5) { // 5mまで来たら地上2へ
       return 1;

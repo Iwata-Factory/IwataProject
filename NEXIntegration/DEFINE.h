@@ -48,7 +48,6 @@
 
 // EEPROM関連
 #define EEP_LENGTH 4096  //EEPROMはMegaは4096byte、Unoは1024byteの容量です。
-#define EEP_FLAG 0  //flagの記録場所は現在は０です。
 #define DESTINATION_HEAD 1  //以下のアドレスは実験によって確定させます。
 #define DESTINATION_END  16
 #define START_HEAD 17
@@ -57,6 +56,25 @@
 #define STOP_END  48
 #define AVESPEED_HEAD 49
 #define AVESPEED_END  56
+#define EEP_STATUS 0  //eeprom内のフラグアドレス
+#define FLAG_START 0x01
+#define FLAG_LAUNCH 0x02
+#define FLAG_FALL 0x04
+#define FLAG_LAND 0x08
+#define FLAG_GND1 0x10
+#define FLAG_GND2 0x20
+#define FLAG_END 0x40
+
+#define EEP_CENSOR_STATUS 1  //eeprom内のセンサステータスのアドレス
+#define STATUS_GPS 0x01
+#define STATUS_AC 0x02
+#define STATUS_TM 0x04
+#define STATUS_LIGHT 0x08
+#define STATUS_TONE 0x10
+#define STATUS_SD 0x20
+#define STATUS_DIS 0x40
+#define STATUS_XBEE 0x80
+#define SD_FLAG ("mis_flag.byt")
 
 //ニクロム線
 #define NICROM_1 28
@@ -78,6 +96,10 @@ byte flag[8] = { //flag配列SDへの書き込みが１byte単位なので書き
   0x04, 0x05, 0x06, 0x07
 };
 
+byte flag_phase[8] = {
+  FLAG_START, FLAG_LAUNCH, FLAG_FALL,
+  FLAG_LAND, FLAG_GND1, FLAG_GND2, FLAG_END
+};
 
 // 地磁気のキャリブレーションに関するやつ
 double tm_x_offset = 0.0;

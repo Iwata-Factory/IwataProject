@@ -25,9 +25,11 @@ void setup() {
     delay(3000);
     xbee_atcb(1);  //ネットワーク参加ボタン押下
   }
-  
+
   //eep_clear();   //EEPROMのリセット。４KB全てに書き込むので時間かかる。
-  //EEPROM.write(EEP_FLAG,0);  //flagの部分のみ初期化。
+
+  EEPROM.write( EEP_STATUS, flag_phase[0] );
+  EEPROM.write( EEP_CENSOR_STATUS, 0xff);  //eepのflag類の初期化
 
   // モーター用ピンの設定
   pinMode(M1_1, OUTPUT);
@@ -44,6 +46,11 @@ void setup() {
   Serial.println("setup完了");
 }
 
+
+
+
+
+
 void loop() {
 
   ROVER rover;  // 自身の情報を初期化
@@ -51,16 +58,22 @@ void loop() {
   rover.time_from_start = time;  // 機体時間を取得
 
   // EEPROMからフラグを読んで、ROBER型のstatus_numberを更新する。
+  rover.status_number = (log10(int(EEPROM.read(EEP_STATUS))) / log10(2.0));
+
+  //  EEPROM.read(EEP_CENSOR_STATUS);
   // EEPRPMからフラグを読んで、各センサが生きているか検知してROVER型の各種センサ_ariveを更新する。
+
   do {
     switch (rover.status_number) {
 
       case 1:
+        trans_phase(1);
         rover.status_number += 1;
         continue;
 
       case 2:
         if (status2() == 1) {
+          trans_phase(2);
           rover.status_number += 1;
           continue;
         } else {
@@ -69,6 +82,7 @@ void loop() {
 
       case 3:
         if (status3() == 1) {
+          trans_phase(3);
           rover.status_number += 1;
           continue;
         } else {
@@ -77,6 +91,7 @@ void loop() {
 
       case 4:
         if (status4() == 1) {
+          trans_phase(4);
           rover.status_number += 1;
           continue;
         } else {
@@ -85,6 +100,7 @@ void loop() {
 
       case 5:
         if (status5(&rover) == 1) {
+          trans_phase(5);
           rover.status_number += 1;
           continue;
         } else {
@@ -93,6 +109,7 @@ void loop() {
 
       case 6:
         if (status6(&rover) == 1) {
+          trans_phase(6);
           rover.status_number += 1;
           continue;
         } else {
