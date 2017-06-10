@@ -275,10 +275,10 @@ double get_my_direction() {
 
       tm_v.x = 2 * (tm.x - tm_x_offset) / x_def;
       tm_v.y = 2 * (tm.y - tm_y_offset) / y_def;
-      double tm_v_size = sqrt(pow(tm_v.x, 2) + pow(tm_v.y, 2));
+      double tm_v_size = vector2d_size(tm_v);
       tm_v.x = tm_v.x / tm_v_size; tm_v.y = tm_v.y / tm_v_size; // tm_vの大きさは1
 
-      double inner_product = tm_v.x * s.x + tm_v.y * s.y;  // 内積を取る
+      double inner_product = vector2d_inner(tm_v, s);  // 内積を取る
       double tm_degree = rad2deg(acos(inner_product));  // 角度を得る(0~π)
 
       // 角度が0~360で出るように調整
