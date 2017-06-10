@@ -39,8 +39,7 @@ int status5(ROVER *rover) {
 
     Serial.println("機体方向を調整します");
     // 目的の方向を目指して回転を行う。rover->My_Directionは書き換えていく。
-    //    int turn_result = turn_target_direction(rover->Target_Direction, &rover->My_Direction);
-    int turn_result = turn_target_direction(100, &rover->My_Direction);
+    int turn_result = turn_target_direction(rover->Target_Direction, &rover->My_Direction);
 
 
     if (turn_result == 0) {

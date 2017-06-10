@@ -18,7 +18,7 @@ int status4() {  // Status4 着陸の関数
   }
 
   //以下パラシュートからの脱出
-  casing();
+  //casing();
 
   return 1;
 }
