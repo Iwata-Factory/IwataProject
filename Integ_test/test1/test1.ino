@@ -90,16 +90,21 @@ void loop() {
 
       case 1:
         Serial.println("ステータス1を開始");
-        Serial.println("ステータス1をスキップ");
-        trans_phase(1);
-        rover.status_number += 1;
+        if (status1() == 1) {
+          Serial.println("ステータス1をスキップ");
+          trans_phase(rover.status_number);
+          rover.status_number += 1;
+          break;
+        } else {
+          break;
+        }
         break;
 
       case 2:
         Serial.println("ステータス2を開始");
         if (status2() == 1) {
           Serial.println("ステータス2をスキップ");
-          trans_phase(2);
+          trans_phase(rover.status_number);
           rover.status_number += 1;
           break;
         } else {
@@ -110,7 +115,7 @@ void loop() {
         Serial.println("ステータス3を開始");
         if (status3() == 1) {
           Serial.println("ステータス3をスキップ");
-          trans_phase(3);
+          trans_phase(rover.status_number);
           rover.status_number += 1;
           break;
         } else {
@@ -120,7 +125,7 @@ void loop() {
       case 4:
         Serial.println("ステータス4を開始");
         if (status4() == 1) {
-          trans_phase(4);
+          trans_phase(rover.status_number);
           rover.status_number += 1;
           break;
         } else {
@@ -130,7 +135,7 @@ void loop() {
       case 5:
         Serial.println("ステータス5を開始");
         if (status5(&rover) == 1) {
-          trans_phase(5);
+          trans_phase(rover.status_number);
           rover.status_number += 1;
           break;
         } else {
@@ -140,8 +145,8 @@ void loop() {
       case 6:
         Serial.println("ステータス6を開始");
         if (status6(&rover) == 1) {
-          Serial.println("ステータス3をスキップ");
-          trans_phase(6);
+          Serial.println("ステータス6をスキップ");
+          trans_phase(rover.status_number);
           rover.status_number += 1;
           break;
         } else {
