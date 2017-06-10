@@ -82,6 +82,10 @@
 #define NICROM_1 28
 #define NICROM_2 30
 
+//SD関連
+#define SS 53
+
+
 
 // その他
 #define SERIAL_BAUDRATE 9600 //シリアル通信のデータ送信レートを9600bpsに定義するための定数(ArduinoとPC)
@@ -102,12 +106,12 @@ byte flag_phase[8] = {
   FLAG_START, FLAG_LAUNCH, FLAG_FALL,
   FLAG_LAND, FLAG_GND1, FLAG_GND2, FLAG_END
 };
-
+const int chipSelect = 4;
 // 地磁気のキャリブレーションに関するやつ
 double tm_x_offset = 0.0;
 double tm_y_offset = 0.0;
-double x_def = 0.0;
-double y_def = 0.0;
+double x_def = 1.0;
+double y_def = 1.0;
 
 SoftwareSerial g_gps( PIN_GPS_Rx, PIN_GPS_Tx); // ArduinoとGPS間のシリアル通信用に
 Servo servo1;

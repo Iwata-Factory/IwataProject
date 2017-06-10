@@ -104,7 +104,7 @@ double rad_out(const int array_num, double* value) {
   double temp = 0;
   Vector2D vector[array_num];
   Vector2D vector_ave;
-  double value_distance[5];
+  double value_distance[array_num];
   double ave = 0;
 
 
@@ -122,6 +122,7 @@ double rad_out(const int array_num, double* value) {
   for (i = 0; i < array_num; i++) {
     value_distance[i] = sqrt(pow((vector[i].x - vector_ave.x), 2) + pow((vector[i].y - vector_ave.y), 2));
   }
+
 
   //距離を比較し一番長いのを外れ値として省く
   for (i = 1; i < array_num; i++) {
@@ -178,7 +179,7 @@ double vector2d_size(Vector2D v) {
 /*----------- Vector2Dの内積を得る--------------------
   ------------------------------------------*/
 double vector2d_inner(Vector2D v1, Vector2D v2) {
-  double inner_product = v1.x * v2.x + v1.y + v2.y;
+  double inner_product = v1.x * v2.x + v1.y * v2.y;
   return inner_product;
 }
 
