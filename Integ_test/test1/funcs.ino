@@ -153,7 +153,7 @@ int gps_data_get(GPS* gps) {
   Serial.println(gps->Speed);   //knot表示されます
   Serial.print("Course : ");
   Serial.println(gps->course);
-  float LatA = 35.713860, LongA = 139.759570;      //目的地
+  float LatA = GOAL_LATITUDE, LongA = GOAL_LONGITUDE;      //目的地
   //  float LatA = 35.710039, LongA = 139.810726;      //目的地
   float LatB = gps->latitude;       //現在地の緯度経度
   float LongB = gps->longitude;

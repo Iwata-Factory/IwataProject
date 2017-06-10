@@ -5,7 +5,7 @@ int status5(ROVER *rover) {
 
   do {
 
-    if (i % 10 == 0) { // たまにキャリブレーションする
+    if (i % 20 == 0) { // たまにキャリブレーションする
       tm_calibration();
     }
 

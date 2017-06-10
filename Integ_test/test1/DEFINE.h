@@ -2,10 +2,12 @@
 #define __DEFINE_H__
 
 // 定数の定義
+# define GOAL_LATITUDE 35.713860
+# define GOAL_LONGITUDE 139.759570
 
 //GPS関連
-#define PIN_GPS_Rx  53 // GPSのシリアル通信でデータを受信するピン
-#define PIN_GPS_Tx  51 // GPSのシリアル通信でデータを送信するピン
+#define PIN_GPS_Rx  10 // GPSのシリアル通信でデータを受信するピン
+#define PIN_GPS_Tx  12 // GPSのシリアル通信でデータを送信するピン
 #define LATITUDE_MINIMUM 30  //緯度の最小値
 #define LATITUDE_MAXIMUM 40  //緯度の最大値
 #define LONGITUDE_MINIMUM 130  //経度の最小値
@@ -22,14 +24,14 @@
 #define ADXL345 0x53  //ADXL345(加速度センサ)のスレーブアドレス
 
 //モーター関連
-#define M1_1 8 // モーター制御用ピン
-#define M1_2 9 // モーター制御用ピン
-#define M2_1 10 // モーター制御用ピン
-#define M2_2 11 // モーター制御用ピン
+#define M1_1 4 // モーター制御用ピン
+#define M1_2 5 // モーター制御用ピン
+#define M2_1 6 // モーター制御用ピン
+#define M2_2 7 // モーター制御用ピン
 
 //スピーカー関連
 #define BEAT_LONG 300   // 音の長さを指定
-#define TONE_PINNO 8   // 圧電スピーカを接続したピン番号
+#define TONE_PINNO 43   // 圧電スピーカを接続したピン番号
 #define C_TONE  262    //ド
 #define D_TONE  294    //レ
 #define E_TONE  330    //ミ

@@ -44,6 +44,8 @@ void setup() {
   //サーボモーター用のピン
   servo1.attach(26);
   Serial.println("setup完了");
+  Serial.print("メイン処理へ移行");
+
 }
 
 
@@ -52,6 +54,8 @@ void setup() {
 
 
 void loop() {
+
+  delay(2000);
 
   ROVER rover;  // 自身の情報を初期化
   rover.status_number = 1;  // 現在ステータスを1に更新

@@ -17,7 +17,7 @@ typedef struct {  // 機体自身の情報を定義
   int status_number = 0;  // 自分の現在のシーケンスを把握
   
   int gps1_arive = 1;  // 1個目のgpsが生きているか（1:生存、0:死亡）
-  int gps2_arive = 1;
+  int gps2_arive = 1; 
   int tm_arive = 1;
   int ac_arive = 1;
   int sd_arive = 1;
