@@ -18,17 +18,17 @@ void setup() {
   writeI2c(0x02, 0x00, HMC5883L); //HMC5883Lの初期設定0x02レジスタに0x00書き込み
   writeI2c(0x31, 0x00, ADXL345);  //上と同様
   writeI2c(0x2d, 0x08, ADXL345);  //上と同様
-  xbee_init(0);  //初期化
-  xbee_atcb(4);  //ネットワーク初期化
-  xbee_atnj(0);  //孫機のジョイン拒否
-  while (xbee_atai() > 0x01) { //ネットワーク参加状況を確認
-    delay(3000);
-    xbee_atcb(1);  //ネットワーク参加ボタン押下
-  }
+  //  xbee_init(0);  //初期化
+  //  xbee_atcb(4);  //ネットワーク初期化
+  //  xbee_atnj(0);  //孫機のジョイン拒否
+  //  while (xbee_atai() > 0x01) { //ネットワーク参加状況を確認
+  //    delay(3000);
+  //    xbee_atcb(1);  //ネットワーク参加ボタン押下
+  //  }
 
   //eep_clear();   //EEPROMのリセット。４KB全てに書き込むので時間かかる。
 
-  EEPROM.write( EEP_STATUS, flag_phase[0] );
+  EEPROM.write( EEP_STATUS, flag_phase[0] ); // status1で初期化
   EEPROM.write( EEP_CENSOR_STATUS, 0xff);  //eepのflag類の初期化
 
   // モーター用ピンの設定
@@ -56,64 +56,61 @@ void loop() {
   ROVER rover;  // 自身の情報を初期化
   rover.status_number = 1;  // 現在ステータスを1に更新
   rover.time_from_start = time;  // 機体時間を取得
-
-  // EEPROMからフラグを読んで、ROBER型のstatus_numberを更新する。
-  rover.status_number = (log10(int(EEPROM.read(EEP_STATUS))) / log10(2.0));
-
-  //  EEPROM.read(EEP_CENSOR_STATUS);
-  // EEPRPMからフラグを読んで、各センサが生きているか検知してROVER型の各種センサ_ariveを更新する。
+  
+  get_censor_status(&rover);  // 自身のステータスを更新する関数
 
   do {
+
     switch (rover.status_number) {
 
       case 1:
         trans_phase(1);
         rover.status_number += 1;
-        continue;
+        break;
 
       case 2:
         if (status2() == 1) {
           trans_phase(2);
           rover.status_number += 1;
-          continue;
+          break;
         } else {
-          continue;
+          break;
         }
 
       case 3:
         if (status3() == 1) {
           trans_phase(3);
           rover.status_number += 1;
-          continue;
+          break;
         } else {
-          continue;
+          break;
         }
 
       case 4:
         if (status4() == 1) {
           trans_phase(4);
           rover.status_number += 1;
-          continue;
+          break;
         } else {
-          continue;
+          break;
         }
 
       case 5:
         if (status5(&rover) == 1) {
           trans_phase(5);
           rover.status_number += 1;
-          continue;
+          break;
         } else {
-          continue;
+          break;
         }
 
       case 6:
         if (status6(&rover) == 1) {
           trans_phase(6);
           rover.status_number += 1;
-          continue;
+          break;
         } else {
-          continue;
+          break;
         }
     }
   } while (0 < rover.status_number < 7);

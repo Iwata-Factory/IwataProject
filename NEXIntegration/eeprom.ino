@@ -108,3 +108,64 @@ byte renew_status( byte stat, int TF ) {
   }
 }
 
+/*----------- 自身のステータスをeepromから取得--------------------
+  ------------------------------------------*/
+int get_censor_status(ROVER *rover) {
+
+  // EEPROMからフラグを読んで、ROBER型のstatus_numberを更新する部分
+  int e2p_status = log10(int(EEPROM.read(EEP_STATUS))) / log10(2.0);
+  if (e2p_status != 0) {
+    rover->status_number = e2p_status;
+  }
+
+
+  // EEPROMからフラグを読んで、ROBER型のセンサーステータスを更新する。
+  int e2p_censor = EEPROM.read(EEP_CENSOR_STATUS);
+  int i = 0;
+  int c = 0;
+  int b[32];
+
+  for (i = 0; i < 8; i++) {  // 最大8回繰り返し
+
+    int censor_status = 1;
+
+    b[i] = e2p_censor % 2;
+
+    if (b[i] == 1) {
+      censor_status = 1;
+    } else {
+      censor_status = 0;
+    }
+    e2p_censor = e2p_censor / 2;
+
+    switch (i) {
+      case 0:
+        rover->gps1_arive = censor_status;
+        break;
+      case 1:
+        rover->ac_arive = censor_status;
+        break;
+      case 2:
+        rover->tm_arive = censor_status;
+        break;
+      case 3:
+        rover->light_arive = censor_status;
+        break;
+      case 4:
+        rover->gps2_arive = censor_status;
+        break;
+      case 5:
+        rover->sd_arive = censor_status;
+        break;
+      case 6:
+        rover->distance_arive = censor_status;
+        break;
+      case 7:
+        rover->xbee_arive = censor_status;
+        break;
+    }
+  }
+
+  return 1;
+}
+

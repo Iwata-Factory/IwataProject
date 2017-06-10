@@ -167,15 +167,19 @@ double deg2rad(double deg) {
 }
 
 
-// Vector2Dのサイズを得る
+
+/*-----------Vector2Dのサイズを得る--------------------
+  ------------------------------------------*/
 double vector2d_size(Vector2D v) {
   double v_size = sqrt(pow(v.x, 2) + pow(v.y, 2));
   return v_size;
 }
 
-// Vector2Dの内積を得る
+/*----------- Vector2Dの内積を得る--------------------
+  ------------------------------------------*/
 double vector2d_inner(Vector2D v1, Vector2D v2) {
   double inner_product = v1.x * v2.x + v1.y + v2.y;
   return inner_product;
 }
+
 

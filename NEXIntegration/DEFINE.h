@@ -70,7 +70,7 @@
 #define STATUS_AC 0x02
 #define STATUS_TM 0x04
 #define STATUS_LIGHT 0x08
-#define STATUS_TONE 0x10
+#define STATUS_GPS2 0x10
 #define STATUS_SD 0x20
 #define STATUS_DIS 0x40
 #define STATUS_XBEE 0x80
