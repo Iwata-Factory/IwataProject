@@ -263,10 +263,32 @@ double get_my_direction() {
   for (int i = 0; i < 10; i++) {
     error_c = 0;
     do {
+
+      Vector2D tm_v;  // 地磁気ベクトル
+
+      Vector2D s;  // 基準ベクトル
+      s.x = 1.0;
+      s.y = 0.0;
+
       tm.x = 100; tm.y = 100; tm.z = 100;
       tm = get_tm();
-      //      direction_array[i] = (atan2((tm.x + 20 - tm_x_offset), (tm.y + 20 - tm_y_offset) * (-1)) * RAD_TO_DEG + 180 - TM_DIFFERENCE);
-      direction_array[i] = (atan2((tm.x - tm_x_offset), (tm.y * xy_magnification - tm_y_offset) * (-1)) * RAD_TO_DEG + 180 - TM_DIFFERENCE);
+
+      tm_v.x = 2 * (tm.x - tm_x_offset) / x_def;
+      tm_v.y = 2 * (tm.y - tm_y_offset) / y_def;
+      double tm_v_size = sqrt(pow(tm_v.x, 2) + pow(tm_v.y, 2));
+      tm_v.x = tm_v.x / tm_v_size; tm_v.y = tm_v.y / tm_v_size; // tm_vの大きさは1
+
+      double inner_product = tm_v.x * s.x + tm_v.y * s.y;  // 内積を取る
+      double tm_degree = rad2deg(acos(inner_product));  // 角度を得る(0~π)
+
+      // 角度が0~360で出るように調整
+      if (tm_v.y < 0) {
+        tm_degree = int(360 - tm_degree + TM_DIFFERENCE) % 360;
+      } else {
+        tm_degree = int(tm_degree + TM_DIFFERENCE) % 360;
+      }
+
+      direction_array[i] = deg2rad(tm_degree);  // 外れ値処理のためにradに再変換
 
       error_c += 1;
       if (error_c = 100) {  // 100回連続で取得失敗したら失敗を返す
@@ -276,7 +298,7 @@ double get_my_direction() {
   }
   my_direction = rad_out(10, direction_array);  // 10サンプルから平均を計算
   my_direction = rad2deg(my_direction);  // radからdegへ
-  return my_direction;
+  return my_direction;  // 単位はdeg
 }
 
 
@@ -357,7 +379,7 @@ int tm_calibration() {
 
   rover_degital(turn); // 回転開始
 
-  for (int i = 0; i < 1000; i++) {
+  for (int i = 0; i < 5000; i++) {
 
     delay(10);
 
@@ -397,13 +419,11 @@ int tm_calibration() {
   rover_degital(turn); // 回転終了
 
   // 最大値と最小値の差を求める
-  double x_def = max_x - min_x;
-  double y_def = max_y - min_y;
-  // どれだけ潰せばいいかを求める
-  xy_magnification = x_def / y_def;
+  x_def = max_x - min_x;
+  y_def = max_y - min_y;
   // オフセットを計算
-  tm_x_offset = x_def / 2;
-  tm_y_offset = y_def / 2;
+  tm_x_offset = (max_x + min_x) / 2;
+  tm_y_offset = (max_y + min_y) / 2;
 
   delay(500);
 

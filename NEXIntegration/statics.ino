@@ -97,7 +97,7 @@ double rad_ave(const int array_num, double* value) {
   return ave;
 }
 
-//角度の外れ値を１ことってその平均をだす
+//角度の外れ値を１ことってその平均をだす(ラジアン)
 double rad_out(const int array_num, double* value) {
   int i = 0;
   int j = 0;
@@ -144,6 +144,8 @@ double rad_out(const int array_num, double* value) {
 
   return ave;
 }
+
+
 
 // 単位換算関数を書く関数
 
