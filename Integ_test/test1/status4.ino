@@ -18,7 +18,7 @@ int status4() {  // Status4 着陸の関数
   }
 
   //以下パラシュートからの脱出
-  casing();
+  //casing();
 
   return 1;
 }
@@ -70,7 +70,7 @@ int determine_landing() {
   ac_ave = ac_sum / 10;
   Serial.print("解析結果:");
   Serial.print(ac_ave);
-  if (8.8 <= ac_ave && ac_ave <= 10.8) {
+  if (225 <= ac_ave && ac_ave <= 245) {
     Serial.println("着陸と断定しました");
     return 1; //着陸判定にパス
   } else {

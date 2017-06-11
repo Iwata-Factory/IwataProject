@@ -103,7 +103,7 @@ void loop() {
       case 2:
         Serial.println("ステータス2を開始");
         if (status2() == 1) {
-          Serial.println("ステータス2をスキップ");
+          Serial.println("ステータス2をクリア");
           trans_phase(rover.status_number);
           rover.status_number += 1;
           break;
