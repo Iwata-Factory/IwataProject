@@ -125,14 +125,14 @@ int gps_data_get(GPS* gps) {
   }
 
   //緯度経度が明らかにおかしい場合はじく
-  //  if (LATITUDE_MINIMUM < (gps->latitude) && LATITUDE_MAXIMUM > (gps->latitude)) { //緯度の検査域にいるか
-  //    if (  LONGITUDE_MINIMUM < (gps->longitude) && LONGITUDE_MAXIMUM > (gps->longitude)) { //経度の検査域にいるか
-  //    } else {
-  //      return 4;
-  //    }
-  //  } else {
-  //    return 4;
-  //  }
+  if (LATITUDE_MINIMUM < (gps->latitude) && LATITUDE_MAXIMUM > (gps->latitude)) { //緯度の検査域にいるか
+    if (  LONGITUDE_MINIMUM < (gps->longitude) && LONGITUDE_MAXIMUM > (gps->longitude)) { //経度の検査域にいるか
+    } else {
+      return 4;
+    }
+  } else {
+    return 4;
+  }
   // 緯度、経度を読み取れた。
   // float to string
   char sz_utc[16];
@@ -261,7 +261,7 @@ double get_my_direction() {
   TM tm;  // 地磁気型
   Vector2D tm_v;  // 地磁気ベクトル
   Vector2D s;  // 基準ベクトル
-  
+
   Serial.println("自身の方向のサンプルを取得します");
   for (int i = 0; i < 10; i++) {
     error_c = 0;
@@ -276,11 +276,11 @@ double get_my_direction() {
 
       tm_v.x = 2 * (tm.x - tm_x_offset) / x_def;
       tm_v.y = 2 * (tm.y - tm_y_offset) / y_def;
-      
+
       double tm_v_size = vector2d_size(tm_v);
-      
+
       tm_v.x = tm_v.x / tm_v_size;  // tm_vの大きさは1
-      tm_v.y = tm_v.y / tm_v_size; 
+      tm_v.y = tm_v.y / tm_v_size;
 
       double inner_product = vector2d_inner(tm_v, s);  // 内積を取る
       double tm_degree = rad2deg(acos(inner_product));  // 角度を得る(0~π)
