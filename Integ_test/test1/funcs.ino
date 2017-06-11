@@ -236,7 +236,7 @@ TM get_tm() {
   tm.z = 100;
 
   if (readI2c(0x03, length, tm_axis_buff, HMC5883L)) {   //HMC5883Lのデータ(地磁気取得)
-    tm.x = (((int)tm_axis_buff[0]) << 8) | tm_axis_buff[1] + 215;  //x軸のデータは2バイト分であるMSBは8ビット左シフトさせる
+    tm.x = (((int)tm_axis_buff[0]) << 8) | tm_axis_buff[1];  //x軸のデータは2バイト分であるMSBは8ビット左シフトさせる
     tm.z = (((int)tm_axis_buff[2]) << 8) | tm_axis_buff[3];  //z軸
     tm.y = (((int)tm_axis_buff[4]) << 8) | tm_axis_buff[5];  //y軸
   } else {
