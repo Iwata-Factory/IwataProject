@@ -92,7 +92,8 @@ void loop() {
 
   ROVER rover;  // 自身の情報を初期化
   rover.status_number = 1;  // 現在ステータスを1に更新
-  rover.time_from_start = time;  // 機体時間を取得
+  rover.time_from_start = millis();  // 機体時間を取得
+  write_timelog_sd(rover.time_from_start, 1);
 
   get_censor_status(&rover);  // 自身のステータスを更新する関数
 
@@ -106,8 +107,13 @@ void loop() {
     switch (rover.status_number) {
 
       case 1:
+
         Serial.println("ステータス1を開始");
-        if (status1() == 1) {
+
+        rover.time_from_start = millis();  // 機体時間を取得
+        write_timelog_sd(rover.time_from_start, 1);
+
+        if (status1(&rover) == 1) {
           Serial.println("ステータス1をスキップ");
           trans_phase(rover.status_number);
           rover.status_number += 1;
@@ -119,7 +125,11 @@ void loop() {
 
       case 2:
         Serial.println("ステータス2を開始");
-        if (status2() == 1) {
+
+        rover.time_from_start = millis();  // 機体時間を取得
+        write_timelog_sd(rover.time_from_start, 2);
+
+        if (status2(&rover) == 1) {
           Serial.println("ステータス2をクリア");
           trans_phase(rover.status_number);
           rover.status_number += 1;
@@ -130,7 +140,11 @@ void loop() {
 
       case 3:
         Serial.println("ステータス3を開始");
-        if (status3() == 1) {
+
+        rover.time_from_start = millis();  // 機体時間を取得
+        write_timelog_sd(rover.time_from_start, 3);
+
+        if (status3(&rover) == 1) {
           Serial.println("ステータス3をスキップ");
           trans_phase(rover.status_number);
           rover.status_number += 1;
@@ -141,7 +155,11 @@ void loop() {
 
       case 4:
         Serial.println("ステータス4を開始");
-        if (status4() == 1) {
+
+        rover.time_from_start = millis();  // 機体時間を取得
+        write_timelog_sd(rover.time_from_start, 4);
+
+        if (status4(&rover) == 1) {
           trans_phase(rover.status_number);
           rover.status_number += 1;
           break;
@@ -151,6 +169,10 @@ void loop() {
 
       case 5:
         Serial.println("ステータス5を開始");
+
+        rover.time_from_start = millis();  // 機体時間を取得
+        write_timelog_sd(rover.time_from_start, 5);
+
         if (status5(&rover) == 1) {
           trans_phase(rover.status_number);
           rover.status_number += 1;
@@ -161,6 +183,10 @@ void loop() {
 
       case 6:
         Serial.println("ステータス6を開始");
+
+        rover.time_from_start = millis();  // 機体時間を取得
+        write_timelog_sd(rover.time_from_start, 6);
+
         if (status6(&rover) == 1) {
           Serial.println("ステータス6をスキップ");
           trans_phase(rover.status_number);
@@ -174,6 +200,8 @@ void loop() {
   Serial.println("ステータス7に到達");
   Serial.println("制御を終了します");
   while (1) {
+    rover.time_from_start = millis();  // 機体時間を取得
+    write_timelog_sd(rover.time_from_start, 7);
     speaker(HIGH_C);
     speaker(HIGH_C);
     speaker(HIGH_C);

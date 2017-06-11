@@ -1,5 +1,5 @@
 
-int status4() {  // Status4 着陸の関数
+int status4(ROVER *rover) {  // Status4 着陸の関数
   return 1;
 
 
@@ -83,10 +83,27 @@ int determine_landing() {
 
 //ケーシング展開関数
 int casing() {
+
   //ニクロム線溶断する
-  digitalWrite(NICROM_1, HIGH);
-  delay(10000);   //10秒間ニクロム線を熱すれば切れるはず
-  digitalWrite(NICROM_1, LOW);
+  //  digitalWrite(NICROM_1, HIGH);
+  //  delay(10000);   //10秒間ニクロム線を熱すれば切れるはず
+  //  digitalWrite(NICROM_1, LOW);
+
+  AC ac_case;  // 反転判定用
+  
+  while (1) {
+    
+    if (ac_case.z < 0) {  // 加速度が負の場合
+      speaker(C_TONE);  // 音を鳴らす
+      speaker(C_TONE);
+      speaker(C_TONE);
+      delay(1000);
+      go_back(5000);
+    } else {
+      delay(1000);
+      break;
+    }
+  }
 
   //ここから、パラシュートをよけるプロセス
 

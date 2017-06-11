@@ -12,7 +12,7 @@ typedef struct {  // 機体自身の情報を定義
   double Target_Direction = -1.0;  // ターゲットの方角
   double distance = -1.0;  //ターゲットまでの距離
   
-  long time_from_start = 0.0;  // 機体の現在時刻
+  unsigned long time_from_start = 0.0;  // 機体の現在時刻
   
   int status_number = 0;  // 自分の現在のシーケンスを把握
   

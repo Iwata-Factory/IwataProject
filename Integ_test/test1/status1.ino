@@ -1,4 +1,4 @@
-int status1(){
+int status1(ROVER *rover){
   return 1;
 }
 

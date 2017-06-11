@@ -4,11 +4,43 @@ int status5(ROVER *rover) {
   int i = 0; // do-whileの繰り返し数をカウント
 
   do {
+    
+    AC ac_going;  // 反転判定用
+    
+    while (1) {  // 判定していないかチェック
+
+      if (ac_going.z < 0) {  // 加速度が負の場合
+        speaker(C_TONE);  // 音を鳴らす
+        speaker(C_TONE);
+        speaker(C_TONE);
+        delay(1000);
+        go_back(5000);
+      } else {
+        delay(1000);
+        break;
+      }
+    }
 
     if (i % 30 == 0) { // たまにキャリブレーションする
-      speaker(C_TONE);
-      speaker(D_TONE);
-      tm_calibration();
+
+      AC ac_calib;  // キャリブレーション時の水平判定用
+      int count_calib = 0;  // 非水平カウント用
+
+      while (1) {
+
+        ac_calib = get_ac();
+
+        if ((fabs(ac_calib.x) < 50 && fabs(ac_calib.y) < 50 && 200 < ac_calib.z) || count_calib == 5) {  // 水平な感じの場所にいるならキャリブレーション。試行回数過多でもキャリブレーション
+          speaker(C_TONE);
+          speaker(D_TONE);
+          tm_calibration();  // 条件が揃ったらキャリブレーション
+          break;
+        } else {
+          count_calib += 1;
+          go_straight(1500);  //水平な場所を目指す
+        }
+      }
+
     }
 
     Serial.println("GPSを取得します");
@@ -27,8 +59,7 @@ int status5(ROVER *rover) {
       Serial.println("失敗");
     }
 
-    time = millis(); //現在の時間を取得
-    rover->time_from_start = time;
+    rover->time_from_start =  millis();//現在の時間を取得
     write_timelog_sd(time, 5);
 
     Serial.print("ゴールまでの距離は");

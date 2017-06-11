@@ -91,14 +91,13 @@ int write_gps_sd(GPS gps) {
     if (dataFile) { // ファイルが開けたときの処理
       dataFile.seek(dataFile.size());
       dataFile.println("*"); // 記録の境目
-      dataFile.println(gps.utc);
-      dataFile.println(gps.latitude);
-      dataFile.println(gps.longitude);
-      dataFile.println(gps.Speed);
-      dataFile.println(gps.course);
-      dataFile.println(gps.Direction);
-      dataFile.println(gps.distance);
-      dataFile.close();
+      dataFile.println(gps.utc, 4);  // 下4桁
+      dataFile.println(gps.latitude, 4);
+      dataFile.println(gps.longitude, 4);
+      dataFile.println(gps.Speed, 4);
+      dataFile.println(gps.course, 4);
+      dataFile.println(gps.Direction, 4);
+      dataFile.println(gps.distance, 4);
       dataFile.close();
       return 1; // 成功を返す
     } else {
