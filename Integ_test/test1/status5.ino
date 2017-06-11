@@ -52,7 +52,7 @@ int status5(ROVER *rover) {
     rover->longitude = gps.longitude;  //経度
     rover->Target_Direction = gps.Direction;  //ターゲットの方向
     rover->distance = gps.distance;  // ターゲットまでの距離
-    xbee_uart( dev,"logging");
+    xbee_uart( dev,"logging\r");
     if (write_gps_sd(gps)) { // 自身の位置をsdに記録
       xbee_uart( dev,"success\r");
     } else {
@@ -83,7 +83,7 @@ int status5(ROVER *rover) {
 
     xbee_uart( dev,"go straight\r");
     // 3秒直進
-    go_straight(3000);
+    go_straight(7000);
 
     speaker(E_TONE);
     speaker(F_TONE);

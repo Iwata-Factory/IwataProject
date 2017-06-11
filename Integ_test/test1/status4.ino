@@ -33,7 +33,7 @@ int status4(ROVER *rover) {  // Status4 着陸の関数
   ------------------------------------------*/
 
 int determine_landing() {
-  xbee_uart( dev,"judging landing\r");
+  xbee_uart( dev,"judging Landing\r");
 
 
   AC ac; // 宣言
@@ -131,13 +131,15 @@ int casing() {
   int count_para = 0;     //何回パラシュートがあるかの判定をしたかのカウンター
 
   while (1) {
-//    xbee_uart( dev,"ケーシングを開きパラシュートを回避します。");
-//    xbee_uart( dev,"今回はパスします。");
+    xbee_uart( dev,"avoid parashute by opening casing.\r");
+    xbee_uart( dev,"Pass this phase in this experiment.\r");
     return 1;
     count_para++;
     my_direction = get_my_direction();  //現在の方角を取得
     volt = analogRead( DISTANCE ) * 5 / 1023.0;
-//    xbee_uart( dev, volt );  //電圧換算表示
+
+    xbee_uart( dev, "volt of distance is " );  //電圧換算表示
+    xbee_send_1double(volt);
 
     //0.9~5mくらいなら取れる
     //servoモーターは90°が機体正面としています
@@ -149,7 +151,7 @@ int casing() {
       if ( 1.35 < volt & volt < 2.7 ) {            //有効測距範囲内
         para_distance = 140.0 / ( volt - 1.10 ) ;
         xbee_uart( dev, "success reading! Distance is  \r" );
-        //xbee_uart( dev, para_distance );
+        xbee_send_1double( para_distance );
         distance_flag = 1;     //一方向でも危険物があるとパラシュートとみなしアウト
       }
     }

@@ -52,7 +52,7 @@ int write_ac_sd(AC ac) {
       dataFile.close();
       return 1; // 成功を返す
     } else {
-      xbee_uart( dev,"fail to open sd...\r");
+      xbee_uart( dev,"fail to open SD...\r");
       i += 1;
     }
   }
@@ -75,7 +75,7 @@ int write_tm_sd(TM tm) {
       dataFile.close();
       return 1; // 成功を返す
     } else {
-      xbee_uart( dev,"fail to open sd...\r");
+      xbee_uart( dev,"fail to open SD...\r");
       i += 1;
     }
   }
@@ -101,7 +101,7 @@ int write_gps_sd(GPS gps) {
       dataFile.close();
       return 1; // 成功を返す
     } else {
-      xbee_uart( dev,"fail to open sd...\r");
+      xbee_uart( dev,"fail to open SD...\r");
       i += 1;
     }
   }
