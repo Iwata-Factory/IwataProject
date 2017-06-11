@@ -31,6 +31,7 @@ int judge_release() {
 
 //
 int status2() {  // Status2 打ち上げの関数
+  return 1;
   return (judge_release());
 }
 

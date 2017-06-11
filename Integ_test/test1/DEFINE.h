@@ -31,7 +31,7 @@
 
 //スピーカー関連
 #define BEAT_LONG 300   // 音の長さを指定
-#define TONE_PINNO 43   // 圧電スピーカを接続したピン番号
+#define TONE_PINNO 33   // 圧電スピーカを接続したピン番号
 #define C_TONE  262    //ド
 #define D_TONE  294    //レ
 #define E_TONE  330    //ミ

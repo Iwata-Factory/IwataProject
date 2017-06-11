@@ -6,6 +6,8 @@ int status5(ROVER *rover) {
   do {
 
     if (i % 30 == 0) { // たまにキャリブレーションする
+      speaker(C_TONE);
+      speaker(D_TONE);
       tm_calibration();
     }
 
@@ -48,8 +50,14 @@ int status5(ROVER *rover) {
     }
 
     Serial.println("直進します");
-    // 2秒直進
-    go_straight(2000);
+    // 3秒直進
+    go_straight(3000);
+
+    speaker(E_TONE);
+    speaker(F_TONE);
+    speaker(G_TONE);
+
+
 
     i += 1;
 

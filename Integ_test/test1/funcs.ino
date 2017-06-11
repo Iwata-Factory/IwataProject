@@ -408,7 +408,7 @@ int tm_calibration() {
   rover_degital(turn); // 回転開始
   Serial.println("サンプル取得開始");
 
-  for (int i = 0; i < 5000; i++) {
+  for (int i = 0; i < 2500; i++) {
 
     delay(10);
 

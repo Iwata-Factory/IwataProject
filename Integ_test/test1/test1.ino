@@ -50,6 +50,7 @@ void setup() {
         break;
       }
     } else {
+      Serial.println("SD OK");
       break;
     }
   }
@@ -67,7 +68,7 @@ void setup() {
   //サーボモーター用のピン
   servo1.attach(26);
   Serial.println("setup完了");
-  Serial.print("メイン処理へ移行");
+  Serial.println("メイン処理へ移行");
 
 }
 
@@ -77,6 +78,8 @@ void setup() {
 
 
 void loop() {
+
+  speaker(C_TONE);
 
   delay(2000);
 
@@ -164,6 +167,12 @@ void loop() {
   Serial.println("ステータス7に到達");
   Serial.println("制御を終了します");
   while (1) {
+    speaker(HIGH_C);
+    speaker(HIGH_C);
+    speaker(HIGH_C);
+    speaker(HIGH_C);
+    speaker(HIGH_C);
+    speaker(HIGH_C);
     delay(10000);
   }
 }
