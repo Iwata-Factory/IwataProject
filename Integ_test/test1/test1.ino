@@ -37,12 +37,20 @@ void setup() {
 
   //SD関連
   pinMode(SS, OUTPUT);
+  int sd_ok_counter = 0;
   while (1) {
     if (!SD.begin(chipSelect)) {
+      sd_ok_counter += 1;
       Serial.println("Card failed, or not present");
       // 失敗、何もしない
       delay(1000);
+      if (sd_ok_counter == 60) {
+        Serial.println("SD CARD DEATH");
+        renew_status(STATUS_SD, 0);
+        break;
+      }
     } else {
+      Serial.println("SD OK");
       break;
     }
   }
@@ -60,7 +68,7 @@ void setup() {
   //サーボモーター用のピン
   servo1.attach(26);
   Serial.println("setup完了");
-  Serial.print("メイン処理へ移行");
+  Serial.println("メイン処理へ移行");
 
 }
 
@@ -70,6 +78,8 @@ void setup() {
 
 
 void loop() {
+
+  speaker(C_TONE);
 
   delay(2000);
 
@@ -103,7 +113,7 @@ void loop() {
       case 2:
         Serial.println("ステータス2を開始");
         if (status2() == 1) {
-          Serial.println("ステータス2をスキップ");
+          Serial.println("ステータス2をクリア");
           trans_phase(rover.status_number);
           rover.status_number += 1;
           break;
@@ -157,6 +167,12 @@ void loop() {
   Serial.println("ステータス7に到達");
   Serial.println("制御を終了します");
   while (1) {
+    speaker(HIGH_C);
+    speaker(HIGH_C);
+    speaker(HIGH_C);
+    speaker(HIGH_C);
+    speaker(HIGH_C);
+    speaker(HIGH_C);
     delay(10000);
   }
 }

@@ -8,17 +8,17 @@
 //GPS関連
 #define PIN_GPS_Rx  10 // GPSのシリアル通信でデータを受信するピン
 #define PIN_GPS_Tx  12 // GPSのシリアル通信でデータを送信するピン
-#define LATITUDE_MINIMUM 30  //緯度の最小値
-#define LATITUDE_MAXIMUM 40  //緯度の最大値
-#define LONGITUDE_MINIMUM 130  //経度の最小値
-#define LONGITUDE_MAXIMUM 140  //経度の最大値
+#define LATITUDE_MINIMUM 35  //緯度の最小値
+#define LATITUDE_MAXIMUM 45  //緯度の最大値
+#define LONGITUDE_MINIMUM 133  //経度の最小値
+#define LONGITUDE_MAXIMUM 143  //経度の最大値
 #define GPSBAUDRATE 9600 //シリアル通信のデータ送信レートを9600bpsに定義するための定数(GPSとArduino)
 #define READBUFFERSIZE  (256)
 #define DELIMITER   (",")  // 区切り文字定数
 
 //地磁気センサ関連
 #define HMC5883L 0x1E   //HMC5883L(地磁気センサ)のスレーブアドレス
-#define TM_DIFFERENCE 7.2
+#define TM_DIFFERENCE -7.2
 
 //加速度センサ関連
 #define ADXL345 0x53  //ADXL345(加速度センサ)のスレーブアドレス
@@ -31,7 +31,7 @@
 
 //スピーカー関連
 #define BEAT_LONG 300   // 音の長さを指定
-#define TONE_PINNO 43   // 圧電スピーカを接続したピン番号
+#define TONE_PINNO 33   // 圧電スピーカを接続したピン番号
 #define C_TONE  262    //ド
 #define D_TONE  294    //レ
 #define E_TONE  330    //ミ

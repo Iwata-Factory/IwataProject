@@ -3,6 +3,7 @@
    受け取った配列を昇順に並び替える
 */
 
+
 double descending_sort(const int array_num, double* value ) {
   int i = 0;
   int j = 0;
@@ -93,12 +94,42 @@ double rad_ave(const int array_num, double* value) {
   /*これってはatan2だからはじめからradだからrad2degで逆だよね？*/
 
   ave = rad2deg(ave);
-  ave = (((int)ave + 360) % 360);
+  if (ave >= 0){
+    return ave;
+  } else {
+    ave = ave + 360;
+    return ave;
+  }
   return ave;
 }
 
+Vector2D cordinate_ave(const int array_num, double* value) {
+  double ave = 0;
+  int i = 0;
+
+  Vector2D vector[array_num];
+  Vector2D vector_sum;
+  Vector2D vector_ave;
+
+  //角度を北から時計回りにとったxy座標上の点にする
+  for (i = 0; i < array_num; i++) {
+    vector[i].x = cos(deg2rad(value[i]));
+    vector[i].y = sin(deg2rad(value[i]));
+  }
+
+  //点の重心をとる(平均みたいになります)
+  for (i = 0; i < array_num; i++) {
+    vector_sum.x += vector[i].x;
+    vector_sum.y += vector[i].y;
+  }
+  vector_ave.x = vector_sum.x / array_num;
+  vector_ave.y = vector_sum.y / array_num;
+
+  return vector_ave;
+}
+
 //角度の外れ値を１ことってその平均をだす(ラジアン)
-double rad_out(const int array_num, double* value) {
+double degree_out(const int array_num, double* value) {
   int i = 0;
   int j = 0;
   double temp = 0;
@@ -106,9 +137,9 @@ double rad_out(const int array_num, double* value) {
   Vector2D vector_ave;
   double value_distance[array_num];
   double ave = 0;
+  
 
-
-  ave = rad_ave(array_num, value);  //まずはすべての平均角度をとる
+  vector_ave = cordinate_ave(array_num, value);  //重心のxy座標を取得
 
   //角度を北から時計回りにとったxy座標上の点にする
   for (i = 0; i < array_num; i++) {
@@ -116,8 +147,7 @@ double rad_out(const int array_num, double* value) {
     vector[i].y = sin(value[i]);
   }
 
-  vector_ave.x = cos(ave);
-  vector_ave.y = sin(ave);
+ 
 
   for (i = 0; i < array_num; i++) {
     value_distance[i] = sqrt(pow((vector[i].x - vector_ave.x), 2) + pow((vector[i].y - vector_ave.y), 2));

@@ -125,14 +125,14 @@ int gps_data_get(GPS* gps) {
   }
 
   //緯度経度が明らかにおかしい場合はじく
-  //  if (LATITUDE_MINIMUM < (gps->latitude) && LATITUDE_MAXIMUM > (gps->latitude)) { //緯度の検査域にいるか
-  //    if (  LONGITUDE_MINIMUM < (gps->longitude) && LONGITUDE_MAXIMUM > (gps->longitude)) { //経度の検査域にいるか
-  //    } else {
-  //      return 4;
-  //    }
-  //  } else {
-  //    return 4;
-  //  }
+  if (LATITUDE_MINIMUM < (gps->latitude) && LATITUDE_MAXIMUM > (gps->latitude)) { //緯度の検査域にいるか
+    if (  LONGITUDE_MINIMUM < (gps->longitude) && LONGITUDE_MAXIMUM > (gps->longitude)) { //経度の検査域にいるか
+    } else {
+      return 4;
+    }
+  } else {
+    return 4;
+  }
   // 緯度、経度を読み取れた。
   // float to string
   char sz_utc[16];
@@ -195,6 +195,10 @@ int gps_get(GPS* gps) {
     }
     if (gps_flag == 4) {
       ;
+      speaker(E_TONE);
+      speaker(F_TONE);
+      speaker(E_TONE);
+
       //通信ができて値も解析されたが緯度経度の値がバグってる
       Serial.println("緯度経度がおかしい");
     }
@@ -261,7 +265,7 @@ double get_my_direction() {
   TM tm;  // 地磁気型
   Vector2D tm_v;  // 地磁気ベクトル
   Vector2D s;  // 基準ベクトル
-  
+
   Serial.println("自身の方向のサンプルを取得します");
   for (int i = 0; i < 10; i++) {
     error_c = 0;
@@ -276,11 +280,11 @@ double get_my_direction() {
 
       tm_v.x = 2 * (tm.x - tm_x_offset) / x_def;
       tm_v.y = 2 * (tm.y - tm_y_offset) / y_def;
-      
+
       double tm_v_size = vector2d_size(tm_v);
-      
+
       tm_v.x = tm_v.x / tm_v_size;  // tm_vの大きさは1
-      tm_v.y = tm_v.y / tm_v_size; 
+      tm_v.y = tm_v.y / tm_v_size;
 
       double inner_product = vector2d_inner(tm_v, s);  // 内積を取る
       double tm_degree = rad2deg(acos(inner_product));  // 角度を得る(0~π)
@@ -291,12 +295,17 @@ double get_my_direction() {
       } else {
         tm_degree = int(tm_degree + TM_DIFFERENCE) % 360;
       }
+      if (tm_degree < 90) {
+        tm_degree = tm_degree - 90 + 360;
+      } else {
+        tm_degree =  tm_degree - 90;
+      }
       Serial.print("サンプル");
       Serial.print(i + 1);
       Serial.print(":");
       Serial.println(tm_degree);
 
-      direction_array[i] = deg2rad(tm_degree);  // 外れ値処理のためにradに再変換
+      direction_array[i] = tm_degree;  // 外れ値処理のためにradに再変換
 
       error_c += 1;
 
@@ -307,8 +316,8 @@ double get_my_direction() {
     } while (tm.x == 100 || tm.y == 100 || tm.z == 100);
   }
   Serial.println("解析します。");
-  my_direction = rad_out(10, direction_array);  // 10サンプルから平均を計算
-  my_direction = rad2deg(my_direction);  // radからdegへ
+  my_direction = degree_out(10, direction_array);  // 10サンプルから平均を計算
+  //my_direction = rad2deg(my_direction);  // radからdegへ
   Serial.print("機体の方向は");
   Serial.println(my_direction);
 
@@ -403,7 +412,7 @@ int tm_calibration() {
   rover_degital(turn); // 回転開始
   Serial.println("サンプル取得開始");
 
-  for (int i = 0; i < 5000; i++) {
+  for (int i = 0; i < 2500; i++) {
 
     delay(10);
 
