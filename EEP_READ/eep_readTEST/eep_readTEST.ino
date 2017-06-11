@@ -7,7 +7,10 @@ void setup() {
     ; // wait for serial port to connect. Needed for native USB port only
   }
   Serial.print("Read flag from EEPROM: ");
-  EEPROM.read(0);
+  Serial.print("rover status:");
+  Serial.println(EEPROM.read(0));
+  Serial.print("censor status:");
+  Serial.println(EEPROM.read(1));
   eep_gpsread(1); //Run the next test.
 }
 

@@ -16,15 +16,20 @@ void eep_clear() {       //EEPのすべてのアドレスに０書き込み
    を使えば１バイトの形で読み出せます。
 */
 boolean eep_flagwrite(int adr, byte oldflag, byte newflag) {
-  byte flagread = EEPROM.read(adr);
-  if ( oldflag == flagread ) {
-    EEPROM.write( adr, newflag );
-    Serial.println( "success writing!!" );
-    return true;
+  if ( phasein_YN == 1) {
+    byte flagread = EEPROM.read(adr);
+    if ( oldflag == flagread ) {
+      EEPROM.write( adr, newflag );
+      Serial.println( "success writing!!" );
+      return true;
+    }
+    else {
+      Serial.println("invalid flag" );
+      return false;
+    }
   }
-  else {
-    Serial.println("invalid flag" );
-    return false;
+  else{
+    Serial.println("flagdata broken!!");
   }
 }
 
