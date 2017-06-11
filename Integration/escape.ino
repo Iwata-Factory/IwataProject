@@ -138,5 +138,10 @@ int wadachi() {
     return 0;
   }
 
+  if ((wadachi_count % 10 == 0)){
+    go_rotate((wadachi_count/7) * 700 );
+    go_straight(5000);
+  }
+
 }
 
