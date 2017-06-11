@@ -5,7 +5,7 @@ int status5(ROVER *rover) {
 
   do {
 
-    if (i % 20 == 0) { // たまにキャリブレーションする
+    if (i % 30 == 0) { // たまにキャリブレーションする
       tm_calibration();
     }
 
@@ -40,6 +40,7 @@ int status5(ROVER *rover) {
     Serial.println("機体方向を調整します");
     // 目的の方向を目指して回転を行う。rover->My_Directionは書き換えていく。
     int turn_result = turn_target_direction(rover->Target_Direction, &rover->My_Direction);
+
 
 
     if (turn_result == 0) {

@@ -301,7 +301,7 @@ double get_my_direction() {
       Serial.print(":");
       Serial.println(tm_degree);
 
-      direction_array[i] = deg2rad(tm_degree);  // 外れ値処理のためにradに再変換
+      direction_array[i] = tm_degree;  // 外れ値処理のためにradに再変換
 
       error_c += 1;
 
@@ -312,8 +312,8 @@ double get_my_direction() {
     } while (tm.x == 100 || tm.y == 100 || tm.z == 100);
   }
   Serial.println("解析します。");
-  my_direction = rad_out(10, direction_array);  // 10サンプルから平均を計算
-  my_direction = rad2deg(my_direction);  // radからdegへ
+  my_direction = degree_out(10, direction_array);  // 10サンプルから平均を計算
+  //my_direction = rad2deg(my_direction);  // radからdegへ
   Serial.print("機体の方向は");
   Serial.println(my_direction);
 

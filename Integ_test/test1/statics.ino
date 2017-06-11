@@ -94,7 +94,12 @@ double rad_ave(const int array_num, double* value) {
   /*これってはatan2だからはじめからradだからrad2degで逆だよね？*/
 
   ave = rad2deg(ave);
-  ave = (((int)ave + 360) % 360);
+  if (ave >= 0){
+    return ave;
+  } else {
+    ave = ave + 360;
+    return ave;
+  }
   return ave;
 }
 
@@ -124,7 +129,7 @@ Vector2D cordinate_ave(const int array_num, double* value) {
 }
 
 //角度の外れ値を１ことってその平均をだす(ラジアン)
-double rad_out(const int array_num, double* value) {
+double degree_out(const int array_num, double* value) {
   int i = 0;
   int j = 0;
   double temp = 0;
