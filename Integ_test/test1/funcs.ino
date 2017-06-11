@@ -372,6 +372,9 @@ int turn_target_direction(double target_direction, double *my_Direction) {
     Serial.print("必要な回転量は。");
     Serial.println(rotate_angle);
     Serial.println("回転します。");
+
+    rotate_angle = rotate_angle * (10 - i) / 10;  // 回転角度を収束させる
+    
     go_rotate(rotate_angle);  // 回転を行う
 
   } while (i < 10); // 10回回転してもダメだったら失敗

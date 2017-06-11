@@ -55,12 +55,6 @@ void setup() {
     }
   }
 
-  // モーター用ピンの設定
-  pinMode(M1_1, OUTPUT);
-  pinMode(M1_2, OUTPUT);
-  pinMode(M2_1, OUTPUT);
-  pinMode(M2_2, OUTPUT);
-
   //照度センサ用のピン
   pinMode(LIGHT_PIN, INPUT);
   //距離センサ用のピン
@@ -69,6 +63,19 @@ void setup() {
   servo1.attach(26);
   Serial.println("setup完了");
   Serial.println("メイン処理へ移行");
+
+  // モーター用ピンの設定
+  pinMode(M1_1, OUTPUT);
+  pinMode(M1_2, OUTPUT);
+  pinMode(M2_1, OUTPUT);
+  pinMode(M2_2, OUTPUT);
+
+  DRIVE set;
+  set.right1 = 1;
+  set.right2 = 1;
+  set.leght1 = 1;
+  set.leght2 = 1;
+  rover_degital(set);
 
 }
 

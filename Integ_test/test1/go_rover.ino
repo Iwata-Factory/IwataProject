@@ -46,7 +46,7 @@ void go_rotate(double rotate) {
     turn.leght1 = 1;
     turn.leght2 = 0;
 
-    rotate_time = (rotate / 400) * 1000 + 120;
+    rotate_time = (rotate / 400) * 1000;
 
   } else {
     turn.right1 = 1;
@@ -54,7 +54,7 @@ void go_rotate(double rotate) {
     turn.leght1 = 0;
     turn.leght2 = 1;
 
-    rotate_time = -1 * (rotate / 400) * 1000 + 120;
+    rotate_time = -1 * (rotate / 400) * 1000;
 
   }
 
@@ -81,7 +81,7 @@ void go_rotate(double rotate) {
 void go_straight(int go_time) {
   DRIVE go; //DRIVE型の宣言
   // 初期化
-  int wait_time = go_time - 1024;
+  int wait_time = go_time - 1300;
   go.right1 = 1;
   go.right2 = 1;
   go.leght1 = 1;
@@ -106,8 +106,14 @@ void go_straight(int go_time) {
     go.leght1 = 0;
     go.leght2 = i;
     rover_analog(go);
-    delay(2);
+    delay(5);
   }
+
+  go.right1 = 1;
+  go.right2 = 1;
+  go.leght1 = 1;
+  go.leght2 = 1;
+  rover_degital(go);
 }
 
 void go_back(int go_time) {
@@ -141,7 +147,7 @@ void go_back(int go_time) {
     delay(2);
   }
 }
-//void go_straight(int go_time) {
+//void (int go_time) {
 //  DRIVE go; //DRIVE型の宣言
 //  // 初期化
 //  go.right1 = 0;
