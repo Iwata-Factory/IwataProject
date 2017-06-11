@@ -19,11 +19,11 @@ boolean EEP_STATUSwrite(int adr, byte oldflag, byte newflag) {
   byte flagread = EEPROM.read(adr);
   if ( oldflag == flagread ) {
     EEPROM.write( adr, newflag );
-    Serial.println( "success writing!!" );
+    xbee_uart( dev, "success writing!!" );
     return true;
   }
   else {
-    Serial.println("invalid flag" );
+    xbee_uart( dev,"invalid flag" );
     return false;
   }
 }
@@ -37,7 +37,7 @@ boolean EEP_STATUSwrite(int adr, byte oldflag, byte newflag) {
 */
 int eep_gpswrite( int adr, GPS gps ) {
   EEPROM.put( adr, gps );
-  Serial.println("success writeing gps in EEP.");
+  xbee_uart( dev,"success writeing gps in EEP.");
   adr += sizeof(gps);   //実験してしまえば必要なさ？？
   return adr + 1;
 }
@@ -45,7 +45,7 @@ int eep_gpswrite( int adr, GPS gps ) {
 int eep_doublewrite( int adr, double Speed ) {
   EEPROM.put(adr, Speed );
   adr += sizeof(Speed);
-  Serial.println("success writing (double)!!");
+  xbee_uart( dev,"success writing (double)!!");
 
   return adr + 1;
 }
@@ -53,7 +53,7 @@ int eep_doublewrite( int adr, double Speed ) {
 int eep_acwrite( int adr, AC ac ) {
   EEPROM.put(adr, ac);
   adr += sizeof(ac);
-  Serial.println("success writing ac!!");
+  xbee_uart( dev,"success writing ac!!");
 
   return adr + 1;
 }
@@ -61,7 +61,7 @@ int eep_acwrite( int adr, AC ac ) {
 int eep_tmwrite( int adr, TM tm ) {
   EEPROM.put(adr, tm);
   adr += sizeof(tm);
-  Serial.println("success writing tm!!");
+  xbee_uart( dev,"success writing tm!!");
 
   return adr + 1;
 }
@@ -78,8 +78,9 @@ boolean trans_phase(int phase ) {
   byte new_flag = EEPROM.read(EEP_STATUS);
   if ( new_flag == flag_phase[phase]) {
     EEPROM.write( EEP_STATUS, flag_phase[phase + 1] );
-    Serial.print(phase + 1);
-    Serial.println("へトランスフェーズ");
+
+    sprintf( xbee_send, "trans phase to...%d\r", phase);
+    xbee_uart( dev,xbee_send);
     return true;
   }
   else return false;

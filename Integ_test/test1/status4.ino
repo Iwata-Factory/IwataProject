@@ -33,7 +33,7 @@ int status4(ROVER *rover) {  // Status4 着陸の関数
   ------------------------------------------*/
 
 int determine_landing() {
-  Serial.println("着陸判定を行います");
+  xbee_uart( dev,"judging landing\r");
 
 
   AC ac; // 宣言
@@ -46,17 +46,20 @@ int determine_landing() {
 
   // 加速度のサンプルを10個取る
   int i = 0;
-  Serial.println("加速度のサンプルを取得します");
+  //xbee_uart( dev,"加速度のサンプルを取得します");
   while (i < 10) {
     ac = get_ac(); // 加速度を取得
     if (!(ac.x == 100 && ac.y == 100 && ac.z == 100)) {
       // 値を取れている
       // 加速度の大きさを計算
       ac_array[i] = sqrt(pow(ac.x, 2) + pow(ac.y, 2) + pow(ac.z, 2));
-      Serial.print("サンプル");
-      Serial.print(i + 1);
-      Serial.print(":");
-      Serial.println(ac_array[i]);
+//      xbee_uart( dev,"サンプル");
+//      xbee_uart( dev,i + 1);
+//      xbee_uart( dev,":");
+//      xbee_uart( dev,ac_array[i]);
+
+        sprintf(xbee_send, "sample of %d is %f", i+1, ac_array[i]);
+        xbee_uart(dev, xbee_send);
       delay(6000); // サンプリングは6秒ごとに
       i += 1;
     } else {
@@ -70,13 +73,13 @@ int determine_landing() {
     ac_sum += ac_array[i];
   }
   ac_ave = ac_sum / 10;
-  Serial.print("解析結果:");
-  Serial.print(ac_ave);
+//  xbee_uart( dev,"解析結果:");
+//  xbee_uart( dev,ac_ave);
   if (225 <= ac_ave && ac_ave <= 245) {
-    Serial.println("着陸と断定しました");
+    xbee_uart( dev,"land ok\r");
     return 1; //着陸判定にパス
   } else {
-    Serial.println("着陸と断定できません");
+    xbee_uart( dev,"land not ok\r");
     return 0;
   }
 }
@@ -128,13 +131,13 @@ int casing() {
   int count_para = 0;     //何回パラシュートがあるかの判定をしたかのカウンター
 
   while (1) {
-    Serial.println("ケーシングを開きパラシュートを回避します。");
-    Serial.println("今回はパスします。");
+//    xbee_uart( dev,"ケーシングを開きパラシュートを回避します。");
+//    xbee_uart( dev,"今回はパスします。");
     return 1;
     count_para++;
     my_direction = get_my_direction();  //現在の方角を取得
     volt = analogRead( DISTANCE ) * 5 / 1023.0;
-    Serial.println( volt );  //電圧換算表示
+//    xbee_uart( dev, volt );  //電圧換算表示
 
     //0.9~5mくらいなら取れる
     //servoモーターは90°が機体正面としています
@@ -145,8 +148,8 @@ int casing() {
       delay(1000);    //回転時間
       if ( 1.35 < volt & volt < 2.7 ) {            //有効測距範囲内
         para_distance = 140.0 / ( volt - 1.10 ) ;
-        Serial.print( "success reading! Distance is  " );
-        Serial.println( para_distance );
+        xbee_uart( dev, "success reading! Distance is  \r" );
+        //xbee_uart( dev, para_distance );
         distance_flag = 1;     //一方向でも危険物があるとパラシュートとみなしアウト
       }
     }

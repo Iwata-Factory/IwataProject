@@ -6,6 +6,8 @@
 // 諸々の処理をこれ一文で
 #include "INCLUDE.h"
 
+char xbee_send[63];  //とりあえずのxbee送信用配列
+
 /*
    セットアップ
 */
@@ -21,14 +23,14 @@ void setup() {
   writeI2c(0x31, 0x00, ADXL345);  //上と同様
   writeI2c(0x2d, 0x08, ADXL345);  //上と同様
 
-  //xbee関連
-  //  xbee_init(0);  //初期化
-  //  xbee_atcb(4);  //ネットワーク初期化
-  //  xbee_atnj(0);  //孫機のジョイン拒否
-  //  while (xbee_atai() > 0x01) { //ネットワーク参加状況を確認
-  //    delay(3000);
-  //    xbee_atcb(1);  //ネットワーク参加ボタン押下
-  //  }
+//  xbee関連
+    xbee_init(0);  //初期化
+    xbee_atcb(4);  //ネットワーク初期化
+    xbee_atnj(0);  //孫機のジョイン拒否
+    while (xbee_atai() > 0x01) { //ネットワーク参加状況を確認
+      delay(3000);
+      xbee_atcb(1);  //ネットワーク参加ボタン押下
+    }
 
   //eeprom関連
   //eep_clear();   //EEPROMのリセット。４KB全てに書き込むので時間かかる。
@@ -41,16 +43,16 @@ void setup() {
   while (1) {
     if (!SD.begin(chipSelect)) {
       sd_ok_counter += 1;
-      Serial.println("Card failed, or not present");
+      xbee_uart( dev,"Card failed, or not present\r");
       // 失敗、何もしない
       delay(1000);
       if (sd_ok_counter == 60) {
-        Serial.println("SD CARD DEATH");
+        xbee_uart( dev,"SD CARD DEATH\r");
         renew_status(STATUS_SD, 0);
         break;
       }
     } else {
-      Serial.println("SD OK");
+      xbee_uart( dev,"SD OK\r");
       break;
     }
   }
@@ -61,8 +63,7 @@ void setup() {
   pinMode(DISTANCE, INPUT);
   //サーボモーター用のピン
   servo1.attach(26);
-  Serial.println("setup完了");
-  Serial.println("メイン処理へ移行");
+  xbee_uart( dev,"setup done\rchange to main phase\r");
 
   // モーター用ピンの設定
   pinMode(M1_1, OUTPUT);
@@ -97,8 +98,8 @@ void loop() {
 
   get_censor_status(&rover);  // 自身のステータスを更新する関数
 
-  Serial.print("EEPROMから情報を取得。現在のステータスは");
-  Serial.println(rover.status_number);
+  sprintf(xbee_send, "get data from EEP\rPresent status is %d\r", rover.status_number);
+  xbee_uart( dev,xbee_send);
 
 
 
@@ -108,13 +109,13 @@ void loop() {
 
       case 1:
 
-        Serial.println("ステータス1を開始");
+        xbee_uart( dev,"start status1\r");
 
         rover.time_from_start = millis();  // 機体時間を取得
         write_timelog_sd(rover.time_from_start, 1);
 
         if (status1(&rover) == 1) {
-          Serial.println("ステータス1をスキップ");
+          xbee_uart( dev,"skip status1\r");
           trans_phase(rover.status_number);
           rover.status_number += 1;
           break;
@@ -124,13 +125,13 @@ void loop() {
         break;
 
       case 2:
-        Serial.println("ステータス2を開始");
+        xbee_uart( dev,"start status2\r");
 
         rover.time_from_start = millis();  // 機体時間を取得
         write_timelog_sd(rover.time_from_start, 2);
 
         if (status2(&rover) == 1) {
-          Serial.println("ステータス2をクリア");
+          xbee_uart( dev,"clear status2\r");
           trans_phase(rover.status_number);
           rover.status_number += 1;
           break;
@@ -139,13 +140,13 @@ void loop() {
         }
 
       case 3:
-        Serial.println("ステータス3を開始");
+        xbee_uart( dev,"start status3\r");
 
         rover.time_from_start = millis();  // 機体時間を取得
         write_timelog_sd(rover.time_from_start, 3);
 
         if (status3(&rover) == 1) {
-          Serial.println("ステータス3をスキップ");
+          xbee_uart( dev,"skip status3\r");
           trans_phase(rover.status_number);
           rover.status_number += 1;
           break;
@@ -154,7 +155,7 @@ void loop() {
         }
 
       case 4:
-        Serial.println("ステータス4を開始");
+        xbee_uart( dev,"start status4\r");
 
         rover.time_from_start = millis();  // 機体時間を取得
         write_timelog_sd(rover.time_from_start, 4);
@@ -168,7 +169,7 @@ void loop() {
         }
 
       case 5:
-        Serial.println("ステータス5を開始");
+        xbee_uart( dev,"start status5\r");
 
         rover.time_from_start = millis();  // 機体時間を取得
         write_timelog_sd(rover.time_from_start, 5);
@@ -182,13 +183,13 @@ void loop() {
         }
 
       case 6:
-        Serial.println("ステータス6を開始");
+        xbee_uart( dev,"start status6\r");
 
         rover.time_from_start = millis();  // 機体時間を取得
         write_timelog_sd(rover.time_from_start, 6);
 
         if (status6(&rover) == 1) {
-          Serial.println("ステータス6をスキップ");
+          xbee_uart( dev,"skip status6\r");
           trans_phase(rover.status_number);
           rover.status_number += 1;
           break;
@@ -197,8 +198,7 @@ void loop() {
         }
     }
   } while (0 < rover.status_number < 7);
-  Serial.println("ステータス7に到達");
-  Serial.println("制御を終了します");
+  xbee_uart( dev,"reach status7\rEND CONTROL\r");
   while (1) {
     rover.time_from_start = millis();  // 機体時間を取得
     write_timelog_sd(rover.time_from_start, 7);

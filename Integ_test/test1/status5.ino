@@ -43,7 +43,7 @@ int status5(ROVER *rover) {
 
     }
 
-    Serial.println("GPSを取得します");
+    xbee_uart( dev,"get gps\r");
     // GPS情報を取得
     GPS gps;
     gps_get(&gps);
@@ -52,34 +52,36 @@ int status5(ROVER *rover) {
     rover->longitude = gps.longitude;  //経度
     rover->Target_Direction = gps.Direction;  //ターゲットの方向
     rover->distance = gps.distance;  // ターゲットまでの距離
-    Serial.println("取得した値をSDに記録");
+    xbee_uart( dev,"logging");
     if (write_gps_sd(gps)) { // 自身の位置をsdに記録
-      Serial.println("成功");
+      xbee_uart( dev,"success\r");
     } else {
-      Serial.println("失敗");
+      xbee_uart( dev,"fail\r");
     }
 
     rover->time_from_start =  millis();//現在の時間を取得
     write_timelog_sd(time, 5);
 
-    Serial.print("ゴールまでの距離は");
-    Serial.println(gps.distance);
+    sprintf(xbee_send, "distance to goal is %f\r", gps.distance);
+    xbee_uart(dev, xbee_send);
+//    xbee_uart( dev,"ゴールまでの距離は");
+//    xbee_uart( dev,gps.distance);
 
     if (0 <= rover->distance && rover->distance < 15) { // 15mまで来たら地上2へ
-      Serial.println("ゴール付近へ到達");
+      xbee_uart( dev,"near goal\r");
       return 1;
     }
 
-    Serial.println("機体方向を調整します");
+    xbee_uart( dev,"balancing rover\r");
     // 目的の方向を目指して回転を行う。rover->My_Directionは書き換えていく。
     int turn_result = turn_target_direction(rover->Target_Direction, &rover->My_Direction);
 
 
     if (turn_result == 0) {
-      Serial.println("10回調整に失敗したので諦めます。");
+      xbee_uart( dev,"give up!!!\r");
     }
 
-    Serial.println("直進します");
+    xbee_uart( dev,"go straight\r");
     // 3秒直進
     go_straight(3000);
 
