@@ -5,27 +5,10 @@ int status5(ROVER *rover) {
 
   do {
 
+    judge_invered_revive(); //状態復旧
 
     if (i % 30 == 0) { // たまにキャリブレーションする
-
-      AC ac_calib;  // キャリブレーション時の水平判定用
-      int count_calib = 0;  // 非水平カウント用
-
-      while (1) {
-
-        ac_calib = get_ac();
-
-        if ((fabs(ac_calib.x) < 50 && fabs(ac_calib.y) < 50 && 200 < ac_calib.z) || count_calib == 5) {  // 水平な感じの場所にいるならキャリブレーション。試行回数過多でもキャリブレーション
-          speaker(C_TONE);
-          speaker(D_TONE);
-          tm_calibration();  // 条件が揃ったらキャリブレーション
-          break;
-        } else {
-          count_calib += 1;
-          go_straight(1500);  //水平な場所を目指す
-        }
-      }
-
+      tm_calibration();  // 条件が揃ったらキャリブレーション
     }
 
     // GPS情報を取得

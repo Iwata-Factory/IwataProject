@@ -128,6 +128,7 @@ int casing(int landing_flag, ROVER *rover) {
   //ここから、パラシュートをよけるプロセス
 
   /*ここで反転判定及び復帰シーケンスを必ずできたら入れてください*/
+  judge_invered_revive(); /*←いれましたbyとうま */
 
   GPS gps;
   gps_get(&gps);    //ここで取得したデータをSDなりに保管して以後近づかないようにしてください

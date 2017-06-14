@@ -318,11 +318,11 @@ int turn_target_direction(double target_direction, double *my_Direction) {
     delay(1000);
     i += 1;
 
-    
-    if (target_direction < 0 || 360 <= target_direction){//target_directionが360以上の場合調整
+
+    if (target_direction < 0 || 360 <= target_direction) { //target_directionが360以上の場合調整
       target_direction = (int)target_direction % 360;
     }
-    
+
     double dir_result = get_my_direction(); // 自身の方向を取得(deg)。target_directionもdeg
 
     if (dir_result != -1) {
@@ -363,93 +363,134 @@ int turn_target_direction(double target_direction, double *my_Direction) {
 
 int tm_calibration() {
 
-  delay(500);
+  AC ac_calib;  // キャリブレーション時の水平判定用
+  int count_calib = 0;  // 非水平カウント用
 
-  // 値を定義しておく
-  DRIVE turn; // DRIVE型の宣言
-  // 初期化
-  turn.right1 = 0;
-  turn.right2 = 1;
-  turn.leght1 = 1;
-  turn.leght2 = 0;
+  while (1) {
 
-  double min_x;
-  double max_x;
-  double min_y;
-  double max_y;
-  double min_z;
-  double max_z;
+    ac_calib = get_ac();
 
-  TM tm;
+    if ((fabs(ac_calib.x) < 50 && fabs(ac_calib.y) < 50 && 200 < ac_calib.z) || count_calib == 5) {  // 水平な感じの場所にいるならキャリブレーション。試行回数過多でもキャリブレーション
+      speaker(C_TONE);
+      speaker(D_TONE);
 
-  rover_degital(turn); // 回転開始
+      delay(500);
 
-  for (int i = 0; i < 5000; i++) {
+      // 値を定義しておく
+      DRIVE turn; // DRIVE型の宣言
+      // 初期化
+      turn.right1 = 0;
+      turn.right2 = 1;
+      turn.leght1 = 1;
+      turn.leght2 = 0;
 
-    delay(10);
+      double min_x;
+      double max_x;
+      double min_y;
+      double max_y;
+      double min_z;
+      double max_z;
 
-    tm = get_tm();
+      TM tm;
 
-    if (i == 0) {
-      min_x = tm.x;
-      max_x = tm.x;
-      min_y = tm.y;
-      max_y = tm.y;
-      min_z = tm.z;
-      max_z = tm.z;
+      rover_degital(turn); // 回転開始
+
+      for (int i = 0; i < 5000; i++) {
+
+        delay(10);
+
+        tm = get_tm();
+
+        if (i == 0) {
+          min_x = tm.x;
+          max_x = tm.x;
+          min_y = tm.y;
+          max_y = tm.y;
+          min_z = tm.z;
+          max_z = tm.z;
+        } else {
+          if (tm.x < min_x) {
+            min_x = tm.x;
+          } else if (max_x < tm.x) {
+            max_x = tm.x;
+          }
+          if (tm.y < min_y) {
+            min_y = tm.y;
+          } else if (max_y < tm.y) {
+            max_y = tm.y;
+          }
+          if (tm.z < min_z) {
+            min_z = tm.z;
+          } else if (max_z < tm.z) {
+            max_z = tm.z;
+          }
+        }
+      }
+
+      turn.right1 = 1;
+      turn.right2 = 1;
+      turn.leght1 = 1;
+      turn.leght2 = 1;
+
+      rover_degital(turn); // 回転終了
+
+      // 最大値と最小値の差を求める
+      x_def = max_x - min_x;
+      y_def = max_y - min_y;
+      // オフセットを計算
+      tm_x_offset = (max_x + min_x) / 2;
+      tm_y_offset = (max_y + min_y) / 2;
+
+      delay(500);
+
+      return 1;      break;
+
     } else {
-      if (tm.x < min_x) {
-        min_x = tm.x;
-      } else if (max_x < tm.x) {
-        max_x = tm.x;
-      }
-      if (tm.y < min_y) {
-        min_y = tm.y;
-      } else if (max_y < tm.y) {
-        max_y = tm.y;
-      }
-      if (tm.z < min_z) {
-        min_z = tm.z;
-      } else if (max_z < tm.z) {
-        max_z = tm.z;
-      }
+      count_calib += 1;
+      go_straight(1500);  //水平な場所を目指す
     }
   }
 
-  turn.right1 = 1;
-  turn.right2 = 1;
-  turn.leght1 = 1;
-  turn.leght2 = 1;
-
-  rover_degital(turn); // 回転終了
-
-  // 最大値と最小値の差を求める
-  x_def = max_x - min_x;
-  y_def = max_y - min_y;
-  // オフセットを計算
-  tm_x_offset = (max_x + min_x) / 2;
-  tm_y_offset = (max_y + min_y) / 2;
-
-  delay(500);
-
-  return 1;
 }
 
 
 
 /*-----------judge_invered()--------------------
- * 戻り値
+   戻り値
    1:異常なし、もしくは復帰完了
    0:ひっくりかえったまま
   ------------------------------------------*/
 
-int judge_invered() {
-  
-  AC ac[10];  // サンプル数は10個とする
-  
-  for (int i = 0; i < 10; i++) {
-      ac[i] = get_ac(); // 加速度を取得
+int judge_invered_revive() {
+
+  int judge_count = 0;
+
+  while (1) {
+
+    judge_count += 1;
+
+    if (judge_count == 10) {
+      return 0;  // どうしようもない状況に陥ってそう
+    }
+
+    AC ac[10];  // サンプル数は10個とする
+    double z[10] = {1.0};
+
+    for (int i = 0; i < 10; i++) {
+      ac[i] = get_ac();  // 加速度を取得
+      z[i] = ac[i].z;  // zの値に着目
+      delay(50);
+    }
+    double ac_z_ave =  value_ave(10, z);
+
+    if (ac_z_ave < -1.0) {  // この式が真なら反転している。
+      go_straight(5000); // 5秒直進で復旧してほしい
+      continue;
+    } else {
+      return 1; // 問題なし
+    }
   }
+
 }
 
 
