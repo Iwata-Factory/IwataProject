@@ -97,8 +97,6 @@ def turn_leght_suddenly(path, times):
     f.write("  delay(2500);\n")
     f.close()
 
-
-
 def get_t():
     while True:
         t = input("何ミリ秒行いますか？\n")
@@ -162,7 +160,7 @@ def main():
         print("8:生成を終了して保存。")
         command = input("数字で入力して下さい。\n")
         if command == "1":
-            t = get_second()
+            t = get_t()
             go_smoothly(f_path, t)
             print("")
             print("書き込み完了")

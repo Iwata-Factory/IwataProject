@@ -83,7 +83,7 @@ int write_tm_sd(TM tm) {
 }
 
 // GPSを記録
-int write_gps_sd(struct GPS gps) {
+int write_gps_sd(GPS gps) {
   int i = 0; // 試行回数記録用
   Serial.println("GPSを記録します。");
   while (i < 30) { // 30回SDカードを開けなかったら諦める
@@ -268,7 +268,7 @@ int read_tm_sd(TM tm[100], int num) {
 // GPSを読み取る
 // 第一引数:値を入れる構造体の配列
 // 第二引数:何個の値を入れるか
-int read_gps_sd(struct GPS *gps, int num) {
+int read_gps_sd(GPS gps[100], int num) {
 
   // 0.0で初期化
   for (int i = 0; i < num; i++) {

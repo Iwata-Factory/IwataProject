@@ -23,6 +23,9 @@ int writeI2c(byte register_addr, byte value, byte slave_addr) {
   }
 }
 
+
+
+
 /*-----------I2C読み込み--------------------
    register_addr:HMC5883L内のレジスタ番地
    num: 読み出すデータの個数(連続データ)

@@ -97,7 +97,7 @@ double rad_ave(const int array_num, double* value) {
   return ave;
 }
 
-//角度の外れ値を１ことってその平均をだす
+//角度の外れ値を１ことってその平均をだす(ラジアン)
 double rad_out(const int array_num, double* value) {
   int i = 0;
   int j = 0;
@@ -146,5 +146,40 @@ double rad_out(const int array_num, double* value) {
 }
 
 
+
+// 単位換算関数を書く関数
+
+
+/*-----------radからdegに--------------------
+  引数はrad(double型)
+  ------------------------------------------*/
+double rad2deg(double rad) {
+  double deg = rad * 180.0 / PI;
+  return (deg);
+}
+
+/*-----------degからradに--------------------
+  引数はdeg(double型)
+  ------------------------------------------*/
+double deg2rad(double deg) {
+  double rad = deg * PI / 180.0;
+  return (rad);
+}
+
+
+
+/*-----------Vector2Dのサイズを得る--------------------
+  ------------------------------------------*/
+double vector2d_size(Vector2D v) {
+  double v_size = sqrt(pow(v.x, 2) + pow(v.y, 2));
+  return v_size;
+}
+
+/*----------- Vector2Dの内積を得る--------------------
+  ------------------------------------------*/
+double vector2d_inner(Vector2D v1, Vector2D v2) {
+  double inner_product = v1.x * v2.x + v1.y + v2.y;
+  return inner_product;
+}
 
 

@@ -1,40 +1,16 @@
 /* SDカード周りの関数
-   write_ac_sd
-   write_tm_sd
-   write_gps_sd
-   read_ac_sd
-   read_tm_sd
-   read_gps_sd
+ * write_ac_sd
+ * write_tm_sd 
+ * write_gps_sd
+ * read_ac_sd
+ * read_tm_sd
+ * read_gps_sd
 
   記録系:write
 
   読み取る系:read
+
 */
-
-
-int write_timelog_sd(long logtime, int now_status) {
-  int i = 0; // 試行回数記録用
-  Serial.println("時間とステータスをを記録します。");
-  while (i < 30) { // 30回SDカードを開けなかったら諦める
-    File dataFile = SD.open("timelog.txt", FILE_WRITE);
-    if (dataFile) { // ファイルが開けたときの処理
-      dataFile.seek(dataFile.size());
-      dataFile.println("*"); // 記録の境目
-      dataFile.print("time:");
-      dataFile.print(logtime);
-      dataFile.print(",status:");
-      dataFile.println(now_status);
-
-      dataFile.close();
-      return 1; // 成功を返す
-    } else {
-      Serial.println("ファイルオープンに失敗");
-      i += 1;
-    }
-  }
-  return 0; // 失敗を返す
-}
-
 
 // 加速度を記録
 int write_ac_sd(AC ac) {
@@ -60,7 +36,7 @@ int write_ac_sd(AC ac) {
 }
 
 
-// 地磁気を記録
+// 加速度を記録
 int write_tm_sd(TM tm) {
   int i = 0; // 試行回数記録用
   Serial.println("地磁気を記録します。");
@@ -130,7 +106,7 @@ int read_ac_sd(AC ac[100], int num) {
 
     if (dataFile) { // ファイルが開けたときの処理
       int now_pos = dataFile.size(); // now_pos は自身の位置を表す
-      static const int back_num = 1; // 操作ごとに調べる位置をいくつ戻すか
+      static int back_num = 1; // 操作ごとに調べる位置をいくつ戻すか
       dataFile.seek(now_pos); // 位置移動
 
       for (int j = 0; j < num; j++) { // num回分のデータを取る
@@ -207,7 +183,7 @@ int read_tm_sd(TM tm[100], int num) {
 
     if (dataFile) { // ファイルが開けたときの処理
       int now_pos = dataFile.size(); // now_pos は自身の位置を表す
-      static const int back_num = 1; // 操作ごとに調べる位置をいくつ戻すか
+      static int back_num = 1; // 操作ごとに調べる位置をいくつ戻すか
       dataFile.seek(now_pos); // 位置移動
 
       for (int j = 0; j < num; j++) { // num回分のデータを取る
@@ -289,7 +265,7 @@ int read_gps_sd(struct GPS *gps, int num) {
 
     if (dataFile) { // ファイルが開けたときの処理
       int now_pos = dataFile.size(); // now_pos は自身の位置を表す
-      static const int back_num = 1; // 操作ごとに調べる位置をいくつ戻すか
+      static int back_num = 1; // 操作ごとに調べる位置をいくつ戻すか
       dataFile.seek(now_pos); // 位置移動
 
       for (int j = 0; j < num; j++) { // num回分のデータを取る
@@ -355,5 +331,9 @@ int read_gps_sd(struct GPS *gps, int num) {
   }
   return 0;
 }
+
+
+
+
 
 

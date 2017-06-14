@@ -17,5 +17,3 @@ double deg2rad(double deg) {
   return (rad);
 }
 
-
-
