@@ -25,7 +25,7 @@ int status4(ROVER *rover) {  // Status4 着陸の関数
   }
 
   //以下パラシュートからの脱出
-  casing(landing_flag, &rover->My_Direction);
+  casing(landing_flag, rover);
 
   return 1;
 }
@@ -79,7 +79,7 @@ int determine_landing() {
 
 
 //ケーシング展開関数
-int casing(int landing_flag, double *my_Direction) {
+int casing(int landing_flag, ROVER *rover) {
 
   int target_flag = 0;
   int nicrom_count = 0;
@@ -98,8 +98,8 @@ int casing(int landing_flag, double *my_Direction) {
 
     //ケーシングが展開したかの確認シーケンス
     if (landing_flag == 0) { //比較的風が弱い
-      *my_Direction = get_my_direction();
-      target_flag = turn_target_direction((int(*my_Direction) + 180) % 360, &(*my_Direction));
+      rover->My_Direction = get_my_direction();
+      target_flag = turn_target_direction(rover->My_Direction + 180, &rover->My_Direction);
 
       if (target_flag == 1) {
         //無事に回転できた＞＞ケーシングが展開している
@@ -111,8 +111,8 @@ int casing(int landing_flag, double *my_Direction) {
       }
     } else {
       //landing_flag == 1の時は風が相当強いので何もいなくても空いていたらケーシングがどっかに行く
-      *my_Direction = get_my_direction();
-      target_flag = turn_target_direction((int(*my_Direction) + 180) % 360, &(*my_Direction));
+      rover->My_Direction = get_my_direction();
+      target_flag = turn_target_direction(rover->My_Direction + 180, &rover->My_Direction);
       if (target_flag == 1) {
         //無事に回転できた＞＞ケーシングが展開している
         /*風が強いので後述の脱出シーケンスがひょっとしたらいらないかも*/
@@ -150,7 +150,7 @@ int casing(int landing_flag, double *my_Direction) {
 
   while (1) {
     count_para++;
-    *my_Direction = get_my_direction();  //現在の方角を取得
+    rover->My_Direction = get_my_direction();  //現在の方角を取得
 
     //0.9~5mくらいなら取れる
     //servoモーターは90°が機体正面としています
@@ -207,11 +207,11 @@ int casing(int landing_flag, double *my_Direction) {
     if (distance_flag == 1) {
       //前方にパラシュートが存在
       //回転する
-      turn_target_direction((int(*my_Direction) + 90) % 360, &(*my_Direction));
+      turn_target_direction(rover->My_Direction + 90, &rover->My_Direction);
       /*本当は90°直角に回りたいけどいまそこら辺の制御どうなっているかわからないのでとりあえずこれで*/
     } else {
       //前方にパラシュートがない or 近すぎて判別できない
-      *my_Direction = get_my_direction();  //現在方角を把握
+      rover->My_Direction = get_my_direction();  //現在方角を把握
       break;
     }
     //距離センサの以上orパラシュートがかぶさっているなどなんともしがたい状況になっている
