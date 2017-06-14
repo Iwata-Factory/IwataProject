@@ -1,23 +1,31 @@
+/*
+   放出判定行われたのち
+   着地判定とケーシング展開、ケーシングからの脱出シーケンス
+*/
+
 
 int status4() {  // Status4 着陸の関数
   // 加速度とGPSから判断することになりそう
 
+  int landing_flag = 0;   //着地判定を何で行ったか
   //暫定的に前回までのやつにしています
   int t = 0;  //時間経過
   while (1) {
     if (determine_landing() == 1) {
+      landing_flag = 0;
       break;
     }
     //1ループ1分より適当に15分たったら強制的に着陸したものとする
     t++;
 
     if (t >= 15) {
+      landing_flag = 1;
       break;
     }
   }
 
   //以下パラシュートからの脱出
-  casing();
+  casing(landing_flag);
 
   return 1;
 }
@@ -68,14 +76,53 @@ int determine_landing() {
 }
 
 //ケーシング展開関数
-int casing() {
+int casing(int landing_flag) {
+  double my_direction = 0;
+  int target_flag = 0;
+  int nicrom_count = 0;
+
   //ニクロム線溶断する
-  digitalWrite(NICROM_1, HIGH);
-  delay(10000);   //10秒間ニクロム線を熱すれば切れるはず
-  digitalWrite(NICROM_1, LOW);
+  while (1) {
+    digitalWrite(NICROM_1, HIGH);
+    delay(10000);   //10秒間ニクロム線を熱すれば切れるはず
+    digitalWrite(NICROM_1, LOW);
 
+    if (nicrom_count >=10){
+      //たぶんニクロム線が行かれているとかで異常事態
+      break;
+      /*将来の冗長性のために判定しておきます*/
+    }
+    
+    //ケーシングが展開したかの確認シーケンス
+    if (landing_flag == 0) { //比較的風が弱い
+      my_direction = get_my_direction();
+      target_flag = turn_target_direction((my_direction + 180), &my_direction);
+      if (target_flag == 1) {
+        //無事に回転できた＞＞ケーシングが展開している
+        break;
+      } else {
+        //ケーシングが展開していなくて回転できない
+        nicrom_count++;
+        continue;
+      }
+    } else {
+      //landing_flag == 1の時は風が相当強いので何もいなくても空いていたらケーシングがどっかに行く
+      my_direction = get_my_direction();
+      target_flag = turn_target_direction((my_direction + 180), &my_direction);
+      if (target_flag == 1) {
+        //無事に回転できた＞＞ケーシングが展開している
+        /*風が強いので後述の脱出シーケンスがひょっとしたらいらないかも*/
+        break;
+      } else {
+        //ケーシングが展開していなくて回転できない
+        nicrom_count++;
+        continue;
+      }
+    }
+
+  }
   //ここから、パラシュートをよけるプロセス
-
+  /*ここで反転判定及び復帰シーケンスを必ずできたら入れてください*/
   GPS gps;
   gps_get(&gps);    //ここで取得したデータをSDなりに保管して以後近づかないようにしてください
 
@@ -92,15 +139,12 @@ int casing() {
   double para_distance = 0;  //パラシュートまでの距離を測ります
   double volt = 0;
   int distance_flag = 0;
-  double my_direction = 0;
   double angle_servo = 0;  //servoモーターの角度
   int count_para = 0;     //何回パラシュートがあるかの判定をしたかのカウンター
 
   while (1) {
     count_para++;
     my_direction = get_my_direction();  //現在の方角を取得
-    volt = analogRead( DISTANCE ) * 5 / 1023.0;
-    Serial.println( volt );  //電圧換算表示
 
     //0.9~5mくらいなら取れる
     //servoモーターは90°が機体正面としています
@@ -109,6 +153,9 @@ int casing() {
     for (angle_servo = 60; angle_servo <= 130; angle_servo += 10 ) {
       servo1.write(angle_servo);    //
       delay(1000);    //回転時間
+      volt = analogRead( DISTANCE ) * 5 / 1023.0;
+      Serial.println( volt );  //電圧換算表示
+
       if ( 1.35 < volt & volt < 2.7 ) {            //有効測距範囲内
         para_distance = 140.0 / ( volt - 1.10 ) ;
         Serial.print( "success reading! Distance is  " );
@@ -116,12 +163,45 @@ int casing() {
         distance_flag = 1;     //一方向でも危険物があるとパラシュートとみなしアウト
       }
     }
+
+
+    /*
+       サーボモーターなしver
+    */
+
+    target_flag = 0;
+    int i = 0;
+    /*
+        //サーボモーターなしver
+        for (i = -3; i <= 3; i++) {
+          while (1) {
+            target_flag = turn_target_direction((my_direction + 10 * i), &my_direction);
+            if (target_flag == 1) {
+            break;
+          } else {
+            continue;
+          }
+          volt = analogRead( DISTANCE ) * 5 / 1023.0;
+                 Serial.println( volt );  //電圧換算表示
+
+          if ( 1.35 < volt & volt < 2.7 ) {            //有効測距範囲内
+            para_distance = 140.0 / ( volt - 1.10 ) ;
+              Serial.print( "success reading! Distance is  " );
+              Serial.println( para_distance );
+              distance_flag = 1;     //一方向でも危険物があるとパラシュートとみなしアウト
+            }
+          }
+
+
+
+        }*/
+
     delay( 500 );
 
     if (distance_flag == 1) {
       //前方にパラシュートが存在
       //回転する
-      go_rotate(1000);
+      turn_target_direction((my_direction + 90), &my_direction);
       /*本当は90°直角に回りたいけどいまそこら辺の制御どうなっているかわからないのでとりあえずこれで*/
     } else {
       //前方にパラシュートがない or 近すぎて判別できない
@@ -129,7 +209,7 @@ int casing() {
       break;
     }
     //距離センサの以上orパラシュートがかぶさっているなどなんともしがたい状況になっている
-    if (count_para >= 10) { //その時のいい方法も思い浮かばないので一旦運げで走らせることにした
+    if (count_para >= 10) { //パラシュートがどっかいっちゃってるとかそんな感じ
       break;
     }
   }
@@ -143,5 +223,6 @@ int casing() {
   return 0;
 
 }
+
 
 
