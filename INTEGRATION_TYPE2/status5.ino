@@ -5,8 +5,27 @@ int status5(ROVER *rover) {
 
   do {
 
-    if (i % 10 == 0) { // たまにキャリブレーションする
-      tm_calibration();
+
+    if (i % 30 == 0) { // たまにキャリブレーションする
+
+      AC ac_calib;  // キャリブレーション時の水平判定用
+      int count_calib = 0;  // 非水平カウント用
+
+      while (1) {
+
+        ac_calib = get_ac();
+
+        if ((fabs(ac_calib.x) < 50 && fabs(ac_calib.y) < 50 && 200 < ac_calib.z) || count_calib == 5) {  // 水平な感じの場所にいるならキャリブレーション。試行回数過多でもキャリブレーション
+          speaker(C_TONE);
+          speaker(D_TONE);
+          tm_calibration();  // 条件が揃ったらキャリブレーション
+          break;
+        } else {
+          count_calib += 1;
+          go_straight(1500);  //水平な場所を目指す
+        }
+      }
+
     }
 
     // GPS情報を取得
@@ -58,11 +77,11 @@ int escape(double distance_hold, ROVER *rover) {  /* こっちの統合ではdis
   while (1) {
     //まずは自分がどういう状況か確認
     //自己位置が変化できるか
-    
+
     gps_get(&gps_stack);
     distance[0] = gps_stack.distance;
     rover->My_Direction = get_my_direction();
-    if (turn_target_direction(rover->My_Direction + 90, &rover->My_Direction) == 1){
+    if (turn_target_direction(rover->My_Direction + 90, &rover->My_Direction) == 1) {
       //回転できる
       flag_direction = 1;
     } else {
@@ -101,16 +120,16 @@ int escape(double distance_hold, ROVER *rover) {  /* こっちの統合ではdis
 */
 int wadachi(ROVER *rover) {
   GPS gps;
-  
+
   double distance_hold = 0;
   double diff_distance = 1000;
   int wadachi_count = 0;
 
-  rover->My_Direction = get_my_direction(); 
+  rover->My_Direction = get_my_direction();
   distance_hold = gps.distance;   //distance保持
   //基本的に下がっては少し右旋回して直進してまた引っかかったら右旋回とやっていき轍を回避できる場所まで行く
   go_back(3000);
-  turn_target_direction(rover->My_Direction + 60, &rover->My_Direction);  
+  turn_target_direction(rover->My_Direction + 60, &rover->My_Direction);
   go_straight(3000);
   turn_target_direction(rover->My_Direction - 60, &rover->My_Direction);
 
@@ -132,7 +151,7 @@ int wadachi(ROVER *rover) {
     return 0;
   }
 
-  if (wadachi_count %5 ==0){//ダメなのが続いたらランダムに進んでみる
+  if (wadachi_count % 5 == 0) { //ダメなのが続いたらランダムに進んでみる
     go_rotate(wadachi_count * 200);
     go_straight(5000);
   }

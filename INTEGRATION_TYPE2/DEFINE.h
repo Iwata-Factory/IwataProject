@@ -2,34 +2,36 @@
 #define __DEFINE_H__
 
 // 定数の定義
+# define GOAL_LATITUDE 35.756165
+# define GOAL_LONGITUDE 139.770740
 
 //GPS関連
-#define PIN_GPS_Rx  53 // GPSのシリアル通信でデータを受信するピン
-#define PIN_GPS_Tx  51 // GPSのシリアル通信でデータを送信するピン
-#define LATITUDE_MINIMUM 30  //緯度の最小値
-#define LATITUDE_MAXIMUM 40  //緯度の最大値
-#define LONGITUDE_MINIMUM 130  //経度の最小値
-#define LONGITUDE_MAXIMUM 140  //経度の最大値
+#define PIN_GPS_Rx  10 // GPSのシリアル通信でデータを受信するピン
+#define PIN_GPS_Tx  12 // GPSのシリアル通信でデータを送信するピン
+#define LATITUDE_MINIMUM 35  //緯度の最小値
+#define LATITUDE_MAXIMUM 45  //緯度の最大値
+#define LONGITUDE_MINIMUM 133  //経度の最小値
+#define LONGITUDE_MAXIMUM 143  //経度の最大値
 #define GPSBAUDRATE 9600 //シリアル通信のデータ送信レートを9600bpsに定義するための定数(GPSとArduino)
 #define READBUFFERSIZE  (256)
 #define DELIMITER   (",")  // 区切り文字定数
 
 //地磁気センサ関連
 #define HMC5883L 0x1E   //HMC5883L(地磁気センサ)のスレーブアドレス
-#define TM_DIFFERENCE 7.2
+#define TM_DIFFERENCE -7.2
 
 //加速度センサ関連
 #define ADXL345 0x53  //ADXL345(加速度センサ)のスレーブアドレス
 
 //モーター関連
-#define M1_1 8 // モーター制御用ピン
-#define M1_2 9 // モーター制御用ピン
-#define M2_1 10 // モーター制御用ピン
-#define M2_2 11 // モーター制御用ピン
+#define M1_1 4 // モーター制御用ピン
+#define M1_2 5 // モーター制御用ピン
+#define M2_1 6 // モーター制御用ピン
+#define M2_2 7 // モーター制御用ピン
 
 //スピーカー関連
 #define BEAT_LONG 300   // 音の長さを指定
-#define TONE_PINNO 8   // 圧電スピーカを接続したピン番号
+#define TONE_PINNO 33   // 圧電スピーカを接続したピン番号
 #define C_TONE  262    //ド
 #define D_TONE  294    //レ
 #define E_TONE  330    //ミ
@@ -80,6 +82,10 @@
 #define NICROM_1 28
 #define NICROM_2 30
 
+//SD関連
+#define SS 53
+
+
 
 // その他
 #define SERIAL_BAUDRATE 9600 //シリアル通信のデータ送信レートを9600bpsに定義するための定数(ArduinoとPC)
@@ -100,12 +106,12 @@ byte flag_phase[8] = {
   FLAG_START, FLAG_LAUNCH, FLAG_FALL,
   FLAG_LAND, FLAG_GND1, FLAG_GND2, FLAG_END
 };
-
+const int chipSelect = 4;
 // 地磁気のキャリブレーションに関するやつ
 double tm_x_offset = 0.0;
 double tm_y_offset = 0.0;
-double x_def = 0.0;
-double y_def = 0.0;
+double x_def = 1.0;
+double y_def = 1.0;
 
 SoftwareSerial g_gps( PIN_GPS_Rx, PIN_GPS_Tx); // ArduinoとGPS間のシリアル通信用に
 Servo servo1;
