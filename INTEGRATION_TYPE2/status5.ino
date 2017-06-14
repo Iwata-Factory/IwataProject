@@ -23,8 +23,8 @@ int status5(ROVER *rover) {
     write_gps_sd(gps);  // 自身の位置をsdに記録
 
     time = millis(); //現在の時間を取得
-    rover->time_from_start = time;
-    write_timelog_sd(time, 5);
+    rover->time_from_start = millis();
+    write_timelog_sd(millis(), 5);
 
     if (rover->distance < 5) { // 5mまで来たら地上2へ
       return 1;
