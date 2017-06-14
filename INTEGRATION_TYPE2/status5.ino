@@ -44,8 +44,8 @@ int status5(ROVER *rover) {
    とりあえず自分の状況を理解するためのやつです
    状況がわかったら、またそれに対して適切な処理をしやすくするためflag作っておきましたが、まだ使ってないやつあります
 */
-int escape(double distance_hold) {  /* こっちの統合ではdistance_holdをまだ定義してなかったね */
-  double my_direction;
+int escape(double distance_hold, ROVER *rover) {  /* こっちの統合ではdistance_holdをまだ定義してなかったね */
+
   GPS gps_stack;   //GPSの構造体
   double distance[2] = { -1, -1};
   double dif_distance = 0;
@@ -61,7 +61,8 @@ int escape(double distance_hold) {  /* こっちの統合ではdistance_holdを�
     
     gps_get(&gps_stack);
     distance[0] = gps_stack.distance;
-    if (turn_target_direction(my_direction + 90, &my_direction) == 1){
+    rover->My_Direction = get_my_direction();
+    if (turn_target_direction(rover->My_Direction + 90, &rover->My_Direction) == 1){
       //回転できる
       flag_direction = 1;
     } else {
@@ -90,7 +91,7 @@ int escape(double distance_hold) {  /* こっちの統合ではdistance_holdを�
   if ((flag_distance == 0) && (flag_direction == 1)) {
     //回転等はできるが進めない
     //たぶん轍
-    wadachi();
+    wadachi(rover);
     return 1;
   }
 }
@@ -98,21 +99,20 @@ int escape(double distance_hold) {  /* こっちの統合ではdistance_holdを�
 /*
    轍に沿って移動はできるけど轍から逃げられない
 */
-int wadachi() {
+int wadachi(ROVER *rover) {
   GPS gps;
   
   double distance_hold = 0;
   double diff_distance = 1000;
   int wadachi_count = 0;
-  double my_direction = 0;
 
-  my_direction = get_my_direction(); 
+  rover->My_Direction = get_my_direction(); 
   distance_hold = gps.distance;   //distance保持
   //基本的に下がっては少し右旋回して直進してまた引っかかったら右旋回とやっていき轍を回避できる場所まで行く
   go_back(3000);
-  turn_target_direction(my_direction + 60, &my_direction);  
+  turn_target_direction(rover->My_Direction + 60, &rover->My_Direction);  
   go_straight(3000);
-  turn_target_direction(my_direction - 60, &my_direction);
+  turn_target_direction(rover->My_Direction - 60, &rover->My_Direction);
 
 
   gps_get(&gps);
