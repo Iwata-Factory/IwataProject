@@ -14,7 +14,7 @@
 
 int write_timelog_sd(long logtime, int now_status) {
   int i = 0; // 試行回数記録用
-  Serial.println("時間とステータスをを記録します。");
+  xbee_uart( dev,"logging time and status\r");
   while (i < 30) { // 30回SDカードを開けなかったら諦める
     File dataFile = SD.open("timelog.txt", FILE_WRITE);
     if (dataFile) { // ファイルが開けたときの処理
@@ -28,7 +28,7 @@ int write_timelog_sd(long logtime, int now_status) {
       dataFile.close();
       return 1; // 成功を返す
     } else {
-      Serial.println("ファイルオープンに失敗");
+      xbee_uart( dev,"fail to open SD...\r");
       i += 1;
     }
   }
@@ -39,7 +39,7 @@ int write_timelog_sd(long logtime, int now_status) {
 // 加速度を記録
 int write_ac_sd(AC ac) {
   int i = 0; // 試行回数記録用
-  Serial.println("加速度を記録します。");
+  xbee_uart( dev,"logging AC\r");
   while (i < 30) { // 30回SDカードを開けなかったら諦める
     File dataFile = SD.open("aclog.txt", FILE_WRITE);
     if (dataFile) { // ファイルが開けたときの処理
@@ -52,7 +52,7 @@ int write_ac_sd(AC ac) {
       dataFile.close();
       return 1; // 成功を返す
     } else {
-      Serial.println("ファイルオープンに失敗");
+      xbee_uart( dev,"fail to open sd...\r");
       i += 1;
     }
   }
@@ -63,7 +63,7 @@ int write_ac_sd(AC ac) {
 // 地磁気を記録
 int write_tm_sd(TM tm) {
   int i = 0; // 試行回数記録用
-  Serial.println("地磁気を記録します。");
+  xbee_uart( dev,"logging TM\r");
   while (i < 30) { // 30回SDカードを開けなかったら諦める
     File dataFile = SD.open("tmlog.txt", FILE_WRITE);
     if (dataFile) { // ファイルが開けたときの処理
@@ -75,7 +75,7 @@ int write_tm_sd(TM tm) {
       dataFile.close();
       return 1; // 成功を返す
     } else {
-      Serial.println("ファイルオープンに失敗");
+      xbee_uart( dev,"fail to open sd...\r");
       i += 1;
     }
   }
@@ -85,24 +85,23 @@ int write_tm_sd(TM tm) {
 // GPSを記録
 int write_gps_sd(GPS gps) {
   int i = 0; // 試行回数記録用
-  Serial.println("GPSを記録します。");
+  xbee_uart( dev,"logging GPS\r");
   while (i < 30) { // 30回SDカードを開けなかったら諦める
     File dataFile = SD.open("gpslog.txt", FILE_WRITE);
     if (dataFile) { // ファイルが開けたときの処理
       dataFile.seek(dataFile.size());
       dataFile.println("*"); // 記録の境目
-      dataFile.println(gps.utc);
-      dataFile.println(gps.latitude);
-      dataFile.println(gps.longitude);
-      dataFile.println(gps.Speed);
-      dataFile.println(gps.course);
-      dataFile.println(gps.Direction);
-      dataFile.println(gps.distance);
-      dataFile.close();
+      dataFile.println(gps.utc, 4);  // 下4桁
+      dataFile.println(gps.latitude, 4);
+      dataFile.println(gps.longitude, 4);
+      dataFile.println(gps.Speed, 4);
+      dataFile.println(gps.course, 4);
+      dataFile.println(gps.Direction, 4);
+      dataFile.println(gps.distance, 4);
       dataFile.close();
       return 1; // 成功を返す
     } else {
-      Serial.println("ファイルオープンに失敗");
+      xbee_uart( dev,"fail to open sd...\r");
       i += 1;
     }
   }
@@ -123,7 +122,7 @@ int read_ac_sd(AC ac[100], int num) {
   }
 
   int i = 0; // 試行回数記録用
-  Serial.println("加速度を読みとります。");
+  xbee_uart( dev,"read AC from SD\r");
   while (i < 30) { // 30回SDカードを開けなかったら諦める
 
     File dataFile = SD.open("aclog.txt", FILE_READ);
@@ -142,9 +141,9 @@ int read_ac_sd(AC ac[100], int num) {
 
           if (line == "*") { // もし*と書いてある行に達したらその下の三行を読む
             String x = dataFile.readStringUntil('\r');
-            // Serial.println(x);
+            // xbee_uart( dev,x);
             String y = dataFile.readStringUntil('\r');
-            //   Serial.println(y);
+            //   xbee_uart( dev,y);
             String z = dataFile.readStringUntil('\r');
             if ((x != "*") & (y != "*") & (z != "*")) { // 値が揃っていたなら代入、そうでないなら0のまま
               ac[j].x = x.toDouble();
@@ -156,7 +155,7 @@ int read_ac_sd(AC ac[100], int num) {
               ac[j].z = 0.0;
             }
 
-            //   Serial.println(z);
+            //   xbee_uart( dev,z);
             now_pos -= back_num; //  調べる位置を戻す
 
             if (now_pos == 0) { // ファイルの先頭に達してしまった場合
@@ -179,7 +178,7 @@ int read_ac_sd(AC ac[100], int num) {
       dataFile.close();
       return 1; // 要求された処理が完了したことを返す
     } else {
-      Serial.println("ファイルオープンに失敗");
+      xbee_uart( dev,"Fail to open SD...\r");
       i += 1;
     }
   }
@@ -200,7 +199,7 @@ int read_tm_sd(TM tm[100], int num) {
   }
 
   int i = 0; // 試行回数記録用
-  Serial.println("地磁気を読みとります。");
+  xbee_uart( dev,"read TM from SD\r");
   while (i < 30) { // 30回SDカードを開けなかったら諦める
 
     File dataFile = SD.open("tmlog.txt", FILE_READ);
@@ -219,9 +218,9 @@ int read_tm_sd(TM tm[100], int num) {
 
           if (line == "*") { // もし*と書いてある行に達したらその下の三行を読む
             String x = dataFile.readStringUntil('\r');
-            // Serial.println(x);
+            // xbee_uart( dev,x);
             String y = dataFile.readStringUntil('\r');
-            //   Serial.println(y);
+            //   xbee_uart( dev,y);
             String z = dataFile.readStringUntil('\r');
             if ((x != "*") & (y != "*") & (z != "*")) { // 値が揃っていたなら代入、そうでないなら0のまま
               tm[j].x = x.toDouble();
@@ -233,7 +232,7 @@ int read_tm_sd(TM tm[100], int num) {
               tm[j].z = 0.0;
             }
 
-            //   Serial.println(z);
+            //   xbee_uart( dev,z);
             now_pos -= back_num; //  調べる位置を戻す
 
             if (now_pos == 0) { // ファイルの先頭に達してしまった場合
@@ -256,7 +255,7 @@ int read_tm_sd(TM tm[100], int num) {
       dataFile.close();
       return 1; // 要求された処理が完了したことを返す
     } else {
-      Serial.println("ファイルオープンに失敗");
+      xbee_uart( dev,"Fail to open SD...\r");
       i += 1;
     }
   }
@@ -282,7 +281,7 @@ int read_gps_sd(GPS gps[100], int num) {
   }
 
   int i = 0; // 試行回数記録用
-  Serial.println("GPSを読みとります。");
+  xbee_uart( dev,"read GPS from SD\r");
   while (i < 30) { // 30回SDカードを開けなかったら諦める
 
     File dataFile = SD.open("gpslog.txt", FILE_READ);
@@ -326,7 +325,7 @@ int read_gps_sd(GPS gps[100], int num) {
               gps[j].distance = 0.0;
             }
 
-            //   Serial.println(z);
+            //   xbee_uart( dev,z);
             now_pos -= back_num; //  調べる位置を戻す
 
             if (now_pos == 0) { // ファイルの先頭に達してしまった場合
@@ -349,7 +348,7 @@ int read_gps_sd(GPS gps[100], int num) {
       dataFile.close();
       return 1; // 要求された処理が完了したことを返す
     } else {
-      Serial.println("ファイルオープンに失敗");
+      xbee_uart( dev,"fail to open SD...\r");
       i += 1;
     }
   }
