@@ -318,6 +318,11 @@ int turn_target_direction(double target_direction, double *my_Direction) {
     delay(1000);
     i += 1;
 
+    
+    if (target_direction < 0 || 360 <= target_direction){//target_directionが360以上の場合調整
+      target_direction = (int)target_direction % 360;
+    }
+    
     double dir_result = get_my_direction(); // 自身の方向を取得(deg)。target_directionもdeg
 
     if (dir_result != -1) {
