@@ -44,7 +44,7 @@ int status5(ROVER *rover) {
    とりあえず自分の状況を理解するためのやつです
    状況がわかったら、またそれに対して適切な処理をしやすくするためflag作っておきましたが、まだ使ってないやつあります
 */
-int escape(double distance_hold) {
+int escape(double distance_hold) {  /* こっちの統合ではdistance_holdをまだ定義してなかったね */
   double my_direction;
   GPS gps_stack;   //GPSの構造体
   double distance[2] = { -1, -1};
@@ -56,7 +56,7 @@ int escape(double distance_hold) {
 
 
   while (1) {
-    //まずは自分がどういう状況下確認
+    //まずは自分がどういう状況か確認
     //自己位置が変化できるか
     
     gps_get(&gps_stack);
@@ -77,13 +77,13 @@ int escape(double distance_hold) {
 
     dif_distance = fabs(distance[1] - distance[0]);
 
-    if (dif_distance <= 1) {
+    if (dif_distance <= 3) {
       //スタックしたまま
       flag_distance = 0;
     } else {
       //脱出成功
       flag_distance = 1;
-      return 0;
+      return 1;
     }
   }
 
@@ -91,7 +91,7 @@ int escape(double distance_hold) {
     //回転等はできるが進めない
     //たぶん轍
     wadachi();
-    return 0;
+    return 1;
   }
 }
 
@@ -100,6 +100,7 @@ int escape(double distance_hold) {
 */
 int wadachi() {
   GPS gps;
+  
   double distance_hold = 0;
   double diff_distance = 1000;
   int wadachi_count = 0;
@@ -132,7 +133,7 @@ int wadachi() {
   }
 
   if (wadachi_count %5 ==0){//ダメなのが続いたらランダムに進んでみる
-    go_rotate(wadachi_count*200);
+    go_rotate(wadachi_count * 200);
     go_straight(5000);
   }
 
