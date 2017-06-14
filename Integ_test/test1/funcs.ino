@@ -345,7 +345,7 @@ int turn_target_direction(double target_direction, double *my_Direction) {
     double a_difference = *my_Direction - target_direction;
 
     xbee_uart( dev, "a_difference is\r");
-    xbee_send_1double(a_difference);
+    xbee_send_1double(a_difference);             //送信時に文字化けして（受信したものが”？”）出てくる。関数を呼び出しているから。。？
 
     if (180 <= a_difference) {
       rotate_angle = 360 - a_difference;  // 右回転
