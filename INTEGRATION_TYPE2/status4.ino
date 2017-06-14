@@ -4,7 +4,7 @@
 */
 
 
-int status4() {  // Status4 着陸の関数
+int status4(ROVER *rover) {  // Status4 着陸の関数
   // 加速度とGPSから判断することになりそう
 
   int landing_flag = 0;   //着地判定を何で行ったか
@@ -25,7 +25,7 @@ int status4() {  // Status4 着陸の関数
   }
 
   //以下パラシュートからの脱出
-  casing(landing_flag);
+  casing(landing_flag, &rover->My_Direction);
 
   return 1;
 }
@@ -75,9 +75,12 @@ int determine_landing() {
   }
 }
 
+
+
+
 //ケーシング展開関数
-int casing(int landing_flag) {
-  double my_direction = 0;
+int casing(int landing_flag, double *my_Direction) {
+
   int target_flag = 0;
   int nicrom_count = 0;
 
@@ -87,16 +90,17 @@ int casing(int landing_flag) {
     delay(10000);   //10秒間ニクロム線を熱すれば切れるはず
     digitalWrite(NICROM_1, LOW);
 
-    if (nicrom_count >=10){
-      //たぶんニクロム線が行かれているとかで異常事態
+    if (nicrom_count >= 10) {
+      //たぶんニクロム線がイカれているとかで異常事態
       break;
       /*将来の冗長性のために判定しておきます*/
     }
-    
+
     //ケーシングが展開したかの確認シーケンス
     if (landing_flag == 0) { //比較的風が弱い
-      my_direction = get_my_direction();
-      target_flag = turn_target_direction((my_direction + 180), &my_direction);
+      *my_Direction = get_my_direction();
+      target_flag = turn_target_direction((int(*my_Direction) + 180) % 360, &(*my_Direction));
+
       if (target_flag == 1) {
         //無事に回転できた＞＞ケーシングが展開している
         break;
@@ -107,8 +111,8 @@ int casing(int landing_flag) {
       }
     } else {
       //landing_flag == 1の時は風が相当強いので何もいなくても空いていたらケーシングがどっかに行く
-      my_direction = get_my_direction();
-      target_flag = turn_target_direction((my_direction + 180), &my_direction);
+      *my_Direction = get_my_direction();
+      target_flag = turn_target_direction((int(*my_Direction) + 180) % 360, &(*my_Direction));
       if (target_flag == 1) {
         //無事に回転できた＞＞ケーシングが展開している
         /*風が強いので後述の脱出シーケンスがひょっとしたらいらないかも*/
@@ -122,7 +126,9 @@ int casing(int landing_flag) {
 
   }
   //ここから、パラシュートをよけるプロセス
+
   /*ここで反転判定及び復帰シーケンスを必ずできたら入れてください*/
+
   GPS gps;
   gps_get(&gps);    //ここで取得したデータをSDなりに保管して以後近づかないようにしてください
 
@@ -144,13 +150,13 @@ int casing(int landing_flag) {
 
   while (1) {
     count_para++;
-    my_direction = get_my_direction();  //現在の方角を取得
+    *my_Direction = get_my_direction();  //現在の方角を取得
 
     //0.9~5mくらいなら取れる
     //servoモーターは90°が機体正面としています
 
     //サーボモーターで6０～１２０°まで安全確認
-    for (angle_servo = 60; angle_servo <= 130; angle_servo += 10 ) {
+    for (angle_servo = 60; angle_servo <= 120; angle_servo += 10 ) {
       servo1.write(angle_servo);    //
       delay(1000);    //回転時間
       volt = analogRead( DISTANCE ) * 5 / 1023.0;
@@ -201,11 +207,11 @@ int casing(int landing_flag) {
     if (distance_flag == 1) {
       //前方にパラシュートが存在
       //回転する
-      turn_target_direction((my_direction + 90), &my_direction);
+      turn_target_direction((int(*my_Direction) + 90) % 360, &(*my_Direction));
       /*本当は90°直角に回りたいけどいまそこら辺の制御どうなっているかわからないのでとりあえずこれで*/
     } else {
       //前方にパラシュートがない or 近すぎて判別できない
-      my_direction = get_my_direction();  //現在方角を把握
+      *my_Direction = get_my_direction();  //現在方角を把握
       break;
     }
     //距離センサの以上orパラシュートがかぶさっているなどなんともしがたい状況になっている
@@ -215,12 +221,14 @@ int casing(int landing_flag) {
   }
 
   //先ほど取得した方向へ、しばらく進む
+
   /*本当は地磁気で角度を取得しながら正確に直進したいがそれが今どうなっているかわからないのでとうまに任せます*/
+
   go_straight(10000);
 
 
   //脱出成功
-  return 0;
+  return 1;  /*成功は１を返すように統一しようbyとうま*/
 
 }
 

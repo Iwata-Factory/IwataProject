@@ -87,7 +87,7 @@ void loop() {
         }
 
       case 4:
-        if (status4() == 1) {
+        if (status4(&rover) == 1) {
           trans_phase(4);
           rover.status_number += 1;
           break;
