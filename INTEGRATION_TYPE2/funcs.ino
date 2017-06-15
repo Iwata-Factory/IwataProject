@@ -164,7 +164,7 @@ int gps_data_get(GPS* gps) {
 
   Serial.print("Direction = ");                               //目的地Aの方角(°）
   Serial.print(direct);
-  Serial.print("deg:Distance = ");                             //目的地A迄の距離(m)
+  Serial.print("Distance = ");                             //目的地A迄の距離(m)
   Serial.print(distance);
   Serial.println("m");
   //以下loop関数に値渡しする
@@ -494,7 +494,7 @@ int judge_invered_revive() {
 
 
 
-/*-----------set_danger_area(double latitude, double longitude)--------------------
+/*-----------set_danger_area()--------------------
    引数の周囲10mを立ち入り禁止エリアに
    戻り値
    1:設定完了
@@ -506,17 +506,54 @@ int set_danger_area() {
   /* GPSとれなかったら死ぬからそのままでも良いけどgps_getの無限ループは避けたいbyとうま */
   GPS danger_gps;
   gps_get(&danger_gps);
-  
-  for (int i; i < 10; i++) {
+
+  for (int i = 0; i < 10; i++) {
     if (!(danger_area_points[i].latitude == -1.0 && danger_area_points[i].longitude == -1.0)) {
       danger_area_points[i].latitude = danger_gps.latitude;
       danger_area_points[i].longitude = danger_gps.longitude;
       return 1;  // 登録完了
     }
-    
-    return -1;  // 登録が10箇所埋まっている 
-    
-  }  
+
+    return -1;  // 登録が10箇所埋まっている
+
+  }
 }
 
+
+/*-----------check_danger_area()--------------------
+   引数の周囲10mを立ち入り禁止エリアに
+   戻り値
+   1:問題なし
+   2:問題ありだったが退避完了
+   0:問題あり且つ解決していない
+  ------------------------------------------*/
+
+int check_danger_area() {
+
+  GPS check_gps;
+  gps_get(&check_gps);
+
+  int escape_count = 0;
+
+  for (int i = 0; i < 10; i++) {  // 各禁止エリアについて
+
+    if (!(danger_area_points[i].latitude == -1.0 && danger_area_points[i].longitude == -1.0)) {
+      // 禁止エリアまでの距離算出
+      /* これであってますか? */
+      float danger_distance = sqrt(pow(check_gps.longitude - danger_area_points[i].longitude, 2) + pow(check_gps.latitude - danger_area_points[i].latitude, 2)) * 99096.44;
+      if (danger_distance < 10) {
+        escape_count += 1;
+        // 危険エリアにいるから脱出関数を回す
+        // あとでここに脱出関数を書きます
+        // 脱出できなかった様子なら−１を返す
+      }
+    } 
+  }
+
+  if (escape_count == 0) {
+    return 1; // 何も問題が起きなかった
+  } else {
+    return 2;
+  }
+}
 
