@@ -68,4 +68,9 @@ typedef struct { // モーター制御
   int leght2 = 1; // 11番ピン対応
 } DRIVE;
 
+typedef struct{//経緯情報の保持
+  double latitude = 0.0;   //緯度
+  double longitude = 0.0;  //経度
+} POINT;
+
 #endif
