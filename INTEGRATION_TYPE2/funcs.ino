@@ -490,7 +490,33 @@ int judge_invered_revive() {
       return 1; // 問題なし
     }
   }
+}
 
+
+
+/*-----------set_danger_area(double latitude, double longitude)--------------------
+   引数の周囲10mを立ち入り禁止エリアに
+   戻り値
+   1:設定完了
+   0:引数おかしい
+  ------------------------------------------*/
+
+int set_danger_area() {
+
+  /* GPSとれなかったら死ぬからそのままでも良いけどgps_getの無限ループは避けたいbyとうま */
+  GPS danger_gps;
+  gps_get(&danger_gps);
+  
+  for (int i; i < 10; i++) {
+    if (!(danger_area_points[i].latitude == -1.0 && danger_area_points[i].longitude == -1.0)) {
+      danger_area_points[i].latitude = danger_gps.latitude;
+      danger_area_points[i].longitude = danger_gps.longitude;
+      return 1;  // 登録完了
+    }
+    
+    return -1;  // 登録が10箇所埋まっている 
+    
+  }  
 }
 
 

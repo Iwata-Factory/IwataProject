@@ -27,6 +27,11 @@ typedef struct {  // 機体自身の情報を定義
   
 } ROVER;
 
+typedef struct {
+  double latitude = -1.0;
+  double longitude = -1.0;
+} POINT;
+
 typedef struct { // 2次元のベクトル
   double x = 0.0; //2次元ベクトルのx座標
   double y = 0.0; //2次元ベクトルのy座標
