@@ -174,36 +174,57 @@ int gps_data_get(GPS* gps) {
   return 1;
 }
 
-int gps_get(GPS* gps) {
-  while (1) { //gpsの値が正常になるまで取り続ける
-    int gps_flag = 0;   //gps_getの返り値保存
-    gps_flag = gps_data_get(gps);
-    delay(10);
-    //gpsの値が取れない間どこで引っかかっているのか識別できるようになりました
-    if (gps_flag == 1) { //値が取れたら抜ける
-      break;
-    }
-    if (gps_flag == 2) {
-      ;
-      //      gpsとの通信が来ていない
-      Serial.println("gpsとの通信できていない");
-    }
-    if (gps_flag == 3) {
-      ;
-      //gpsとの通信はできているが値が変or GPRMCでない
-      Serial.println("gpsの値がおかしい or GPRMCではない");
-    }
-    if (gps_flag == 4) {
-      ;
-      speaker(E_TONE);
-      speaker(F_TONE);
-      speaker(E_TONE);
+int gps_get(GPS* gps) {          //故障判定を追加  cnt_gpsdeadをdefineに追加
+  if ((EEPROM.read(EEP_CENSOR_STATUS) & STATUS_GPS) == STATUS_GPS) {
+    while (1) { //gpsの値が正常になるまで取り続ける
+      int gps_flag = 0;   //gps_getの返り値保存
+      gps_flag = gps_data_get(gps);
+      delay(10);
+      //gpsの値が取れない間どこで引っかかっているのか識別できるようになりました
+      if (gps_flag == 1) { //値が取れたら抜ける
+        cnt_gpsdead[1] = 0;
+        cnt_gpsdead[0] = 0;  //
+        break;
+      }
+      if (gps_flag == 2) {
+        ;
+        //      gpsとの通信が来ていない
+        Serial.println("gpsとの通信できていない");
+        cnt_gpsdead[0]++;
+      }
+      if (gps_flag == 3) {
+        ;
+        //gpsとの通信はできているが値が変or GPRMCでない
+        Serial.println("gpsの値がおかしい or GPRMCではない");
+        cnt_gpsdead[0]++;
+      }
+      if (gps_flag == 4) {
+        ;
+        speaker(E_TONE);
+        speaker(F_TONE);
+        speaker(E_TONE);
 
-      //通信ができて値も解析されたが緯度経度の値がバグってる
-      Serial.println("緯度経度がおかしい");
+        //通信ができて値も解析されたが緯度経度の値がバグってる
+        Serial.println("緯度経度がおかしい");
+        cnt_gpsdead[0]++;
+      }
+      if (cnt_gpsdead[0] > 40) {
+        Serial.print("gps broken\r");
+        cnt_gpsdead[1]++;  //完全破壊カウンタ
+        if (cnt_gpsdead[1] > 10) {    //10回連続でgps_getが昨日しなかった
+          renew_status( STATUS_GPS, 0);  //GPSステータスを故障に更新
+          Serial.print("gps finally broken!!\r renew status\r");
+          break;
+        }
+        cnt_gpsdead[0] = 0;
+        break;
+      }
     }
   }
-
+  else {
+    //第一GPS故障
+    Serial.print("1st GPS is dead\r");
+  }
 }
 
 /*-----------get_ac()--------------------
@@ -374,7 +395,7 @@ int turn_target_direction(double target_direction, double *my_Direction) {
     Serial.println("回転します。");
 
     rotate_angle = rotate_angle * (10 - i) / 10;  // 回転角度を収束させる
-    
+
     go_rotate(rotate_angle);  // 回転を行う
 
   } while (i < 10); // 10回回転してもダメだったら失敗

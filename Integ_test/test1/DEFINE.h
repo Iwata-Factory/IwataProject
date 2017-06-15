@@ -115,6 +115,9 @@ double tm_y_offset = 0.0;
 double x_def = 1.0;
 double y_def = 1.0;
 
+//故障カウンタ類
+int cnt_gpsdead[2] = {0,0};   //GPS失敗カウンタ、故障カウンタ
+
 SoftwareSerial g_gps( PIN_GPS_Rx, PIN_GPS_Tx); // ArduinoとGPS間のシリアル通信用に
 Servo servo1;
 

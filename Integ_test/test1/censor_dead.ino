@@ -23,7 +23,7 @@ void distance_dora() {
   }
 }
 
-boolean sd_dora() {
+void sd_dora() {
   int cnt_dead, sno = 0;
   File samplefile = SD.open(SD_FLAG);
   boolean dead;
@@ -46,9 +46,34 @@ boolean sd_dora() {
 }
 
 
-//ac  //ACKでアドレスが帰ってこない・値が変動しない
+void ac_dora() { //ACKでアドレスが帰ってこない・値が変動しない
+  //if ((EEPROM.read(EEP_CENSOR_STATUS) & STATUS_MOTOR) == STATUS_MOTOR ) { //モーターが故障していない場合
+    int cnt_dead, sno = 0;
+    boolean dead = 0;
+    while (sno < 50) {
+      if ( dead ) {
+        cnt_dead++;
+      }
+      sno++;
+      delay(50);
+    }
+    if (cnt_dead >= 40 ) { //死亡書き換え
+      renew_status(STATUS_AC, 0); //死亡
+    }
+    if (cnt_dead == 0 ) {
+      renew_status(STATUS_AC, 1); //復活
+    }
+  //}
+}
+
+
 //tm  //acと同じ不具合が考えられる
 //motor  //加速度変化がない？？
 //light  //現状単一のセンサから１・０が来ているので死亡判定は出せないと思われる。放出判定はタイマーで済ませてその後のステータスにおいて明を返さない場合に死亡判定を出す程度しか不能では
 //xbee
-//gps  //
+//gps  //gpsについてはfuncs内のget_gpsの中に故障判定を追加しました。
+
+//boolean sensing_dora(int sensor) { //sensor = 0:1:2:3:
+//
+//}
+
