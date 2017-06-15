@@ -24,8 +24,9 @@ int write_timelog_sd(long logtime, int now_status) {
       dataFile.print(logtime);
       dataFile.print(",status:");
       dataFile.println(now_status);
-
       dataFile.close();
+
+      xbee_uart( dev, "time to SD success!!\r" );
       return 1; // 成功を返す
     } else {
       xbee_uart( dev,"fail to open SD...\r");
@@ -48,8 +49,9 @@ int write_ac_sd(AC ac) {
       dataFile.println(ac.x);
       dataFile.println(ac.y);
       dataFile.println(ac.z);
+      dataFile.close();\
 
-      dataFile.close();
+      xbee_uart( dev, "AC to SD successed!!\r");
       return 1; // 成功を返す
     } else {
       xbee_uart( dev,"fail to open SD...\r");
@@ -73,6 +75,8 @@ int write_tm_sd(TM tm) {
       dataFile.println(tm.y);
       dataFile.println(tm.z);
       dataFile.close();
+
+      xbee_uart( dev, "TM to SD successed!!\r");
       return 1; // 成功を返す
     } else {
       xbee_uart( dev,"fail to open SD...\r");
@@ -99,6 +103,7 @@ int write_gps_sd(GPS gps) {
       dataFile.println(gps.Direction, 4);
       dataFile.println(gps.distance, 4);
       dataFile.close();
+      xbee_uart( dev, "success!!\r" );
       return 1; // 成功を返す
     } else {
       xbee_uart( dev,"fail to open SD...\r");
@@ -176,6 +181,8 @@ int read_ac_sd(AC ac[100], int num) {
         }
       }
       dataFile.close();
+
+      xbee_uart( dev, "read AC from SD success\r" );
       return 1; // 要求された処理が完了したことを返す
     } else {
       xbee_uart( dev,"Fail to open SD...\r");
@@ -253,6 +260,8 @@ int read_tm_sd(TM tm[100], int num) {
         }
       }
       dataFile.close();
+
+      xbee_uart( dev, "TM from SD success!!\r" );
       return 1; // 要求された処理が完了したことを返す
     } else {
       xbee_uart( dev,"Fail to open SD...\r");
@@ -346,6 +355,8 @@ int read_gps_sd(GPS gps[100], int num) {
         }
       }
       dataFile.close();
+
+      xbee_uart(dev, "gps from SD successed!!!\r" );
       return 1; // 要求された処理が完了したことを返す
     } else {
       xbee_uart( dev,"fail to open SD...\r");

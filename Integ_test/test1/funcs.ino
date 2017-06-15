@@ -49,7 +49,7 @@ int AnalyzeLineString( char szLineString[], GPS* gps) {
      これが出る場合は屋外とか通信状況よくなるようにしてください
   */
   if ( strncmp(*gps_status, 'V', 1 ) == 0) {
-    xbee_uart( dev, "BAD communicatin condition og gps...\r");
+    xbee_uart( dev, "BAD communicatin condition of gps...\r");
   }
   gps->utc = atof(psz_utc);
   gps->Speed = atof(psz_Speed);
@@ -146,6 +146,7 @@ int gps_data_get(GPS* gps) {
   //xbee送信
   xbee_uart(dev, "get gps: utc\rLat,Long,Speed\rCrs,Dir,Dis\r");
   xbee_uart(dev, sz_utc);
+  xbee_uart(dev, "\r" );
   xbee_send_3doubles( gps->latitude, gps->Direction, gps->Speed );
 
   float LatA = GOAL_LATITUDE, LongA = GOAL_LONGITUDE;      //目的地
@@ -292,9 +293,10 @@ double get_my_direction() {
       } else {
         tm_degree =  tm_degree - 90;
       }
-
-      sprintf(xbee_send, "sample of tm %d is %f", i + 1, tm_degree);
+      
+      sprintf(xbee_send, "sample of tm %d is ", i + 1 );  //tm_degreeが文字化けする不具合
       xbee_uart(dev, xbee_send);
+      xbee_send_1double(tm_degree);    //文字化け
 
       direction_array[i] = tm_degree;  // 外れ値処理のためにradに再変換
 
@@ -309,8 +311,8 @@ double get_my_direction() {
   xbee_uart( dev, "calculating\r");
   my_direction = degree_out(10, direction_array);  // 10サンプルから平均を計算
   //my_direction = rad2deg(my_direction);  // radからdegへ
-
-  xbee_uart( dev, "direction of rover is %f\r");
+  
+  xbee_uart( dev, " : direction of rover is ");
   xbee_send_1double(my_direction);
 
   return my_direction;  // 単位はdeg
@@ -345,7 +347,7 @@ int turn_target_direction(double target_direction, double *my_Direction) {
     double a_difference = *my_Direction - target_direction;
 
     xbee_uart( dev, "a_difference is\r");
-    xbee_send_1double(a_difference);             //送信時に文字化けして（受信したものが”？”）出てくる。関数を呼び出しているから。。？
+    xbee_send_1double(a_difference);             //送信時に文字化けして（受信したものが”？”）出てくる。関数を呼び出しているから。。？ （6/15追記　うまくいった）
 
     if (180 <= a_difference) {
       rotate_angle = 360 - a_difference;  // 右回転
@@ -382,7 +384,7 @@ int turn_target_direction(double target_direction, double *my_Direction) {
 
 int tm_calibration() {
 
-  xbee_uart( dev,"Calibration\r");
+  xbee_uart( dev, "Calibration\r");
 
   delay(500);
 
@@ -404,7 +406,7 @@ int tm_calibration() {
   TM tm;
 
   rover_degital(turn); // 回転開始
-  xbee_uart( dev,"Start getting sample...\r");
+  xbee_uart( dev, "Start getting sample...\r");
 
   for (int i = 0; i < 2500; i++) {
 
@@ -463,7 +465,7 @@ int tm_calibration() {
   //  xbee_uart( dev,tm_y_offset);
 
 
-  xbee_uart( dev,"Finish calibration.\r");
+  xbee_uart( dev, "Finish calibration.\r");
 
 
   return 1;

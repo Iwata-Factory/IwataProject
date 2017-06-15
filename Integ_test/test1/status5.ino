@@ -4,9 +4,9 @@ int status5(ROVER *rover) {
   int i = 0; // do-whileの繰り返し数をカウント
 
   do {
-    
+
     AC ac_going;  // 反転判定用
-    
+
     while (1) {  // 判定していないかチェック
 
       if (ac_going.z < 0) {  // 加速度が負の場合
@@ -43,7 +43,7 @@ int status5(ROVER *rover) {
 
     }
 
-    xbee_uart( dev,"get gps\r");
+    xbee_uart( dev, "get gps\r");
     // GPS情報を取得
     GPS gps;
     gps_get(&gps);
@@ -52,36 +52,37 @@ int status5(ROVER *rover) {
     rover->longitude = gps.longitude;  //経度
     rover->Target_Direction = gps.Direction;  //ターゲットの方向
     rover->distance = gps.distance;  // ターゲットまでの距離
-    xbee_uart( dev,"logging\r");
     if (write_gps_sd(gps)) { // 自身の位置をsdに記録
-      xbee_uart( dev,"success\r");
+      xbee_uart( dev, "gps to SD successed\r");
     } else {
-      xbee_uart( dev,"fail\r");
+      xbee_uart( dev, "fail\r");
     }
 
     rover->time_from_start =  millis();//現在の時間を取得
     write_timelog_sd(time, 5);
+    
+    xbee_uart(dev, "distance to goal is ");
+    xbee_send_1double(gps.distance);
+    //sprintf(xbee_send, "distance to goal is %f\r", gps.distance);
 
-    sprintf(xbee_send, "distance to goal is %f\r", gps.distance);
-    xbee_uart(dev, xbee_send);
-//    xbee_uart( dev,"ゴールまでの距離は");
-//    xbee_uart( dev,gps.distance);
+    //    xbee_uart( dev,"ゴールまでの距離は");
+    //    xbee_uart( dev,gps.distance);
 
     if (0 <= rover->distance && rover->distance < 15) { // 15mまで来たら地上2へ
-      xbee_uart( dev,"near goal\r");
+      xbee_uart( dev, "near goal\r");
       return 1;
     }
 
-    xbee_uart( dev,"balancing rover\r");
+    xbee_uart( dev, "balancing rover\r");
     // 目的の方向を目指して回転を行う。rover->My_Directionは書き換えていく。
     int turn_result = turn_target_direction(rover->Target_Direction, &rover->My_Direction);
 
 
     if (turn_result == 0) {
-      xbee_uart( dev,"give up!!!\r");
+      xbee_uart( dev, "give up!!!\r");
     }
 
-    xbee_uart( dev,"go straight\r");
+    xbee_uart( dev, "go straight\r");
     // 3秒直進
     go_straight(7000);
 
