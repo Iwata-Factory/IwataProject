@@ -220,3 +220,16 @@ double vector2d_inner(Vector2D v1, Vector2D v2) {
 }
 
 
+/*
+   緯度経度から目的地までの距離を測定する
+*/
+double get_distance(GPS* gps, POINT* point) {
+  double distance = 0;
+  double direct = 0;
+  //一応方角も出せるようにしておきました
+  distance = sqrt(pow(point->longitude - gps->longitude, 2) + pow(point->latitude - gps->latitude, 2)) * 99096.44, 0;
+  direct = (int)(atan2((point->longitude - gps->longitude) * 1.23, (point->latitude - gps->latitude)) * 57.3 + 360) % 360;
+
+  return distance;
+}
+
