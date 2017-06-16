@@ -1,4 +1,5 @@
 int judge_release(){
+  return 1;
   int i = 0;
   int light=0;   //照度センサのカウンタ
   unsigned long t=0;   //一定時間たったら勝手に照度センサ起動

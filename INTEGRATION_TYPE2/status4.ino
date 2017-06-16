@@ -38,7 +38,7 @@ int status4(ROVER *rover) {  // Status4 着陸の関数
   ------------------------------------------*/
 
 int determine_landing() {
-
+  return 1;
   AC ac; // 宣言
 
   double ac_array[10]; // サンプルを入れる箱
@@ -51,11 +51,14 @@ int determine_landing() {
   int i = 0;
   while (i < 10) {
     ac = get_ac(); // 加速度を取得
+
     if (!(ac.x == 100 && ac.y == 100 && ac.z == 100)) {
       // 値を取れている
       // 加速度の大きさを計算
       ac_array[i] = sqrt(pow(ac.x, 2) + pow(ac.y, 2) + pow(ac.z, 2));
-      delay(6000); // サンプリングは6秒ごとに
+      Serial.println("以下合計");
+      Serial.println(ac_array[i]);
+      delay(3000); // サンプリングは6秒ごとに
       i += 1;
     } else {
       // 加速度を取得に失敗したら6秒待ってもう一度取る
@@ -68,7 +71,8 @@ int determine_landing() {
     ac_sum += ac_array[i];
   }
   ac_ave = ac_sum / 10;
-  if (9.5 <= ac_ave && ac_ave <= 10.3) {
+  if (200 <= ac_ave && ac_ave <= 300) {
+    Serial.println("着陸成功");
     return 1; //着陸判定にパス
   } else {
     return 0;
@@ -86,6 +90,8 @@ int casing(int landing_flag, ROVER *rover) {
 
   //ニクロム線溶断する
   while (1) {
+    speaker(C_TONE);
+    Serial.print("ニクロム着火");
     digitalWrite(NICROM_1, HIGH);
     delay(10000);   //10秒間ニクロム線を熱すれば切れるはず
     digitalWrite(NICROM_1, LOW);
@@ -100,12 +106,15 @@ int casing(int landing_flag, ROVER *rover) {
     if (landing_flag == 0) { //比較的風が弱い
       rover->My_Direction = get_my_direction();
       target_flag = turn_target_direction(rover->My_Direction + 180, &rover->My_Direction);
-
+      Serial.println("回転したとする");
+      break;
       if (target_flag == 1) {
         //無事に回転できた＞＞ケーシングが展開している
+        Serial.println("ケーシング展開成功");
         break;
       } else {
         //ケーシングが展開していなくて回転できない
+        Serial.println("ケーシング展開失敗");
         nicrom_count++;
         continue;
       }
@@ -126,18 +135,15 @@ int casing(int landing_flag, ROVER *rover) {
 
   }
   //ここから、パラシュートをよけるプロセス
-
+  Serial.println("パラシュート回避シーケンス");
   /*ここで反転判定及び復帰シーケンスを必ずできたら入れてください*/
   judge_invered_revive(); /*←いれましたbyとうま */
 
   GPS gps;
-  gps_get(&gps);    //ここで取得したデータをSDなりに保管して以後近づかないようにしてください
-
+  //gps_get(&gps);    //ここで取得したデータをSDなりに保管して以後近づかないようにしてください
+  Serial.println("とりあえず成功したとする");
   //とりあえずケーシング展開できていないと困るので動いて刺激与える
-  /*本当はケーシングが開いたかの判定を何らかのセンサを用いてしたいけど難しそう*/
-  /*いい方法思いついたら教えてください*/
-  go_rotate(1000);
-  go_rotate(-1000);
+
 
   //ひとまずケーシング展開できたとする
   //ここからは距離センサで目の前にパラシュートがないかを確認する
@@ -149,27 +155,32 @@ int casing(int landing_flag, ROVER *rover) {
   double angle_servo = 0;  //servoモーターの角度
   int count_para = 0;     //何回パラシュートがあるかの判定をしたかのカウンター
 
+
   while (1) {
     count_para++;
+    double direction_hold = 0;
     rover->My_Direction = get_my_direction();  //現在の方角を取得
-
+    direction_hold = rover->My_Direction;
+    distance_flag = 0;
     //0.9~5mくらいなら取れる
+
+    Serial.println("距離フェーズ");
     //servoモーターは90°が機体正面としています
+    /*
+        //サーボモーターで6０～１２０°まで安全確認
+        for (angle_servo = 60; angle_servo <= 120; angle_servo += 10 ) {
+          servo1.write(angle_servo);    //
+          delay(1000);    //回転時間
+          volt = analogRead( DISTANCE ) * 5 / 1023.0;
+          Serial.println( volt );  //電圧換算表示
 
-    //サーボモーターで6０～１２０°まで安全確認
-    for (angle_servo = 60; angle_servo <= 120; angle_servo += 10 ) {
-      servo1.write(angle_servo);    //
-      delay(1000);    //回転時間
-      volt = analogRead( DISTANCE ) * 5 / 1023.0;
-      Serial.println( volt );  //電圧換算表示
-
-      if ( 1.35 < volt & volt < 2.7 ) {            //有効測距範囲内
-        para_distance = 140.0 / ( volt - 1.10 ) ;
-        Serial.print( "success reading! Distance is  " );
-        Serial.println( para_distance );
-        distance_flag = 1;     //一方向でも危険物があるとパラシュートとみなしアウト
-      }
-    }
+          if ( 1.35 < volt & volt < 2.7 ) {            //有効測距範囲内
+            para_distance = 140.0 / ( volt - 1.10 ) ;
+            Serial.print( "success reading! Distance is  " );
+            Serial.println( para_distance );
+            distance_flag = 1;     //一方向でも危険物があるとパラシュートとみなしアウト
+          }
+        }*/
 
 
     /*
@@ -178,36 +189,44 @@ int casing(int landing_flag, ROVER *rover) {
 
     target_flag = 0;
     int i = 0;
-    /*
-        //サーボモーターなしver
-        for (i = -3; i <= 3; i++) {
-          while (1) {
-            target_flag = turn_target_direction((my_direction + 10 * i), &my_direction);
-            if (target_flag == 1) {
-            break;
-          } else {
-            continue;
-          }
-          volt = analogRead( DISTANCE ) * 5 / 1023.0;
-                 Serial.println( volt );  //電圧換算表示
 
-          if ( 1.35 < volt & volt < 2.7 ) {            //有効測距範囲内
-            para_distance = 140.0 / ( volt - 1.10 ) ;
-              Serial.print( "success reading! Distance is  " );
-              Serial.println( para_distance );
-              distance_flag = 1;     //一方向でも危険物があるとパラシュートとみなしアウト
-            }
-          }
+    //サーボモーターなしver
+    for (i = -3; i <= 3; i++) {
+      rover->My_Direction = get_my_direction();
+      while (1) {
+        target_flag = turn_target_direction((int)(direction_hold + 10 * i) % 360, &rover->My_Direction);
+        if (target_flag == 1) {
+          Serial.print("回転終了");
+          break;
+        } else {
+          Serial.println("回転できません");
+          speaker(B_TONE);
+          break;
+          continue;
+        }
+      }
+      volt = analogRead( DISTANCE ) * 5 / 1023.0;
+      Serial.println( volt );  //電圧換算表示
+
+      if ( 1.35 < volt & volt < 2.7 ) {            //有効測距範囲内
+        para_distance = 140.0 / ( volt - 1.10 ) ;
+        Serial.print( "前方危険 : " );
+        Serial.println( para_distance );
+        distance_flag = 1;     //一方向でも危険物があるとパラシュートとみなしアウト
+
+      }
+    }
+    delay(500);
 
 
 
-        }*/
 
     delay( 500 );
 
     if (distance_flag == 1) {
       //前方にパラシュートが存在
       //回転する
+      Serial.println("障害物発見");
       turn_target_direction(rover->My_Direction + 90, &rover->My_Direction);
       /*本当は90°直角に回りたいけどいまそこら辺の制御どうなっているかわからないのでとりあえずこれで*/
     } else {
@@ -224,10 +243,10 @@ int casing(int landing_flag, ROVER *rover) {
   //先ほど取得した方向へ、しばらく進む
 
   /*本当は地磁気で角度を取得しながら正確に直進したいがそれが今どうなっているかわからないのでとうまに任せます*/
-
+  Serial.println("前方の安全を確認");
   go_straight(10000);
 
-
+  speaker(D_TONE);
   //脱出成功
   return 1;  /*成功は１を返すように統一しようbyとうま*/
 

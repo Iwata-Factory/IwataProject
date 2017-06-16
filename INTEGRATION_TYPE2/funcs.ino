@@ -186,17 +186,17 @@ int gps_get(GPS* gps) {
     if (gps_flag == 2) {
       ;
       //gpsとの通信が来ていない
-      //Serial.println("gpsとの通信できていない");
+      Serial.println("gpsとの通信できていない");
     }
     if (gps_flag == 3) {
       ;
       //gpsとの通信はできているが値が変or GPRMCでない
-      //Serial.println("gpsの値がおかしい or GPRMCではない");
+      Serial.println("gpsの値がおかしい or GPRMCではない");
     }
     if (gps_flag == 4) {
       ;
       //通信ができて値も解析されたが緯度経度の値がバグってる
-      //Serial.println("緯度経度がおかしい");
+      Serial.println("緯度経度がおかしい");
     }
   }
 
@@ -220,6 +220,13 @@ AC get_ac() {
   } else {
     ; // 何もしない
   }
+    Serial.println("以下加速度生データ");
+    Serial.print("x:");
+    Serial.println(ac.x);
+    Serial.print("y:");
+    Serial.println(ac.y);
+    Serial.print("z:");
+    Serial.println(ac.z);
   return ac;
 }
 
