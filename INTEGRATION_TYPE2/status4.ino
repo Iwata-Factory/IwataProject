@@ -80,6 +80,7 @@ int determine_landing() {
       delay(6000);
     }
   }
+
   // 着陸したかの判定
   // 平均を算出
   for (int i = 0; i < 10; ++i) {
@@ -89,7 +90,7 @@ int determine_landing() {
 
   //  xbee_uart( dev,"解析結果:");
   //  xbee_uart( dev,ac_ave);
-  if (225 <= ac_ave && ac_ave <= 245) {
+  if (200 <= ac_ave && ac_ave <= 300) {
     xbee_uart( dev, "land ok\r");
     return 1; //着陸判定にパス
   } else {
@@ -173,10 +174,12 @@ int casing(int landing_flag, ROVER * rover) {
 
   double angle_servo = 0;  //servoモーターの角度
   int count_para = 0;     //何回パラシュートがあるかの判定をしたかのカウンター
+  double direction_hold = 0;  //方角の保持
 
   while (1) {
     count_para++;
     rover->My_Direction = get_my_direction();  //現在の方角を取得
+    direction_hold = rover->My_Direction;      //現在の方角を保持
 
     xbee_uart( dev, "avoid parashute by opening casing.\r");
     xbee_uart( dev, "Pass this phase in this experiment.\r");
@@ -188,7 +191,7 @@ int casing(int landing_flag, ROVER * rover) {
 
     //0.9~5mくらいなら取れる
     //servoモーターは90°が機体正面としています
-
+ /*
     //サーボモーターで6０～１２０°まで安全確認
     for (angle_servo = 60; angle_servo <= 120; angle_servo += 10 ) {
       servo1.write(angle_servo);    //
@@ -202,7 +205,7 @@ int casing(int landing_flag, ROVER * rover) {
         Serial.println( para_distance );
         distance_flag = 1;     //一方向でも危険物があるとパラシュートとみなしアウト
       }
-    }
+    }*/
 
 
     /*
@@ -211,27 +214,28 @@ int casing(int landing_flag, ROVER * rover) {
 
     target_flag = 0;
     int i = 0;
-    /*
-        //サーボモーターなしver
-        for (i = -3; i <= 3; i++) {
-          while (1) {
-            target_flag = turn_target_direction((my_direction + 10 * i), &my_direction);
-            if (target_flag == 1) {
-            break;
-          } else {
-            continue;
-          }
-          volt = analogRead( DISTANCE ) * 5 / 1023.0;
-                 Serial.println( volt );  //電圧換算表示
 
-          if ( 1.35 < volt & volt < 2.7 ) {            //有効測距範囲内
-            para_distance = 140.0 / ( volt - 1.10 ) ;
-              Serial.print( "success reading! Distance is  " );
-              Serial.println( para_distance );
-              distance_flag = 1;     //一方向でも危険物があるとパラシュートとみなしアウト
-            }
-          }
-        }*/
+    //サーボモーターなしver
+    for (i = -3; i <= 3; i++) {
+      while (1) {
+        rover->My_Direction = get_my_direction();
+        target_flag = turn_target_direction((direction_hold + 10 * i), &rover->My_Direction);
+        if (target_flag == 1) {
+          break;
+        } else {
+          continue;
+        }
+        volt = analogRead( DISTANCE ) * 5 / 1023.0;
+        Serial.println( volt );  //電圧換算表示
+
+        if ( 1.35 < volt & volt < 2.7 ) {            //有効測距範囲内
+          para_distance = 140.0 / ( volt - 1.10 ) ;
+          Serial.print( "success reading! Distance is  " );
+          Serial.println( para_distance );
+          distance_flag = 1;     //一方向でも危険物があるとパラシュートとみなしアウト
+        }
+      }
+    }
 
 
     delay( 500 );
