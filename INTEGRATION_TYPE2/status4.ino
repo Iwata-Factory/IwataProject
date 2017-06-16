@@ -111,6 +111,8 @@ int casing(int landing_flag, ROVER * rover) {
 
   //ニクロム線溶断する
   while (1) {
+    speaker(C_TONE);
+    speaker(E_TONE);
     digitalWrite(NICROM_1, HIGH);
     delay(10000);   //10秒間ニクロム線を熱すれば切れるはず
     digitalWrite(NICROM_1, LOW);
@@ -137,7 +139,7 @@ int casing(int landing_flag, ROVER * rover) {
     } else {
       //landing_flag == 1の時は風が相当強いので何もいなくても空いていたらケーシングがどっかに行く
       rover->My_Direction = get_my_direction();
-      target_flag = turn_target_direction(rover->My_Direction + 180, &rover->My_Direction);
+      target_flag = turn_target_direction((int)(rover->My_Direction + 180) % 360 , &rover->My_Direction);
       if (target_flag == 1) {
         //無事に回転できた＞＞ケーシングが展開している
         /*風が強いので後述の脱出シーケンスがひょっとしたらいらないかも*/
@@ -158,11 +160,6 @@ int casing(int landing_flag, ROVER * rover) {
   GPS gps;
   gps_get(&gps);    //ここで取得したデータをSDなりに保管して以後近づかないようにしてください
 
-  //とりあえずケーシング展開できていないと困るので動いて刺激与える
-  /*本当はケーシングが開いたかの判定を何らかのセンサを用いてしたいけど難しそう*/
-  /*いい方法思いついたら教えてください*/
-  go_rotate(1000);
-  go_rotate(-1000);
 
   //ひとまずケーシング展開できたとする
   //ここからは距離センサで目の前にパラシュートがないかを確認する
@@ -177,6 +174,7 @@ int casing(int landing_flag, ROVER * rover) {
   double direction_hold = 0;  //方角の保持
 
   while (1) {
+    distance_flag = 0;
     count_para++;
     rover->My_Direction = get_my_direction();  //現在の方角を取得
     direction_hold = rover->My_Direction;      //現在の方角を保持
@@ -184,28 +182,26 @@ int casing(int landing_flag, ROVER * rover) {
     xbee_uart( dev, "avoid parashute by opening casing.\r");
     xbee_uart( dev, "Pass this phase in this experiment.\r");
 
-    volt = analogRead( DISTANCE ) * 5 / 1023.0;
-
     xbee_uart( dev, "volt of distance is " );  //電圧換算表示
     xbee_send_1double(volt);
 
     //0.9~5mくらいなら取れる
     //servoモーターは90°が機体正面としています
- /*
-    //サーボモーターで6０～１２０°まで安全確認
-    for (angle_servo = 60; angle_servo <= 120; angle_servo += 10 ) {
-      servo1.write(angle_servo);    //
-      delay(1000);    //回転時間
-      volt = analogRead( DISTANCE ) * 5 / 1023.0;
-      Serial.println( volt );  //電圧換算表示
+    /*
+       //サーボモーターで6０～１２０°まで安全確認
+       for (angle_servo = 60; angle_servo <= 120; angle_servo += 10 ) {
+         servo1.write(angle_servo);    //
+         delay(1000);    //回転時間
+         volt = analogRead( DISTANCE ) * 5 / 1023.0;
+         Serial.println( volt );  //電圧換算表示
 
-      if ( 1.35 < volt & volt < 2.7 ) {            //有効測距範囲内
-        para_distance = 140.0 / ( volt - 1.10 ) ;
-        Serial.print( "success reading! Distance is  " );
-        Serial.println( para_distance );
-        distance_flag = 1;     //一方向でも危険物があるとパラシュートとみなしアウト
-      }
-    }*/
+         if ( 1.35 < volt & volt < 2.7 ) {            //有効測距範囲内
+           para_distance = 140.0 / ( volt - 1.10 ) ;
+           Serial.print( "success reading! Distance is  " );
+           Serial.println( para_distance );
+           distance_flag = 1;     //一方向でも危険物があるとパラシュートとみなしアウト
+         }
+       }*/
 
 
     /*
@@ -225,15 +221,15 @@ int casing(int landing_flag, ROVER * rover) {
         } else {
           continue;
         }
-        volt = analogRead( DISTANCE ) * 5 / 1023.0;
-        Serial.println( volt );  //電圧換算表示
+      }
+      volt = analogRead( DISTANCE ) * 5 / 1023.0;
+      Serial.println( volt );  //電圧換算表示
 
-        if ( 1.35 < volt & volt < 2.7 ) {            //有効測距範囲内
-          para_distance = 140.0 / ( volt - 1.10 ) ;
-          Serial.print( "success reading! Distance is  " );
-          Serial.println( para_distance );
-          distance_flag = 1;     //一方向でも危険物があるとパラシュートとみなしアウト
-        }
+      if ( 1.35 < volt & volt < 2.7 ) {            //有効測距範囲内
+        para_distance = 140.0 / ( volt - 1.10 ) ;
+        Serial.print( "success reading! Distance is  " );
+        Serial.println( para_distance );
+        distance_flag = 1;     //一方向でも危険物があるとパラシュートとみなしアウト
       }
     }
 
@@ -255,7 +251,9 @@ int casing(int landing_flag, ROVER * rover) {
       break;
     }
   }
-
+  //方角をさっきの方角に戻す
+  rover->My_Direction = get_my_direction();
+  target_flag = turn_target_direction((direction_hold ), &rover->My_Direction);
   //先ほど取得した方向へ、しばらく進む
 
   /*本当は地磁気で角度を取得しながら正確に直進したいがそれが今どうなっているかわからないのでとうまに任せます*/
