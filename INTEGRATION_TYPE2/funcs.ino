@@ -575,7 +575,7 @@ int check_danger_area() {
       if (danger_distance < 10) {  // 10m以内に居たらやばい
         escape_count += 1;
 
-        int escape_result = escape_danger_area(danger_area_points[i]);
+        int escape_result = escape_danger_area(&check_gps, &danger_area_points[i]);
         // 危険エリアにいるから脱出関数を回す
         // あとでここに脱出関数を書きます
         // 脱出できなかった様子なら−１を返す
@@ -598,8 +598,9 @@ int check_danger_area() {
    0:失敗
   ------------------------------------------*/
 
-int escape_danger_area(POINT point) {
+int escape_danger_area(GPS *gps, POINT *point) {
   ;
-  
+  //ゴール接近の応用でPOINTの真逆に走る
+  //数回繰り返して無事を確認してreturn
 }
 
