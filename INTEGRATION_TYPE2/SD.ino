@@ -114,6 +114,35 @@ int write_gps_sd(GPS gps) {
 }
 
 
+//新規作成
+int write_gps_sd_file(GPS gps, char filename) {
+  int i = 0; // 試行回数記録用
+  Serial.println("GPSを記録します。");
+  while (i < 30) { // 30回SDカードを開けなかったら諦める
+    File dataFile = SD.open(filename, FILE_WRITE);
+    if (dataFile) { // ファイルが開けたときの処理
+      dataFile.seek(dataFile.size());
+      dataFile.println("*"); // 記録の境目
+      dataFile.println(gps.utc, 4);  // 下4桁
+      dataFile.println(gps.latitude, 4);
+      dataFile.println(gps.longitude, 4);
+      dataFile.println(gps.Speed, 4);
+      dataFile.println(gps.course, 4);
+      dataFile.println(gps.Direction, 4);
+      dataFile.println(gps.distance, 4);
+      dataFile.close();
+      return 1; // 成功を返す
+    } else {
+      Serial.println("ファイルオープンに失敗");
+      i += 1;
+    }
+  }
+  return 0; // 失敗を返す
+}
+
+
+
+
 // 加速度を読み取る
 // 第一引数:値を入れる構造体の配列
 // 第二引数:何個の値を入れるか

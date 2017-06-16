@@ -80,20 +80,39 @@ int determine_landing() {
       delay(6000);
     }
   }
-  // 着陸したかの判定
-  // 平均を算出
-  for (int i = 0; i < 10; ++i) {
-    ac_sum += ac_array[i];
-  }
-  ac_ave = ac_sum / 10;
+  //  // 着陸したかの判定
+  //  // 平均を算出
+  //  for (int i = 0; i < 10; ++i) {
+  //    ac_sum += ac_array[i];
+  //  }
+  //  ac_ave = ac_sum / 10;
+  //
+  //  //  xbee_uart( dev,"解析結果:");
+  //  //  xbee_uart( dev,ac_ave);
+  //  if (225 <= ac_ave && ac_ave <= 245) {
+  //    xbee_uart( dev, "land ok\r");
+  //    return 1; //着陸判定にパス
+  //  } else {
+  //    xbee_uart( dev, "land not ok\r");
+  //    return 0;
+  //  }
 
-  //  xbee_uart( dev,"解析結果:");
-  //  xbee_uart( dev,ac_ave);
-  if (225 <= ac_ave && ac_ave <= 245) {
-    xbee_uart( dev, "land ok\r");
-    return 1; //着陸判定にパス
-  } else {
-    xbee_uart( dev, "land not ok\r");
+
+  //別バージョン
+  //１０回中９回クリアで成功
+  int cnt_land = 0;
+  for (int i = 0; i < 10; ++i) {
+    Serial.println(ac_array[i]);
+    if (225 <= ac_array[i] && ac_array[i] <= 245) {
+      cnt_land++;
+    }
+  }
+  if (cnt_land >= 9 ) {
+    Serial.println("land ok!!");
+    return 1;
+  }
+  else {
+    Serial.println("land not ok...");
     return 0;
   }
 }

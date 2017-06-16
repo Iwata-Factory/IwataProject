@@ -78,6 +78,10 @@
 #define STATUS_XBEE 0x80
 #define SD_FLAG ("mis_flag.byt")
 
+//write_sd_gps_file用の関数を追加
+#define GPS_SPECIAL ("gps_spec.byt")     
+#define INITIAL_GPS 2  //制御開始時のGPSログをしま
+
 //ニクロム線
 #define NICROM_1 28
 #define NICROM_2 30
