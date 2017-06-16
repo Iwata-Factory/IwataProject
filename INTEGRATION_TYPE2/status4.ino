@@ -6,7 +6,7 @@
 
 int status4(ROVER *rover) {  // Status4 着陸の関数
   // 加速度とGPSから判断することになりそう
-
+  speaker(A_TONE);
   int landing_flag = 0;   //着地判定を何で行ったか
 
   //暫定的に前回までのやつにしています
@@ -46,7 +46,7 @@ int status4(ROVER *rover) {  // Status4 着陸の関数
   ------------------------------------------*/
 
 int determine_landing() {
-
+  return 1;
   xbee_uart( dev, "judging Landing\r");
 
 
@@ -115,14 +115,16 @@ int casing(int landing_flag, ROVER * rover) {
     double dif_direction = 0;   //directionの差をとる
     speaker(C_TONE);
     speaker(E_TONE);
+    xbee_uart(dev, "nicrom hotten\n");
     digitalWrite(NICROM_1, HIGH);
     digitalWrite(NICROM_2, HIGH);
     delay(1000);
     digitalWrite(NICROM_2, LOW);
     digitalWrite(NICROM_1, LOW);
+    xbee_uart(dev, "nicrom end\n");
     speaker(G_TONE);
- 
-    
+
+
     if (nicrom_count >= 10) {
       //たぶんニクロム線がイカれているとかで異常事態
       break;
@@ -135,12 +137,13 @@ int casing(int landing_flag, ROVER * rover) {
       rover->My_Direction = get_my_direction();
       direction_hold = rover->My_Direction;
       /*実験からおよそ180度回転になる値を入れてください*/
+      speaker(B_TONE);
       go_rotate(1000);
       rover->My_Direction = get_my_direction();
       //回転した差分をとる
       dif_direction = fabs(rover->My_Direction - direction_hold);
 
-      if (dif_direction <= 20){ //回転できていない
+      if (dif_direction <= 20) { //回転できていない
         target_flag = 0;
       } else {
         target_flag = 1;
@@ -156,21 +159,22 @@ int casing(int landing_flag, ROVER * rover) {
       }
     } else {
       //landing_flag == 1の時は風が相当強いので何もいなくても空いていたらケーシングがどっかに行く
-       //ローバーを回転させ回転できる確認する
+      //ローバーを回転させ回転できる確認する
       rover->My_Direction = get_my_direction();
       direction_hold = rover->My_Direction;
       /*実験からおよそ180度回転になる値を入れてください*/
+      speaker(A_TONE);
       go_rotate(1000);
       rover->My_Direction = get_my_direction();
       //回転した差分をとる
       dif_direction = fabs(rover->My_Direction - direction_hold);
 
-      if (dif_direction <= 20){ //回転できていない
+      if (dif_direction <= 20) { //回転できていない
         target_flag = 0;
       } else {
         target_flag = 1;
       }
-      
+
       if (target_flag == 1) {
         //無事に回転できた＞＞ケーシングが展開している
         /*風が強いので後述の脱出シーケンスがひょっとしたらいらないかも*/
@@ -181,8 +185,8 @@ int casing(int landing_flag, ROVER * rover) {
         continue;
       }
     }
-  
-  
+
+
   }
   //ここから、パラシュートをよけるプロセス
 
@@ -191,7 +195,7 @@ int casing(int landing_flag, ROVER * rover) {
   judge_invered_revive(); /*←いれましたbyとうま */
 
   GPS gps;
-  gps_get(&gps);    //ここで取得したデータをSDなりに保管して以後近づかないようにしてください
+  //gps_get(&gps);    //ここで取得したデータをSDなりに保管して以後近づかないようにしてください
 
 
   //ひとまずケーシング展開できたとする
@@ -214,9 +218,6 @@ int casing(int landing_flag, ROVER * rover) {
 
     xbee_uart( dev, "avoid parashute by opening casing.\r");
     xbee_uart( dev, "Pass this phase in this experiment.\r");
-
-    xbee_uart( dev, "volt of distance is " );  //電圧換算表示
-    xbee_send_1double(volt);
 
     //0.9~5mくらいなら取れる
     //servoモーターは90°が機体正面としています
@@ -248,7 +249,7 @@ int casing(int landing_flag, ROVER * rover) {
     for (i = -3; i <= 3; i++) {
       //うまく回転関数が動かないので一旦同じ位置で複数回と手検査します
       /*
-      while (1) {
+        while (1) {
         rover->My_Direction = get_my_direction();
         target_flag = turn_target_direction((direction_hold + 10 * i), &rover->My_Direction);
         if (target_flag == 1) {
@@ -256,9 +257,11 @@ int casing(int landing_flag, ROVER * rover) {
         } else {
           continue;
         }
-      }*/
+        }*/
       volt = analogRead( DISTANCE ) * 5 / 1023.0;
       Serial.println( volt );  //電圧換算表示
+      xbee_uart( dev, "volt of distance is " );  //電圧換算表示
+      xbee_send_1double(volt);
 
       if ( 1.35 < volt & volt < 2.7 ) {            //有効測距範囲内
         para_distance = 140.0 / ( volt - 1.10 ) ;
@@ -291,8 +294,8 @@ int casing(int landing_flag, ROVER * rover) {
   }
   //方角をさっきの方角に戻す
   /*一旦コメントアウト
-  rover->My_Direction = get_my_direction();
-  target_flag = turn_target_direction((direction_hold ), &rover->My_Direction);
+    rover->My_Direction = get_my_direction();
+    target_flag = turn_target_direction((direction_hold ), &rover->My_Direction);
   */
   //先ほど取得した方向へ、しばらく進む
 
