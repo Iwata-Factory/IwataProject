@@ -111,12 +111,14 @@ int casing(int landing_flag, ROVER * rover) {
 
   //ニクロム線溶断する
   while (1) {
+    double direction_hold = 0;   //方角保持
+    double dif_direction = 0;   //directionの差をとる
     speaker(C_TONE);
     speaker(E_TONE);
     digitalWrite(NICROM_1, HIGH);
     delay(10000);   //10秒間ニクロム線を熱すれば切れるはず
     digitalWrite(NICROM_1, LOW);
-
+    
     if (nicrom_count >= 10) {
       //たぶんニクロム線がイカれているとかで異常事態
       break;
@@ -125,8 +127,20 @@ int casing(int landing_flag, ROVER * rover) {
 
     //ケーシングが展開したかの確認シーケンス
     if (landing_flag == 0) { //比較的風が弱い
+      //ローバーを回転させ回転できる確認する
       rover->My_Direction = get_my_direction();
-      target_flag = turn_target_direction(rover->My_Direction + 180, &rover->My_Direction);
+      direction_hold = rover->My_Direction;
+      /*実験からおよそ180度回転になる値を入れてください*/
+      go_rotate(1000);
+      rover->My_Direction = get_my_direction();
+      //回転した差分をとる
+      dif_direction = fabs(rover->My_Direction - direction_hold);
+
+      if (dif_direction <= 20){ //回転できていない
+        target_flag = 0;
+      } else {
+        target_flag = 1;
+      }
 
       if (target_flag == 1) {
         //無事に回転できた＞＞ケーシングが展開している
@@ -138,8 +152,21 @@ int casing(int landing_flag, ROVER * rover) {
       }
     } else {
       //landing_flag == 1の時は風が相当強いので何もいなくても空いていたらケーシングがどっかに行く
+       //ローバーを回転させ回転できる確認する
       rover->My_Direction = get_my_direction();
-      target_flag = turn_target_direction((int)(rover->My_Direction + 180) % 360 , &rover->My_Direction);
+      direction_hold = rover->My_Direction;
+      /*実験からおよそ180度回転になる値を入れてください*/
+      go_rotate(1000);
+      rover->My_Direction = get_my_direction();
+      //回転した差分をとる
+      dif_direction = fabs(rover->My_Direction - direction_hold);
+
+      if (dif_direction <= 20){ //回転できていない
+        target_flag = 0;
+      } else {
+        target_flag = 1;
+      }
+      
       if (target_flag == 1) {
         //無事に回転できた＞＞ケーシングが展開している
         /*風が強いので後述の脱出シーケンスがひょっとしたらいらないかも*/
@@ -150,11 +177,13 @@ int casing(int landing_flag, ROVER * rover) {
         continue;
       }
     }
-
+  
+  
   }
   //ここから、パラシュートをよけるプロセス
 
   /*ここで反転判定及び復帰シーケンスを必ずできたら入れてください*/
+  //
   judge_invered_revive(); /*←いれましたbyとうま */
 
   GPS gps;
@@ -213,6 +242,8 @@ int casing(int landing_flag, ROVER * rover) {
 
     //サーボモーターなしver
     for (i = -3; i <= 3; i++) {
+      //うまく回転関数が動かないので一旦同じ位置で複数回と手検査します
+      /*
       while (1) {
         rover->My_Direction = get_my_direction();
         target_flag = turn_target_direction((direction_hold + 10 * i), &rover->My_Direction);
@@ -221,7 +252,7 @@ int casing(int landing_flag, ROVER * rover) {
         } else {
           continue;
         }
-      }
+      }*/
       volt = analogRead( DISTANCE ) * 5 / 1023.0;
       Serial.println( volt );  //電圧換算表示
 
@@ -231,6 +262,7 @@ int casing(int landing_flag, ROVER * rover) {
         Serial.println( para_distance );
         distance_flag = 1;     //一方向でも危険物があるとパラシュートとみなしアウト
       }
+      delay(300);
     }
 
 
@@ -239,7 +271,9 @@ int casing(int landing_flag, ROVER * rover) {
     if (distance_flag == 1) {
       //前方にパラシュートが存在
       //回転する
-      turn_target_direction(rover->My_Direction + 90, &rover->My_Direction);
+      //turn_target_direction(rover->My_Direction + 90, &rover->My_Direction);
+      //うまく回れないので一旦これで
+      go_rotate(1000);
       /*本当は90°直角に回りたいけどいまそこら辺の制御どうなっているかわからないのでとりあえずこれで*/
     } else {
       //前方にパラシュートがない or 近すぎて判別できない
@@ -252,11 +286,14 @@ int casing(int landing_flag, ROVER * rover) {
     }
   }
   //方角をさっきの方角に戻す
+  /*一旦コメントアウト
   rover->My_Direction = get_my_direction();
   target_flag = turn_target_direction((direction_hold ), &rover->My_Direction);
+  */
   //先ほど取得した方向へ、しばらく進む
 
   /*本当は地磁気で角度を取得しながら正確に直進したいがそれが今どうなっているかわからないのでとうまに任せます*/
+  /*キャリブレーションしていないので正確に直進はできないかも。禁止エリアに近づかないようにするのが関の山？*/
   go_straight(10000);
 
 
