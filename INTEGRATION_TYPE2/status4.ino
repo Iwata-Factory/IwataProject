@@ -116,8 +116,12 @@ int casing(int landing_flag, ROVER * rover) {
     speaker(C_TONE);
     speaker(E_TONE);
     digitalWrite(NICROM_1, HIGH);
-    delay(10000);   //10秒間ニクロム線を熱すれば切れるはず
+    digitalWrite(NICROM_2, HIGH);
+    delay(1000);
+    digitalWrite(NICROM_2, LOW);
     digitalWrite(NICROM_1, LOW);
+    speaker(G_TONE);
+ 
     
     if (nicrom_count >= 10) {
       //たぶんニクロム線がイカれているとかで異常事態
@@ -183,7 +187,7 @@ int casing(int landing_flag, ROVER * rover) {
   //ここから、パラシュートをよけるプロセス
 
   /*ここで反転判定及び復帰シーケンスを必ずできたら入れてください*/
-  //
+  //ほぼ確実に反転しているので判定なしだとこの後のシーケンスが結構バグります
   judge_invered_revive(); /*←いれましたbyとうま */
 
   GPS gps;
