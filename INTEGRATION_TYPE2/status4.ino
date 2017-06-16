@@ -71,8 +71,9 @@ int determine_landing() {
       ac_array[i] = sqrt(pow(ac.x, 2) + pow(ac.y, 2) + pow(ac.z, 2));
 
 
-      sprintf(xbee_send, "sample of %d is %f", i + 1, ac_array[i]);
-      xbee_uart(dev, xbee_send);
+//      sprintf(xbee_send, "sample of %d is ", i + 1);  //ac_array bug
+//      xbee_uart(dev, xbee_send);
+//      xbee_send_1double(ac_array[i]);  //ここをコメントアウトしないと再起動する（震え）
       delay(6000); // サンプリングは6秒ごとに
       i += 1;
     } else {
@@ -127,6 +128,7 @@ int casing(int landing_flag, ROVER * rover) {
 
       if (target_flag == 1) {
         //無事に回転できた＞＞ケーシングが展開している
+        
         break;
       } else {
         //ケーシングが展開していなくて回転できない

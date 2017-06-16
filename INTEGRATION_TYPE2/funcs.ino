@@ -359,8 +359,8 @@ int turn_target_direction(double target_direction, double *my_Direction) {
 
 
     xbee_uart( dev, "a_difference is\r");
-    xbee_send_1double(a_difference);             //送信時に文字化けして（受信したものが”？”）出てくる。関数を呼び出しているから。。？ （6/15追記　うまくいった）
-
+    xbee_send_1double(a_difference);
+    
     if (180 <= a_difference) {
       rotate_angle = 360 - a_difference;  // 右回転
     } else if (30 <= a_difference && a_difference < 180) {

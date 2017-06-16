@@ -8,6 +8,7 @@ int status5(ROVER *rover) {
     judge_invered_revive(); //状態復旧
 
     if (i % 30 == 0) { // たまにキャリブレーションする
+      xbee_uart(dev, "calibration\r");
       tm_calibration();  // 条件が揃ったらキャリブレーション
     }
 
