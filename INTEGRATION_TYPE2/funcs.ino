@@ -77,7 +77,7 @@ int ReadLineString( SoftwareSerial& serial,
                     char szLineString[], const int ciLineStringSize ) {
   while ( 1 )
   {
-    char c = Serial.read();
+    char c = serial.read();
     if ( -1 == c )
     {
       break;
