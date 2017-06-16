@@ -2,8 +2,8 @@
 #define __DEFINE_H__
 
 // 定数の定義
-# define GOAL_LATITUDE 35.713860
-# define GOAL_LONGITUDE 139.759570
+# define GOAL_LATITUDE 35.756165
+# define GOAL_LONGITUDE 139.770740
 
 //GPS関連
 #define PIN_GPS_Rx  10 // GPSのシリアル通信でデータを受信するピン
