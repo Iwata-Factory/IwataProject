@@ -8,24 +8,32 @@ int status4(ROVER *rover) {  // Status4 着陸の関数
   // 加速度とGPSから判断することになりそう
 
   int landing_flag = 0;   //着地判定を何で行ったか
+
   //暫定的に前回までのやつにしています
   int t = 0;  //時間経過
   while (1) {
     if (determine_landing() == 1) {
+
       landing_flag = 0;
+
       break;
     }
     //1ループ1分より適当に15分たったら強制的に着陸したものとする
     t++;
 
     if (t >= 15) {
+
+
       landing_flag = 1;
+
       break;
     }
   }
 
   //以下パラシュートからの脱出
+
   casing(landing_flag, rover);
+
 
   return 1;
 }
@@ -39,6 +47,9 @@ int status4(ROVER *rover) {  // Status4 着陸の関数
 
 int determine_landing() {
 
+  xbee_uart( dev, "judging Landing\r");
+
+
   AC ac; // 宣言
 
   double ac_array[10]; // サンプルを入れる箱
@@ -49,12 +60,19 @@ int determine_landing() {
 
   // 加速度のサンプルを10個取る
   int i = 0;
+
+  //xbee_uart( dev,"加速度のサンプルを取得します");
+
   while (i < 10) {
     ac = get_ac(); // 加速度を取得
     if (!(ac.x == 100 && ac.y == 100 && ac.z == 100)) {
       // 値を取れている
       // 加速度の大きさを計算
       ac_array[i] = sqrt(pow(ac.x, 2) + pow(ac.y, 2) + pow(ac.z, 2));
+
+
+      sprintf(xbee_send, "sample of %d is %f", i + 1, ac_array[i]);
+      xbee_uart(dev, xbee_send);
       delay(6000); // サンプリングは6秒ごとに
       i += 1;
     } else {
@@ -68,9 +86,14 @@ int determine_landing() {
     ac_sum += ac_array[i];
   }
   ac_ave = ac_sum / 10;
-  if (9.5 <= ac_ave && ac_ave <= 10.3) {
+
+  //  xbee_uart( dev,"解析結果:");
+  //  xbee_uart( dev,ac_ave);
+  if (225 <= ac_ave && ac_ave <= 245) {
+    xbee_uart( dev, "land ok\r");
     return 1; //着陸判定にパス
   } else {
+    xbee_uart( dev, "land not ok\r");
     return 0;
   }
 }
@@ -78,8 +101,9 @@ int determine_landing() {
 
 
 
+
 //ケーシング展開関数
-int casing(int landing_flag, ROVER *rover) {
+int casing(int landing_flag, ROVER * rover) {
 
   int target_flag = 0;
   int nicrom_count = 0;
@@ -146,12 +170,21 @@ int casing(int landing_flag, ROVER *rover) {
   double para_distance = 0;  //パラシュートまでの距離を測ります
   double volt = 0;
   int distance_flag = 0;
+
   double angle_servo = 0;  //servoモーターの角度
   int count_para = 0;     //何回パラシュートがあるかの判定をしたかのカウンター
 
   while (1) {
     count_para++;
     rover->My_Direction = get_my_direction();  //現在の方角を取得
+
+    xbee_uart( dev, "avoid parashute by opening casing.\r");
+    xbee_uart( dev, "Pass this phase in this experiment.\r");
+
+    volt = analogRead( DISTANCE ) * 5 / 1023.0;
+
+    xbee_uart( dev, "volt of distance is " );  //電圧換算表示
+    xbee_send_1double(volt);
 
     //0.9~5mくらいなら取れる
     //servoモーターは90°が機体正面としています
@@ -198,10 +231,8 @@ int casing(int landing_flag, ROVER *rover) {
               distance_flag = 1;     //一方向でも危険物があるとパラシュートとみなしアウト
             }
           }
-
-
-
         }*/
+
 
     delay( 500 );
 
@@ -224,14 +255,9 @@ int casing(int landing_flag, ROVER *rover) {
   //先ほど取得した方向へ、しばらく進む
 
   /*本当は地磁気で角度を取得しながら正確に直進したいがそれが今どうなっているかわからないのでとうまに任せます*/
-
   go_straight(10000);
 
 
   //脱出成功
   return 1;  /*成功は１を返すように統一しようbyとうま*/
-
 }
-
-
-

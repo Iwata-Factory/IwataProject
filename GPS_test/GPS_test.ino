@@ -1,7 +1,7 @@
 #include <SoftwareSerial.h>
 
-#define PIN_GPS_Rx 50
-#define PIN_GPS_Tx 53
+#define PIN_GPS_Rx 10
+#define PIN_GPS_Tx 12
 
 #define SERIAL_BAUDRATE 9600
 #define GPSBAUDRATE 9600

@@ -1,15 +1,15 @@
 /*-----------GPS関連--------------------
    ここの欄は後で補完
   //こっから下は確認用+使い方、あとで消していいよ
-  Serial.println('\n');
-  Serial.println('以下gps構造体の中身表示');
-  Serial.println(gps.latitude);
-  Serial.println(gps.longitude);
-  Serial.println(gps.utc);
-  Serial.println(gps.Speed);
-  Serial.println(gps.course);
-  Serial.println(gps.Direction);
-  Serial.println(gps.distance);
+  xbee_uart( dev,'\n');
+  xbee_uart( dev,'以下gps構造体の中身表示');
+  xbee_uart( dev,gps.latitude);
+  xbee_uart( dev,gps.longitude);
+  xbee_uart( dev,gps.utc);
+  xbee_uart( dev,gps.Speed);
+  xbee_uart( dev,gps.course);
+  xbee_uart( dev,gps.Direction);
+  xbee_uart( dev,gps.distance);
   ------------------------------------------*/
 
 // 区切り文字定数
@@ -49,7 +49,7 @@ int AnalyzeLineString( char szLineString[], GPS* gps) {
      これが出る場合は屋外とか通信状況よくなるようにしてください
   */
   if ( strncmp(*gps_status, 'V', 1 ) == 0) {
-    Serial.println("通信状況が悪いから歩こう");
+    xbee_uart( dev, "BAD communicatin condition of gps...\r");
   }
   gps->utc = atof(psz_utc);
   gps->Speed = atof(psz_Speed);
@@ -143,16 +143,12 @@ int gps_data_get(GPS* gps) {
   dtostrf(gps->latitude, 10, 6, sz_lat);
   dtostrf(gps->longitude, 10, 6, sz_long);
 
-  Serial.print("utc : ");
-  Serial.println(sz_utc);
-  Serial.print("latitude : ");
-  Serial.println(sz_lat);
-  Serial.print("longitude : ");
-  Serial.println(sz_long);
-  Serial.print("Speed : ");
-  Serial.println(gps->Speed);   //knot表示されます
-  Serial.print("Course : ");
-  Serial.println(gps->course);
+  //xbee送信
+  xbee_uart(dev, "get gps: utc\rLat,Long,Speed\rCrs,Dir,Dis\r");
+  xbee_uart(dev, sz_utc);
+  xbee_uart(dev, "\r" );
+  xbee_send_3doubles( gps->latitude, gps->Direction, gps->Speed );
+
   float LatA = GOAL_LATITUDE, LongA = GOAL_LONGITUDE;      //目的地
   //  float LatA = 35.710039, LongA = 139.810726;      //目的地
   float LatB = gps->latitude;       //現在地の緯度経度
@@ -162,14 +158,11 @@ int gps_data_get(GPS* gps) {
   distance = sqrt(pow(LongA - LongB, 2) + pow(LatA - LatB, 2)) * 99096.44, 0;
   direct = (int)(atan2((LongA - LongB) * 1.23, (LatA - LatB)) * 57.3 + 360) % 360;
 
-  Serial.print("Direction = ");                               //目的地Aの方角(°）
-  Serial.print(direct);
-  Serial.print("Distance = ");                             //目的地A迄の距離(m)
-  Serial.print(distance);
-  Serial.println("m");
   //以下loop関数に値渡しする
   gps->Direction = direct;
   gps->distance = distance;
+
+  xbee_send_3doubles( gps->course, gps->Direction, gps->distance );
 
   return 1;
 }
@@ -186,17 +179,21 @@ int gps_get(GPS* gps) {
     if (gps_flag == 2) {
       ;
       //      gpsとの通信が来ていない
-      Serial.println("gpsとの通信できていない");
+      //xbee_uart( dev,"cant communicate with gps\r");
     }
     if (gps_flag == 3) {
       ;
       //gpsとの通信はできているが値が変or GPRMCでない
-      Serial.println("gpsの値がおかしい or GPRMCではない");
+      xbee_uart( dev, "gps wrong or not GPRMC\r");
     }
     if (gps_flag == 4) {
       ;
+      speaker(E_TONE);
+      speaker(F_TONE);
+      speaker(E_TONE);
+
       //通信ができて値も解析されたが緯度経度の値がバグってる
-      Serial.println("緯度経度がおかしい");
+      xbee_uart( dev, "wrong Lat or Long\r");
     }
   }
 
@@ -262,7 +259,7 @@ double get_my_direction() {
   Vector2D tm_v;  // 地磁気ベクトル
   Vector2D s;  // 基準ベクトル
 
-  Serial.println("自身の方向のサンプルを取得します");
+  xbee_uart( dev, "getting sample of rover\r");
   for (int i = 0; i < 10; i++) {
     error_c = 0;
     do {
@@ -296,10 +293,10 @@ double get_my_direction() {
       } else {
         tm_degree =  tm_degree - 90;
       }
-      Serial.print("サンプル");
-      Serial.print(i + 1);
-      Serial.print(":");
-      Serial.println(tm_degree);
+      
+      sprintf(xbee_send, "sample of tm %d is ", i + 1 );  //tm_degreeが文字化けする不具合
+      xbee_uart(dev, xbee_send);
+      xbee_send_1double(tm_degree);    //文字化け
 
       direction_array[i] = tm_degree;  // 外れ値処理のためにradに再変換
 
@@ -311,11 +308,12 @@ double get_my_direction() {
 
     } while (tm.x == 100 || tm.y == 100 || tm.z == 100);
   }
-  Serial.println("解析します。");
+  xbee_uart( dev, "calculating\r");
   my_direction = degree_out(10, direction_array);  // 10サンプルから平均を計算
   //my_direction = rad2deg(my_direction);  // radからdegへ
-  Serial.print("機体の方向は");
-  Serial.println(my_direction);
+  
+  xbee_uart( dev, " : direction of rover is ");
+  xbee_send_1double(my_direction);
 
   return my_direction;  // 単位はdeg
 }
@@ -336,7 +334,7 @@ int turn_target_direction(double target_direction, double *my_Direction) {
 
     delay(1000);
     i += 1;
-    Serial.println("自身の方向を取得します。");
+    xbee_uart( dev, "getting angle of rover\r");
     double dir_result = get_my_direction(); // 自身の方向を取得(deg)。target_directionもdeg
 
     if (dir_result != -1) {
@@ -348,8 +346,8 @@ int turn_target_direction(double target_direction, double *my_Direction) {
     double rotate_angle = 0;  // 回転量
     double a_difference = *my_Direction - target_direction;
 
-    Serial.print("a_difference");
-    Serial.println(a_difference);
+    xbee_uart( dev, "a_difference is\r");
+    xbee_send_1double(a_difference);             //送信時に文字化けして（受信したものが”？”）出てくる。関数を呼び出しているから。。？ （6/15追記　うまくいった）
 
     if (180 <= a_difference) {
       rotate_angle = 360 - a_difference;  // 右回転
@@ -357,7 +355,7 @@ int turn_target_direction(double target_direction, double *my_Direction) {
       rotate_angle = -a_difference;  // 左回転
     } else if (-30 <= a_difference && a_difference < 30) {
       rotate_angle = 0;  // 回転しない
-      Serial.println("機体方向が許容範囲内にあります。");
+      xbee_uart( dev, "angle of rover is acceptable.\r");
       return 1;  // 回転に成功
     } else if (-180 <= a_difference && a_difference < -30) {
       rotate_angle = -a_difference;  // 右回転
@@ -365,9 +363,11 @@ int turn_target_direction(double target_direction, double *my_Direction) {
       rotate_angle = 360 + a_difference;  // 左回転
     }
 
-    Serial.print("必要な回転量は。");
-    Serial.println(rotate_angle);
-    Serial.println("回転します。");
+    xbee_uart(dev, "needed rotation is\r");
+    xbee_send_1double(rotate_angle);
+
+    rotate_angle = rotate_angle * (10 - i) / 10;  // 回転角度を収束させる
+
     go_rotate(rotate_angle);  // 回転を行う
 
   } while (i < 10); // 10回回転してもダメだったら失敗
@@ -384,7 +384,7 @@ int turn_target_direction(double target_direction, double *my_Direction) {
 
 int tm_calibration() {
 
-  Serial.println("キャリブレーションを行います。");
+  xbee_uart( dev, "Calibration\r");
 
   delay(500);
 
@@ -406,7 +406,7 @@ int tm_calibration() {
   TM tm;
 
   rover_degital(turn); // 回転開始
-  Serial.println("サンプル取得開始");
+  xbee_uart( dev, "Start getting sample...\r");
 
   for (int i = 0; i < 2500; i++) {
 
@@ -455,17 +455,17 @@ int tm_calibration() {
   tm_y_offset = (max_y + min_y) / 2;
 
   delay(500);
-  Serial.print("x_def:");
-  Serial.println(x_def);
-  Serial.print("y_def:");
-  Serial.println(y_def);
-  Serial.print("tm_x_offset:");
-  Serial.println(tm_x_offset);
-  Serial.print("tm_y_offset:");
-  Serial.println(tm_y_offset);
+  //  xbee_uart( dev,"x_def:");
+  //  xbee_uart( dev,x_def);
+  //  xbee_uart( dev,"y_def:");
+  //  xbee_uart( dev,y_def);
+  //  xbee_uart( dev,"tm_x_offset:");
+  //  xbee_uart( dev,tm_x_offset);
+  //  xbee_uart( dev,"tm_y_offset:");
+  //  xbee_uart( dev,tm_y_offset);
 
 
-  Serial.println("キャリブレーション完了。");
+  xbee_uart( dev, "Finish calibration.\r");
 
 
   return 1;

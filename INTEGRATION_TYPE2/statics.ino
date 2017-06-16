@@ -66,6 +66,43 @@ double value_ave(const int array_num, double* value) {
 /*
    角度の平均値を出す
 */
+double degree_out(const int array_num, double* value) {
+  double ave = 0;
+  int i = 0;
+
+  Vector2D vector[array_num];
+  Vector2D vector_sum;
+  Vector2D vector_ave;
+
+  //角度を北から時計回りにとったxy座標上の点にする
+  for (i = 0; i < array_num; i++) {
+    vector[i].x = cos(deg2rad(value[i]));
+    vector[i].y = sin(deg2rad(value[i]));
+  }
+
+  //点の重心をとる(平均みたいになります)
+  for (i = 0; i < array_num; i++) {
+    vector_sum.x += vector[i].x;
+    vector_sum.y += vector[i].y;
+  }
+  vector_ave.x = vector_sum.x / array_num;
+  vector_ave.y = vector_sum.y / array_num;
+
+  //重心の角度を北から時計回りで出します
+  ave = atan2(vector_ave.y, vector_ave.x);  //東から
+  /*これってはatan2だからはじめからradだからrad2degで逆だよね？*/
+
+  ave = rad2deg(ave);
+  ave = (((int)ave + 360) % 360);
+  return ave;
+}
+
+
+
+
+/*
+   角度の平均値を出す
+*/
 double rad_ave(const int array_num, double* value) {
   double ave = 0;
   int i = 0;
@@ -108,7 +145,7 @@ double rad_out(const int array_num, double* value) {
   double ave = 0;
 
 
-  ave = rad_ave(array_num, value);  //まずはすべての平均角度をとる
+  ave = degree_out(array_num, value);  //まずはすべての平均角度をとる
 
   //角度を北から時計回りにとったxy座標上の点にする
   for (i = 0; i < array_num; i++) {

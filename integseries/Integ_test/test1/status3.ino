@@ -1,5 +1,5 @@
 
-int status3() {  // Status3 降下の関数
+int status3(ROVER *rover) {  // Status3 降下の関数
   return 1;
 }
 

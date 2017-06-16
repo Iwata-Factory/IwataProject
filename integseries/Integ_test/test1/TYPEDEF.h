@@ -12,7 +12,7 @@ typedef struct {  // 機体自身の情報を定義
   double Target_Direction = -1.0;  // ターゲットの方角
   double distance = -1.0;  //ターゲットまでの距離
   
-  long time_from_start = 0.0;  // 機体の現在時刻
+  unsigned long time_from_start = 0.0;  // 機体の現在時刻
   
   int status_number = 0;  // 自分の現在のシーケンスを把握
   
@@ -62,10 +62,10 @@ typedef struct { // 地磁気センサ
 } TM;
 
 typedef struct { // モーター制御
-  int right1 = 0; // 8番ピン対応
-  int right2 = 0; // 9番ピン対応
-  int leght1 = 0; // 10番ピン対応
-  int leght2 = 0; // 11番ピン対応
+  int right1 = 1; // 8番ピン対応
+  int right2 = 1; // 9番ピン対応
+  int leght1 = 1; // 10番ピン対応
+  int leght2 = 1; // 11番ピン対応
 } DRIVE;
 
 #endif
