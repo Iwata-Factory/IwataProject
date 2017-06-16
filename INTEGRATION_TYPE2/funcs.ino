@@ -570,7 +570,6 @@ int check_danger_area() {
 
     if (!(danger_area_points[i].latitude == -1.0 && danger_area_points[i].longitude == -1.0)) {
       // 禁止エリアまでの距離算出
-      /* これであってますか? */
       float danger_distance = get_distance(&check_gps, &danger_area_points[i]);
       if (danger_distance < 10) {
         escape_count += 1;
@@ -587,4 +586,5 @@ int check_danger_area() {
     return 2;
   }
 }
+
 
