@@ -89,10 +89,6 @@ void setup() {
 }
 
 
-
-
-
-
 void loop() {
 
   speaker(C_TONE);
