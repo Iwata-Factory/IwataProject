@@ -2,7 +2,7 @@
 
 
 /*-----------radからdegに--------------------
-  引数はdegree(double型)
+  引数はrad(double型)
   ------------------------------------------*/
 double rad2deg(double rad) {
   double deg = rad * 180.0 / PI;
@@ -10,12 +10,10 @@ double rad2deg(double rad) {
 }
 
 /*-----------degからradに--------------------
-  引数はrad(double型)
+  引数はdeg(double型)
   ------------------------------------------*/
 double deg2rad(double deg) {
   double rad = deg * PI / 180.0;
   return (rad);
 }
-
-
 
