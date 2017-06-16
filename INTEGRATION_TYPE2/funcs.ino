@@ -571,8 +571,11 @@ int check_danger_area() {
     if (!(danger_area_points[i].latitude == -1.0 && danger_area_points[i].longitude == -1.0)) {
       // 禁止エリアまでの距離算出
       float danger_distance = get_distance(&check_gps, &danger_area_points[i]);
-      if (danger_distance < 10) {
+      
+      if (danger_distance < 10) {  // 10m以内に居たらやばい
         escape_count += 1;
+
+        int escape_result = escape_danger_area(&check_gps, &danger_area_points[i]);
         // 危険エリアにいるから脱出関数を回す
         // あとでここに脱出関数を書きます
         // 脱出できなかった様子なら−１を返す
@@ -587,4 +590,17 @@ int check_danger_area() {
   }
 }
 
+
+/*-----------escape_danger_area()--------------------
+   引数の周囲10mを立ち入り禁止エリアに
+   戻り値
+   1:成功
+   0:失敗
+  ------------------------------------------*/
+
+int escape_danger_area(GPS *gps, POINT *point) {
+  ;
+  //ゴール接近の応用でPOINTの真逆に走る
+  //数回繰り返して無事を確認してreturn
+}
 
