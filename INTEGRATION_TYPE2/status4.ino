@@ -71,8 +71,9 @@ int determine_landing() {
       ac_array[i] = sqrt(pow(ac.x, 2) + pow(ac.y, 2) + pow(ac.z, 2));
 
 
-      sprintf(xbee_send, "sample of %d is %f", i + 1, ac_array[i]);
-      xbee_uart(dev, xbee_send);
+//      sprintf(xbee_send, "sample of %d is ", i + 1);
+//      xbee_uart(dev, xbee_send);
+      //ここにsend_1doubleを入れるとマイコンが再起動します！！
       delay(6000); // サンプリングは6秒ごとに
       i += 1;
     } else {

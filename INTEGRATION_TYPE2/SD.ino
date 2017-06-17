@@ -14,7 +14,7 @@
 
 int write_timelog_sd(long logtime, int now_status) {
   int i = 0; // 試行回数記録用
-  xbee_uart( dev,"logging time and status\r");
+  xbee_uart( dev, "logging time and status\r");
   while (i < 30) { // 30回SDカードを開けなかったら諦める
     File dataFile = SD.open("timelog.txt", FILE_WRITE);
     if (dataFile) { // ファイルが開けたときの処理
@@ -29,7 +29,7 @@ int write_timelog_sd(long logtime, int now_status) {
       xbee_uart( dev, "time to SD success!!\r" );
       return 1; // 成功を返す
     } else {
-      xbee_uart( dev,"fail to open SD...\r");
+      xbee_uart( dev, "fail to open SD...\r");
       i += 1;
     }
   }
@@ -40,7 +40,7 @@ int write_timelog_sd(long logtime, int now_status) {
 // 加速度を記録
 int write_ac_sd(AC ac) {
   int i = 0; // 試行回数記録用
-  xbee_uart( dev,"logging AC\r");
+  xbee_uart( dev, "logging AC\r");
   while (i < 30) { // 30回SDカードを開けなかったら諦める
     File dataFile = SD.open("aclog.txt", FILE_WRITE);
     if (dataFile) { // ファイルが開けたときの処理
@@ -49,12 +49,12 @@ int write_ac_sd(AC ac) {
       dataFile.println(ac.x);
       dataFile.println(ac.y);
       dataFile.println(ac.z);
-      dataFile.close();\
+      dataFile.close(); \
 
       xbee_uart( dev, "AC to SD successed!!\r");
       return 1; // 成功を返す
     } else {
-      xbee_uart( dev,"fail to open SD...\r");
+      xbee_uart( dev, "fail to open SD...\r");
       i += 1;
     }
   }
@@ -65,7 +65,7 @@ int write_ac_sd(AC ac) {
 // 地磁気を記録
 int write_tm_sd(TM tm) {
   int i = 0; // 試行回数記録用
-  xbee_uart( dev,"logging TM\r");
+  xbee_uart( dev, "logging TM\r");
   while (i < 30) { // 30回SDカードを開けなかったら諦める
     File dataFile = SD.open("tmlog.txt", FILE_WRITE);
     if (dataFile) { // ファイルが開けたときの処理
@@ -79,7 +79,7 @@ int write_tm_sd(TM tm) {
       xbee_uart( dev, "TM to SD successed!!\r");
       return 1; // 成功を返す
     } else {
-      xbee_uart( dev,"fail to open SD...\r");
+      xbee_uart( dev, "fail to open SD...\r");
       i += 1;
     }
   }
@@ -89,7 +89,7 @@ int write_tm_sd(TM tm) {
 // GPSを記録
 int write_gps_sd(GPS gps) {
   int i = 0; // 試行回数記録用
-  xbee_uart( dev,"logging GPS\r");
+  xbee_uart( dev, "logging GPS\r");
   while (i < 30) { // 30回SDカードを開けなかったら諦める
     File dataFile = SD.open("gpslog.txt", FILE_WRITE);
     if (dataFile) { // ファイルが開けたときの処理
@@ -106,20 +106,20 @@ int write_gps_sd(GPS gps) {
       xbee_uart( dev, "success!!\r" );
       return 1; // 成功を返す
     } else {
-      xbee_uart( dev,"fail to open SD...\r");
+      xbee_uart( dev, "fail to open SD...\r");
       i += 1;
     }
   }
   return 0; // 失敗を返す
 }
 
-
+//
 //新規作成
 int write_gps_sd_file(GPS gps, char filename) {
   int i = 0; // 試行回数記録用
   Serial.println("GPSを記録します。");
   while (i < 30) { // 30回SDカードを開けなかったら諦める
-    File dataFile = SD.open(filename, FILE_WRITE);
+    File dataFile = SD.open(GPS_SPECIAL, FILE_WRITE);
     if (dataFile) { // ファイルが開けたときの処理
       dataFile.seek(dataFile.size());
       dataFile.println("*"); // 記録の境目
@@ -139,7 +139,7 @@ int write_gps_sd_file(GPS gps, char filename) {
   }
   return 0; // 失敗を返す
 }
-
+//
 
 
 
@@ -156,7 +156,7 @@ int read_ac_sd(AC ac[100], int num) {
   }
 
   int i = 0; // 試行回数記録用
-  xbee_uart( dev,"read AC from SD\r");
+  xbee_uart( dev, "read AC from SD\r");
   while (i < 30) { // 30回SDカードを開けなかったら諦める
 
     File dataFile = SD.open("aclog.txt", FILE_READ);
@@ -214,7 +214,7 @@ int read_ac_sd(AC ac[100], int num) {
       xbee_uart( dev, "read AC from SD success\r" );
       return 1; // 要求された処理が完了したことを返す
     } else {
-      xbee_uart( dev,"Fail to open SD...\r");
+      xbee_uart( dev, "Fail to open SD...\r");
       i += 1;
     }
   }
@@ -235,7 +235,7 @@ int read_tm_sd(TM tm[100], int num) {
   }
 
   int i = 0; // 試行回数記録用
-  xbee_uart( dev,"read TM from SD\r");
+  xbee_uart( dev, "read TM from SD\r");
   while (i < 30) { // 30回SDカードを開けなかったら諦める
 
     File dataFile = SD.open("tmlog.txt", FILE_READ);
@@ -293,7 +293,7 @@ int read_tm_sd(TM tm[100], int num) {
       xbee_uart( dev, "TM from SD success!!\r" );
       return 1; // 要求された処理が完了したことを返す
     } else {
-      xbee_uart( dev,"Fail to open SD...\r");
+      xbee_uart( dev, "Fail to open SD...\r");
       i += 1;
     }
   }
@@ -319,7 +319,7 @@ int read_gps_sd(GPS gps[100], int num) {
   }
 
   int i = 0; // 試行回数記録用
-  xbee_uart( dev,"read GPS from SD\r");
+  xbee_uart( dev, "read GPS from SD\r");
   while (i < 30) { // 30回SDカードを開けなかったら諦める
 
     File dataFile = SD.open("gpslog.txt", FILE_READ);
@@ -388,7 +388,7 @@ int read_gps_sd(GPS gps[100], int num) {
       xbee_uart(dev, "gps from SD successed!!!\r" );
       return 1; // 要求された処理が完了したことを返す
     } else {
-      xbee_uart( dev,"fail to open SD...\r");
+      xbee_uart( dev, "fail to open SD...\r");
       i += 1;
     }
   }
