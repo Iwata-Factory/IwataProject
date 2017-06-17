@@ -25,9 +25,9 @@ int status3(ROVER *rover) {  // Status3 降下の関数
           GPS gps;
           gps_get(&gps);      //無限ウープに陥る可能性あり
           if (write_gps_sd(gps)) { // 自身の位置をsdに記録
-            xbee_uart(dev,"success!!\r");
+            xbee_uart(dev, "success!!\r");
           } else {
-            xbee_uart(dev,"fail...\r");
+            xbee_uart(dev, "fail...\r");
           }
         }
       }
@@ -35,22 +35,22 @@ int status3(ROVER *rover) {  // Status3 降下の関数
 
     }
     else if ((sensor & STATUS_GPS) == STATUS_GPS) {
-      xbee_uart(dev,"only GPS alive\r");
+      xbee_uart(dev, "only GPS alive\r");
       GPS st3_gps = eep_gpsget(INITIAL_GPS);
       int starttime = st3_gps.utc;   //この後滅茶苦茶差分をとった(fin)
     }
     else { //割と詰んでる状態
-      //絶望
+      xbee_uart(dev, "zetubou" ); //絶望(タイマー>??)
     }
     delay(10);
   }
-  xbee_uart(dev,"finish falling\rlanded!!\rlogging landed point!\r");
+  xbee_uart(dev, "finish falling\rlanded!!\rlogging landed point!\r");
   GPS gps_land;  //着陸地点を記録（必要？？）
   gps_get(&gps_land);
   if (write_gps_sd_file(gps_land, GPS_SPECIAL)) { // 自身の位置をsdに記録。新規に関数を作成しました。
-    xbee_uart(dev,"success!!\r");
+    xbee_uart(dev, "success!!\r");
   } else {
-    xbee_uart(dev,"fail...\r");
+    xbee_uart(dev, "fail...\r");
   }
   return 1;
 }
