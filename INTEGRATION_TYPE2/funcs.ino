@@ -342,7 +342,7 @@ int turn_target_direction(double target_direction, double *my_Direction) {
     i += 1;
 
     if (target_direction < 0 || 360 <= target_direction) { //target_directionが360以上の場合調整
-      target_direction = (int)target_direction % 360;
+      target_direction = (360 * 2 + (int)target_direction) % 360;
     }
 
     xbee_uart( dev, "getting angle of rover\r");
