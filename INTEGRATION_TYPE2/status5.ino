@@ -3,13 +3,37 @@ int status5(ROVER *rover) {
 
   int i = 0; // do-whileの繰り返し数をカウント
 
+  DRIVE no5;  // 基本ノンストップで制御を目指す
+  no5.right1 = 1;
+  no5.right2 = 1;
+  no5.leght1 = 1;
+  no5.leght2 = 1;
+
   do {
 
     judge_invered_revive(); //状態復旧
 
     if (i % 30 == 0) { // たまにキャリブレーションする
+      if (!(i == 0)) {
+        for (int i = 255; i > 0; i--) {  // モーター停止
+          no5.right1 = 0;
+          no5.right2 = i;
+          no5.leght1 = 0;
+          no5.leght2 = i;
+          rover_analog(no5);
+          delay(7);
+        }
+      }
       xbee_uart(dev, "calibration\r");
       tm_calibration();  // 条件が揃ったらキャリブレーション
+      for (int i = 1; i < 256; i++) {  // 加速開始
+        no5.right1 = 0;
+        no5.right2 = i;
+        no5.leght1 = 0;
+        no5.leght2 = i;
+        rover_analog(no5);
+        delay(2);
+      }
     }
 
     xbee_uart( dev, "get gps\r");
@@ -40,6 +64,16 @@ int status5(ROVER *rover) {
 
     if (0 <= rover->distance && rover->distance < 15) { // 15mまで来たら地上2へ
       xbee_uart( dev, "near goal\r");
+
+      for (int i = 255; i > 0; i--) {  // モーター停止
+        no5.right1 = 0;
+        no5.right2 = i;
+        no5.leght1 = 0;
+        no5.leght2 = i;
+        rover_analog(no5);
+        delay(7);
+      }
+
       return 1;
     }
 
@@ -52,15 +86,12 @@ int status5(ROVER *rover) {
       xbee_uart( dev, "give up!!!\r");
     }
 
-    xbee_uart( dev, "go straight\r");
+    xbee_uart( dev, "LOOP\r");
     // 7秒直進
-    go_straight(7000);
 
     speaker(E_TONE);
     speaker(F_TONE);
     speaker(G_TONE);
-
-
 
     i += 1;
 

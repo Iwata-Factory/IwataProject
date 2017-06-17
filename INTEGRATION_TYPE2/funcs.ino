@@ -385,7 +385,7 @@ int turn_target_direction(double target_direction, double *my_Direction) {
     xbee_send_1double(rotate_angle);
 
 
-    go_rotate(rotate_angle);  // 回転を行う
+    go_rotate2(rotate_angle);  // 回転を行う
 
     xbee_uart(dev, "rotate ok\r");
 

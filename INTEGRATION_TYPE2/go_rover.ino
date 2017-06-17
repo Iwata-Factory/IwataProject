@@ -74,6 +74,56 @@ void go_rotate(double rotate) {
 }
 
 
+
+/*-----------機体旋回2--------------------
+   rotate: 回転角
+  ------------------------------------------*/
+void go_rotate2(double rotate) {
+
+  DRIVE turn; // DRIVE型の宣言
+  // 初期化
+  turn.right1 = 1;
+  turn.right2 = 1;
+  turn.leght1 = 1;
+  turn.leght2 = 1;
+
+  int rotate_time = 0; // 旋回する時間 /* これを求めるアルゴリズムの用意は必要 */
+
+  // どちら向きに回転するかを判断
+  if (0 < rotate) {
+    turn.right1 = 0;
+    turn.right2 = 0;
+    turn.leght1 = 1;
+    turn.leght2 = 0;
+
+    rotate_time = (rotate / 400) * 1600;
+
+  } else {
+    turn.right1 = 1;
+    turn.right2 = 0;
+    turn.leght1 = 0;
+    turn.leght2 = 0;
+
+    rotate_time = -1 * (rotate / 400) * 1600;
+
+  }
+
+  // 回転を行う
+  rover_degital(turn);
+
+  delay(rotate_time);
+
+  turn.right1 = 1;
+  turn.right2 = 1;
+  turn.leght1 = 1;
+  turn.leght2 = 1;
+
+  // 停止
+  rover_degital(turn);
+  delay(1500);
+}
+
+
 /*-----------機体直進--------------------
    go_time: 進む時間
   ------------------------------------------*/

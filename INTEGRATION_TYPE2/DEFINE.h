@@ -116,6 +116,9 @@ double y_def = 1.0;
 // 立ち入り禁止エリア(10個まで生成可能)
 POINT danger_area_points[10];
 
+double pid_kp = 1.0;
+double pid_ki = 1.0;
+double pid_kd = 1.0;
 
 
 SoftwareSerial g_gps( PIN_GPS_Rx, PIN_GPS_Tx); // ArduinoとGPS間のシリアル通信用に
