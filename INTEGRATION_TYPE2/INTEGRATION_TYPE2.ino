@@ -107,7 +107,6 @@ void loop() {
   xbee_uart( dev, xbee_send);
 
 
-
   do {
 
     switch (rover.status_number) {

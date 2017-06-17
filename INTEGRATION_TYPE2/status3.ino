@@ -21,12 +21,13 @@ int status3(ROVER *rover) {  // Status3 降下の関数
           break;
         }
         if ((st3_time % 60000) < 15) { //１分ごとのgpsログ取り一応処理時間を含めて甘めに範囲を取る感じで
+          xbee_uart(dev, "log falling gps\r");
           GPS gps;
           gps_get(&gps);      //無限ウープに陥る可能性あり
           if (write_gps_sd(gps)) { // 自身の位置をsdに記録
-            Serial.println("success!!");
+            xbee_uart(dev,"success!!\r");
           } else {
-            Serial.println("fail...");
+            xbee_uart(dev,"fail...\r");
           }
         }
       }
@@ -34,7 +35,7 @@ int status3(ROVER *rover) {  // Status3 降下の関数
 
     }
     else if ((sensor & STATUS_GPS) == STATUS_GPS) {
-      Serial.println("only GPS alive");
+      xbee_uart(dev,"only GPS alive\r");
       GPS st3_gps = eep_gpsget(INITIAL_GPS);
       int starttime = st3_gps.utc;   //この後滅茶苦茶差分をとった(fin)
     }
@@ -43,13 +44,13 @@ int status3(ROVER *rover) {  // Status3 降下の関数
     }
     delay(10);
   }
-  Serial.println("finish falling\rlanded!!\rlogging landed point!");
+  xbee_uart(dev,"finish falling\rlanded!!\rlogging landed point!\r");
   GPS gps_land;  //着陸地点を記録（必要？？）
   gps_get(&gps_land);
   if (write_gps_sd_file(gps_land, GPS_SPECIAL)) { // 自身の位置をsdに記録。新規に関数を作成しました。
-    Serial.println("success!!");
+    xbee_uart(dev,"success!!\r");
   } else {
-    Serial.println("fail...");
+    xbee_uart(dev,"fail...\r");
   }
   return 1;
 }
