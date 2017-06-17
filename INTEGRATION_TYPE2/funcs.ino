@@ -380,7 +380,15 @@ int turn_target_direction(double target_direction, double *my_Direction) {
 
     rotate_angle = rotate_angle * (10 - i) / 10;  // 回転角度を収束させる
 
+
+    xbee_uart(dev, "real rotation is\r");
+    xbee_send_1double(rotate_angle);
+
+
     go_rotate(rotate_angle);  // 回転を行う
+
+    xbee_uart(dev, "rotate ok\r");
+
 
   } while (i < 10); // 10回回転してもダメだったら失敗
   return 0;
@@ -496,6 +504,8 @@ int tm_calibration() {
 
 int judge_invered_revive() {
 
+  xbee_uart( dev, "check revive\r");
+
   int judge_count = 0;
 
   while (1) {
@@ -517,9 +527,11 @@ int judge_invered_revive() {
     double ac_z_ave =  value_ave(10, z);
 
     if (ac_z_ave < -1.0) {  // この式が真なら反転している。
+      xbee_uart( dev, "revive...\r");
       go_straight(5000); // 5秒直進で復旧してほしい
       continue;
     } else {
+      xbee_uart( dev, "No Problem\r");
       return 1; // 問題なし
     }
   }
@@ -534,20 +546,22 @@ int judge_invered_revive() {
 
 int set_danger_area() {
 
+  xbee_uart( dev, "set_danger_area\r");
+
   /* GPSとれなかったら死ぬからそのままでも良いけどgps_getの無限ループは避けたいbyとうま */
   GPS danger_gps;
   gps_get(&danger_gps);
 
   for (int i = 0; i < 10; i++) {
-    if (!(danger_area_points[i].latitude == -1.0 && danger_area_points[i].longitude == -1.0)) {
+    if ((danger_area_points[i].latitude == -1.0 && danger_area_points[i].longitude == -1.0)) {
       danger_area_points[i].latitude = danger_gps.latitude;
       danger_area_points[i].longitude = danger_gps.longitude;
+      xbee_uart( dev, "set_danger_area---Success\r");
       return 1;  // 登録完了
     }
-
-    return -1;  // 登録が10箇所埋まっている
-
   }
+  xbee_uart( dev, "set_danger_area---False\r");
+  return 0;  // 登録が10箇所埋まっている
 }
 
 
@@ -561,6 +575,8 @@ int set_danger_area() {
 
 int check_danger_area() {
 
+  xbee_uart( dev, "check_danger_are\r");
+
   GPS check_gps;
   gps_get(&check_gps);
 
@@ -570,22 +586,31 @@ int check_danger_area() {
 
     if (!(danger_area_points[i].latitude == -1.0 && danger_area_points[i].longitude == -1.0)) {
       // 禁止エリアまでの距離算出
-      float danger_distance = get_distance(&check_gps, &danger_area_points[i]);
-      
+      double danger_distance = get_distance(&check_gps, &danger_area_points[i]);
+
       if (danger_distance < 10) {  // 10m以内に居たらやばい
+
+        xbee_uart( dev, "TRY ESCAPE\r");
+
         escape_count += 1;
 
         int escape_result = escape_danger_area(&check_gps, &danger_area_points[i]);
-        // 危険エリアにいるから脱出関数を回す
-        // あとでここに脱出関数を書きます
-        // 脱出できなかった様子なら−１を返す
+
+        if (escape_result == 1) {
+          continue;  // 脱出出来たから次の危険エリアに引っかかって居ないかチェック
+        } else {
+          xbee_uart( dev, "check_danger_are---0\r");
+          return 0;  // 危険エリアから脱出できなかった
+        }
       }
     }
   }
 
   if (escape_count == 0) {
+    xbee_uart( dev, "check_danger_are---1\r");
     return 1; // 何も問題が起きなかった
   } else {
+    xbee_uart( dev, "check_danger_are---2\r");
     return 2;
   }
 }
@@ -599,8 +624,29 @@ int check_danger_area() {
   ------------------------------------------*/
 
 int escape_danger_area(GPS *gps, POINT *point) {
-  ;
-  //ゴール接近の応用でPOINTの真逆に走る
-  //数回繰り返して無事を確認してreturn
+
+  double escape_direction = get_direction(gps, point) + 180.0;  // 危険エリアの中心とは真逆の角度を指定
+  double escape_my_direction = get_my_direction();  // 自身の角度を取得
+  double danger_distance = 0.0;
+  int escape_count = 0;
+
+  do {
+
+    xbee_uart( dev, "escape_danger_area---gogogo\r");
+
+    int turn_result = turn_target_direction(escape_direction, &escape_my_direction);  //危険エリアの真逆を向く
+    go_straight(4000);  // 4秒直進
+    danger_distance = get_distance(gps, point);  //再度距離を取る
+
+    escape_count += 1;
+
+    if (escape_count == 5) {
+      xbee_uart( dev, "escape_danger_area---0\r");
+      return 0;  //  上手く離れることができなかった
+    }
+
+  }  while (10 < danger_distance); // GPS上で十分に離れるか試行回数十分
+  xbee_uart( dev, "escape_danger_area---1\r");
+  return 1;  // 成功を返す
 }
 
