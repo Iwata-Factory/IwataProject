@@ -5,6 +5,7 @@
 
 
 int status4(ROVER *rover) {  // Status4 着陸の関数
+
   // 加速度とGPSから判断することになりそう
 
   int landing_flag = 0;   //着地判定を何で行ったか

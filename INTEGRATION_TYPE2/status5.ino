@@ -52,7 +52,7 @@ int status5(ROVER *rover) {
     }
 
     xbee_uart( dev, "go straight\r");
-    // 3秒直進
+    // 7秒直進
     go_straight(7000);
 
     speaker(E_TONE);
