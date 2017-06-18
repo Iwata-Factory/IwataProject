@@ -2,14 +2,21 @@
 int status5(ROVER *rover) {
 
   int i = 0; // do-whileの繰り返し数をカウント
+  double last_distance = 0;  // スタック判定用
 
   do {
+
+
 
     judge_invered_revive(); //状態復旧
 
     if (i % 30 == 0) { // たまにキャリブレーションする
       xbee_uart(dev, "calibration\r");
       tm_calibration();  // 条件が揃ったらキャリブレーション
+    }
+
+    if (4 <= i) {  // 4回目からは危険エリアチェック
+      check_danger_area();
     }
 
     xbee_uart( dev, "get gps\r");
@@ -22,6 +29,26 @@ int status5(ROVER *rover) {
     rover->longitude = gps.longitude;  //経度
     rover->Target_Direction = gps.Direction;  //ターゲットの方向
     rover->distance = gps.distance;  // ターゲットまでの距離
+
+    // スタック判定
+    if (i == 0) {  // last_distanceの初期値を生成
+      last_distance  = gps.distance;
+    } else {
+      delay(3000);
+      xbee_uart(dev, "judge stack\r");
+      if (fabs(gps.distance - last_distance) < 3.0) {  //Trueでスタック
+        xbee_uart(dev, "STACK\r");
+        escape_wadachi(rover);
+        delay(3000);
+
+        xbee_uart(dev, "REVIVE\r");
+        last_distance = gps.distance;
+      } else {
+        xbee_uart(dev, "NO STACK\r");
+        last_distance = gps.distance;
+      }
+    }
+
     if (write_gps_sd(gps)) { // 自身の位置をsdに記録
       xbee_uart( dev, "gps to SD successed\r");
     } else {
@@ -43,7 +70,7 @@ int status5(ROVER *rover) {
       return 1;
     }
 
-    xbee_uart( dev, "balancing rover\r");
+    //xbee_uart( dev, "balancing rover\r");
     // 目的の方向を目指して回転を行う。rover->My_Directionは書き換えていく。
     int turn_result = turn_target_direction(rover->Target_Direction, &rover->My_Direction);
 
@@ -73,7 +100,9 @@ int status5(ROVER *rover) {
    とりあえず自分の状況を理解するためのやつです
    状況がわかったら、またそれに対して適切な処理をしやすくするためflag作っておきましたが、まだ使ってないやつあります
 */
-int escape(double distance_hold, ROVER *rover) { 
+int escape_wadachi(ROVER *rover) {
+
+  xbee_uart(dev, "escape_wadachi\r");
 
   GPS gps_stack;   //GPSの構造体
   double distance[2] = { -1, -1};
@@ -129,6 +158,8 @@ int escape(double distance_hold, ROVER *rover) {
    轍に沿って移動はできるけど轍から逃げられない
 */
 int wadachi(ROVER *rover) {
+  xbee_uart(dev, "IN -> wadachi\r");
+
   GPS gps;
 
   double distance_hold = 0;
@@ -158,7 +189,7 @@ int wadachi(ROVER *rover) {
     wadachi_count++;
   } else {
     //轍の引っ掛かりの回避に成功
-    return 0;
+    return 1;
   }
 
   if (wadachi_count % 5 == 0) { //ダメなのが続いたらランダムに進んでみる

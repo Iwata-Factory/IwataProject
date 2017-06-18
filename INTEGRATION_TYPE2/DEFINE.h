@@ -2,8 +2,8 @@
 #define __DEFINE_H__
 
 // 定数の定義
-# define GOAL_LATITUDE 35.756165
-# define GOAL_LONGITUDE 139.770740
+# define GOAL_LATITUDE 35.755939
+# define GOAL_LONGITUDE 139.770253
 
 //GPS関連
 #define PIN_GPS_Rx  10 // GPSのシリアル通信でデータを受信するピン
@@ -93,7 +93,7 @@
 
 // グローバル変数の定義(ごちゃごちゃしているためいずれ整理したい)
 static unsigned long time; //タイマー起動
-byte dev[] = {0x00, 0x13, 0xA2, 0x00, 0x40, 0xCA, 0x9A, 0x3D}; //XBEE親機アドレス
+byte dev[] = {0x00, 0x13, 0xA2, 0x00, 0x40, 0xB9, 0x3D, 0xCD}; //XBEE親機アドレス
 static const uint8_t length = 6;   //読み出しデータの個数
 char g_szReadBuffer[READBUFFERSIZE] = "";
 int  g_iIndexChar = 0;

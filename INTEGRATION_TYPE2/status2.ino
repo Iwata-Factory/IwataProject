@@ -1,7 +1,7 @@
 
 int status2(ROVER *rover) {  // Status2 打ち上げの関数
   return 1;   /*後で消してね*/
-  return (judge_release());
+  //return (judge_release());
 }
 
 
@@ -14,6 +14,8 @@ int judge_release() {
   /*判定周期とか厳しさは要実験*/
   while (1) {
 
+    light = 0;
+
     for (i = 0; i < 5; i++) {
       light += digitalRead(LIGHT_PIN);
       xbee_uart( dev, "count");
@@ -22,7 +24,7 @@ int judge_release() {
       t++;
     }
 
-    if (light = 5) {
+    if (light == 5) {
       break;
     }
     i = 0;

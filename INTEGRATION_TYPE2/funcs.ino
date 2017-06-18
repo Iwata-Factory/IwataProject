@@ -151,7 +151,7 @@ int gps_data_get(GPS* gps) {
   xbee_uart(dev, "get gps: utc\rLat,Long,Speed\rCrs,Dir,Dis\r");
   xbee_uart(dev, sz_utc);
   xbee_uart(dev, "\r" );
-  xbee_send_3doubles( gps->latitude, gps->Direction, gps->Speed );
+  xbee_send_3doubles( gps->latitude, gps->longitude, gps->Speed );
 
   float LatA = GOAL_LATITUDE, LongA = GOAL_LONGITUDE;      //目的地
 
@@ -191,7 +191,7 @@ int gps_get(GPS* gps) {
       ;
       //gpsとの通信はできているが値が変or GPRMCでない
 
-      xbee_uart( dev, "gps wrong or not GPRMC\r");
+      //xbee_uart( dev, "gps wrong or not GPRMC\r");
     }
     if (gps_flag == 4) {
       ;
@@ -200,7 +200,7 @@ int gps_get(GPS* gps) {
       speaker(E_TONE);
 
       //通信ができて値も解析されたが緯度経度の値がバグってる
-      xbee_uart( dev, "wrong Lat or Long\r");
+      //xbee_uart( dev, "wrong Lat or Long\r");
     }
   }
 
@@ -267,7 +267,7 @@ double get_my_direction() {
   Vector2D tm_v;  // 地磁気ベクトル
   Vector2D s;  // 基準ベクトル
 
-  xbee_uart( dev, "getting sample of rover\r");
+//  xbee_uart( dev, "getting sample of rover\r");
   for (int i = 0; i < 10; i++) {
     error_c = 0;
     do {
@@ -303,9 +303,9 @@ double get_my_direction() {
         tm_degree =  tm_degree - 90;
       }
 
-      sprintf(xbee_send, "sample of tm %d is ", i + 1 );  //tm_degreeが文字化けする不具合
-      xbee_uart(dev, xbee_send);
-      xbee_send_1double(tm_degree);    //文字化け
+//      sprintf(xbee_send, "sample of tm %d is ", i + 1 );  //tm_degreeが文字化けする不具合
+//      xbee_uart(dev, xbee_send);
+//      xbee_send_1double(tm_degree);    //文字化け
 
       direction_array[i] = tm_degree;  // 外れ値処理のためにradに再変換
 
@@ -317,7 +317,7 @@ double get_my_direction() {
 
     } while (tm.x == 100 || tm.y == 100 || tm.z == 100);
   }
-  xbee_uart( dev, "calculating\r");
+//  xbee_uart( dev, "calculating\r");
   my_direction = degree_out(10, direction_array);  // 10サンプルから平均を計算
   //my_direction = rad2deg(my_direction);  // radからdegへ
 
@@ -363,9 +363,9 @@ int turn_target_direction(double target_direction, double *my_Direction) {
     double rotate_angle = 0;  // 回転量
     double a_difference = *my_Direction - target_direction;
 
-
-    xbee_uart( dev, "a_difference is\r");
-    xbee_send_1double(a_difference);
+//
+//    xbee_uart( dev, "a_difference is\r");
+//    xbee_send_1double(a_difference);
     
     if (180 <= a_difference) {
       rotate_angle = 360 - a_difference;  // 右回転
@@ -373,7 +373,7 @@ int turn_target_direction(double target_direction, double *my_Direction) {
       rotate_angle = -a_difference;  // 左回転
     } else if (-30 <= a_difference && a_difference < 30) {
       rotate_angle = 0;  // 回転しない
-      xbee_uart( dev, "angle of rover is acceptable.\r");
+   //   xbee_uart( dev, "angle of rover is acceptable.\r");
       return 1;  // 回転に成功
     } else if (-180 <= a_difference && a_difference < -30) {
       rotate_angle = -a_difference;  // 右回転
@@ -384,16 +384,16 @@ int turn_target_direction(double target_direction, double *my_Direction) {
     xbee_uart(dev, "needed rotation is\r");
     xbee_send_1double(rotate_angle);
 
-    rotate_angle = rotate_angle * (10 - i) / 10;  // 回転角度を収束させる
+    rotate_angle = rotate_angle * (12 - i) / 10;  // 回転角度を収束させる
 
 
-    xbee_uart(dev, "real rotation is\r");
-    xbee_send_1double(rotate_angle);
+//    xbee_uart(dev, "real rotation is\r");
+//    xbee_send_1double(rotate_angle);
 
 
     go_rotate(rotate_angle);  // 回転を行う
 
-    xbee_uart(dev, "rotate ok\r");
+    //xbee_uart(dev, "rotate ok\r");
 
 
   } while (i < 10); // 10回回転してもダメだったら失敗
@@ -442,7 +442,7 @@ int tm_calibration() {
 
       rover_degital(turn); // 回転開始
 
-      for (int i = 0; i < 5000; i++) {
+      for (int i = 0; i < 1500; i++) {
 
         delay(10);
 

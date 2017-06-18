@@ -47,7 +47,7 @@ int status4(ROVER *rover) {  // Status4 着陸の関数
   ------------------------------------------*/
 
 int determine_landing() {
-  return 1;
+  
   xbee_uart( dev, "judging Landing\r");
 
 
@@ -75,11 +75,11 @@ int determine_landing() {
 //      sprintf(xbee_send, "sample of %d is ", i + 1);  //ac_array bug
 //      xbee_uart(dev, xbee_send);
 //      xbee_send_1double(ac_array[i]);  //ここをコメントアウトしないと再起動する（震え）
-      delay(6000); // サンプリングは6秒ごとに
+      delay(3000); // サンプリングは3秒ごとに
       i += 1;
     } else {
-      // 加速度を取得に失敗したら6秒待ってもう一度取る
-      delay(6000);
+      // 加速度を取得に失敗したら3秒待ってもう一度取る
+      delay(3000);
     }
   }
 
@@ -196,11 +196,12 @@ int casing(int landing_flag, ROVER * rover) {
   }
   //ここから、パラシュートをよけるプロセス
 
-  /*反転復帰でパラシュートに絡まる恐れあり、反転のまま子のシーケンスをやったほうがいいかも*/
+  /*反転復帰でパラシュートに絡まる恐れあり、反転のままこのシーケンスをやったほうがいいかも*/
   judge_invered_revive(); 
 
-  GPS gps;
-  //gps_get(&gps);    //ここで取得したデータをSDなりに保管して以後近づかないようにしてください
+//  GPS gps;
+//  gps_get(&gps);    //ここで取得したデータをSDなりに保管して以後近づかないようにしてください
+  set_danger_area();
 
 
   //ひとまずケーシング展開できたとする

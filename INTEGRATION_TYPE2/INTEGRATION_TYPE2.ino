@@ -41,28 +41,28 @@ void setup() {
   EEPROM.write( EEP_STATUS, flag_phase[0] ); // status1で初期化
   EEPROM.write( EEP_CENSOR_STATUS, 0xff);  //eepのflag類の初期化
 
-  //SD関連
-  pinMode(SS, OUTPUT);
-  int sd_ok_counter = 0;
-  while (1) {
-    if (!SD.begin(chipSelect)) {
-      sd_ok_counter += 1;
-
-      xbee_uart( dev, "Card failed, or not present\r");
-      // 失敗、何もしない
-      delay(1000);
-      if (sd_ok_counter == 60) {
-        xbee_uart( dev, "SD CARD DEATH\r");
-        renew_status(STATUS_SD, 0);
-        break;
-      }
-    } else {
-
-      xbee_uart( dev, "SD OK\r");
-
-      break;
-    }
-  }
+//  //SD関連
+//  pinMode(SS, OUTPUT);
+//  int sd_ok_counter = 0;
+//  while (1) {
+//    if (!SD.begin(chipSelect)) {
+//      sd_ok_counter += 1;
+//
+//      xbee_uart( dev, "Card failed, or not present\r");
+//      // 失敗、何もしない
+//      delay(1000);
+//      if (sd_ok_counter == 60) {
+//        xbee_uart( dev, "SD CARD DEATH\r");
+//        renew_status(STATUS_SD, 0);
+//        break;
+//      }
+//    } else {
+//
+//      xbee_uart( dev, "SD OK\r");
+//
+//      break;
+//    }
+//  }
 
   //照度センサ用のピン
   pinMode(LIGHT_PIN, INPUT);
