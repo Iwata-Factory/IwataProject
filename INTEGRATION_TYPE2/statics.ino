@@ -215,7 +215,7 @@ double vector2d_size(Vector2D v) {
 /*----------- Vector2Dの内積を得る--------------------
   ------------------------------------------*/
 double vector2d_inner(Vector2D v1, Vector2D v2) {
-  double inner_product = v1.x * v2.x + v1.y + v2.y;
+  double inner_product = v1.x * v2.x + v1.y * v2.y;
   return inner_product;
 }
 

@@ -49,7 +49,7 @@ int write_ac_sd(AC ac) {
       dataFile.println(ac.x);
       dataFile.println(ac.y);
       dataFile.println(ac.z);
-      dataFile.close(); \
+      dataFile.close();
 
       xbee_uart( dev, "AC to SD successed!!\r");
       return 1; // 成功を返す
