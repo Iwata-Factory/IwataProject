@@ -65,47 +65,6 @@ double value_ave(const int array_num, double* value) {
 
 /*
    角度の平均値を出す
-   引数　deg
-   戻り値 deg
-*/
-double degree_out(const int array_num, double* value) {
-  double ave = 0;
-  int i = 0;
-
-  Vector2D vector[array_num];
-  Vector2D vector_sum;
-  Vector2D vector_ave;
-
-  //角度を北から時計回りにとったxy座標上の点にする
-  for (i = 0; i < array_num; i++) {
-    vector[i].x = cos(deg2rad(value[i]));
-    vector[i].y = sin(deg2rad(value[i]));
-  }
-
-  //点の重心をとる(平均みたいになります)
-  for (i = 0; i < array_num; i++) {
-    vector_sum.x += vector[i].x;
-    vector_sum.y += vector[i].y;
-  }
-  vector_ave.x = vector_sum.x / array_num;
-  vector_ave.y = vector_sum.y / array_num;
-
-  //重心の角度を北から時計回りで出します
-  ave = atan2(vector_ave.y, vector_ave.x);  //東から
-  /*これってはatan2だからはじめからradだからrad2degで逆だよね？*/
-
-  ave = rad2deg(ave);
-  ave = (((int)ave + 360) % 360);
-  return ave;
-}
-
-
-
-
-/*
-   角度の平均値を出す
-   引数　deg
-   戻り値 deg
 */
 double rad_ave(const int array_num, double* value) {
   double ave = 0;
@@ -138,11 +97,7 @@ double rad_ave(const int array_num, double* value) {
   return ave;
 }
 
-//角度の外れ値を１ことってその平均をだす(ラジアン)
-/*
- * 引数 deg
- * 戻り値　deg
- */
+//角度の外れ値を１ことってその平均をだす
 double rad_out(const int array_num, double* value) {
   int i = 0;
   int j = 0;
@@ -153,7 +108,7 @@ double rad_out(const int array_num, double* value) {
   double ave = 0;
 
 
-  ave = degree_out(array_num, value);  //まずはすべての平均角度をとる
+  ave = rad_ave(array_num, value);  //まずはすべての平均角度をとる
 
   //角度を北から時計回りにとったxy座標上の点にする
   for (i = 0; i < array_num; i++) {
@@ -190,65 +145,6 @@ double rad_out(const int array_num, double* value) {
   return ave;
 }
 
-
-
-// 単位換算関数を書く関数
-
-
-/*-----------radからdegに--------------------
-  引数はrad(double型)
-  ------------------------------------------*/
-double rad2deg(double rad) {
-  double deg = rad * 180.0 / PI;
-  return (deg);
-}
-
-/*-----------degからradに--------------------
-  引数はdeg(double型)
-  ------------------------------------------*/
-double deg2rad(double deg) {
-  double rad = deg * PI / 180.0;
-  return (rad);
-}
-
-
-
-/*-----------Vector2Dのサイズを得る--------------------
-  ------------------------------------------*/
-double vector2d_size(Vector2D v) {
-  double v_size = sqrt(pow(v.x, 2) + pow(v.y, 2));
-  return v_size;
-}
-
-/*----------- Vector2Dの内積を得る--------------------
-  ------------------------------------------*/
-double vector2d_inner(Vector2D v1, Vector2D v2) {
-  double inner_product = v1.x * v2.x + v1.y * v2.y;
-  return inner_product;
-}
-
-
-/*
-   緯度経度から指定した地点までの距離を測定する
-*/
-double get_distance(GPS* gps, POINT* point) {
-  double distance = 0;
-  //一応方角も出せるようにしておきました
-  distance = sqrt(pow(point->longitude - gps->longitude, 2) + pow(point->latitude - gps->latitude, 2)) * 99096.44, 0;
-
-  return distance;
-}
-
-/*
- * 緯度経度から指定した地点までの方角を測定する
-*/
-double get_direction(GPS* gps, POINT* point) {
-  double direct = 0;
-  //一応方角も出せるようにしておきました
-  direct = (int)(atan2((point->longitude - gps->longitude) * 1.23, (point->latitude - gps->latitude)) * 57.3 + 360) % 360;
-
-  return direct;
-}
 
 
 

@@ -73,7 +73,7 @@ int status5(ROVER *rover) {
    とりあえず自分の状況を理解するためのやつです
    状況がわかったら、またそれに対して適切な処理をしやすくするためflag作っておきましたが、まだ使ってないやつあります
 */
-int escape(double distance_hold, ROVER *rover) {  /* こっちの統合ではdistance_holdをまだ定義してなかったね */
+int escape(double distance_hold, ROVER *rover) { 
 
   GPS gps_stack;   //GPSの構造体
   double distance[2] = { -1, -1};
@@ -107,7 +107,7 @@ int escape(double distance_hold, ROVER *rover) {  /* こっちの統合ではdis
 
     dif_distance = fabs(distance[1] - distance[0]);
 
-    if (dif_distance <= 3) {
+    if (dif_distance <= 2) {
       //スタックしたまま
       flag_distance = 0;
     } else {
@@ -138,10 +138,10 @@ int wadachi(ROVER *rover) {
   rover->My_Direction = get_my_direction();
   distance_hold = gps.distance;   //distance保持
   //基本的に下がっては少し右旋回して直進してまた引っかかったら右旋回とやっていき轍を回避できる場所まで行く
-  go_back(3000);
-  turn_target_direction(rover->My_Direction + 60, &rover->My_Direction);
-  go_straight(3000);
-  turn_target_direction(rover->My_Direction - 60, &rover->My_Direction);
+  turn_target_direction(rover->My_Direction + 150, &rover->My_Direction);
+  go_straight(4000);
+  rover->My_Direction = get_my_direction();
+  turn_target_direction(rover->My_Direction - 150, &rover->My_Direction);
 
 
   gps_get(&gps);

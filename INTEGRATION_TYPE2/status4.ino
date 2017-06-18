@@ -84,7 +84,6 @@ int determine_landing() {
   }
 
   // 着陸したかの判定
-  // 平均を算出
   for (int i = 0; i < 10; ++i) {
     ac_sum += ac_array[i];
   }
@@ -102,7 +101,10 @@ int determine_landing() {
 }
 
 
-
+/*
+ * キャリブレーションしていないので地磁気を使う関数の使用原則禁止
+ * turn_target_direction禁止
+ */
 
 
 //ケーシング展開関数
@@ -134,7 +136,8 @@ int casing(int landing_flag, ROVER * rover) {
     }
 
     //ケーシングが展開したかの確認シーケンス
-    if (landing_flag == 0) { //比較的風が弱い
+    if (landing_flag == 0) { /*比較的風が弱い*/
+      
       //ローバーを回転させ回転できる確認する
       rover->My_Direction = get_my_direction();
       direction_hold = rover->My_Direction;
@@ -193,9 +196,8 @@ int casing(int landing_flag, ROVER * rover) {
   }
   //ここから、パラシュートをよけるプロセス
 
-  /*ここで反転判定及び復帰シーケンスを必ずできたら入れてください*/
-  //ほぼ確実に反転しているので判定なしだとこの後のシーケンスが結構バグります
-  judge_invered_revive(); /*←いれましたbyとうま */
+  /*反転復帰でパラシュートに絡まる恐れあり、反転のまま子のシーケンスをやったほうがいいかも*/
+  judge_invered_revive(); 
 
   GPS gps;
   //gps_get(&gps);    //ここで取得したデータをSDなりに保管して以後近づかないようにしてください
@@ -216,30 +218,13 @@ int casing(int landing_flag, ROVER * rover) {
   while (1) {
     distance_flag = 0;
     count_para++;
-    rover->My_Direction = get_my_direction();  //現在の方角を取得
-    direction_hold = rover->My_Direction;      //現在の方角を保持
+
 
     xbee_uart( dev, "avoid parashute by opening casing.\r");
     xbee_uart( dev, "Pass this phase in this experiment.\r");
 
     //0.9~5mくらいなら取れる
     //servoモーターは90°が機体正面としています
-    /*
-       //サーボモーターで6０～１２０°まで安全確認
-       for (angle_servo = 60; angle_servo <= 120; angle_servo += 10 ) {
-         servo1.write(angle_servo);    //
-         delay(1000);    //回転時間
-         volt = analogRead( DISTANCE ) * 5 / 1023.0;
-         Serial.println( volt );  //電圧換算表示
-
-         if ( 1.35 < volt & volt < 2.7 ) {            //有効測距範囲内
-           para_distance = 140.0 / ( volt - 1.10 ) ;
-           Serial.print( "success reading! Distance is  " );
-           Serial.println( para_distance );
-           distance_flag = 1;     //一方向でも危険物があるとパラシュートとみなしアウト
-         }
-       }*/
-
 
     /*
        サーボモーターなしver
@@ -250,17 +235,6 @@ int casing(int landing_flag, ROVER * rover) {
 
     //サーボモーターなしver
     for (i = -3; i <= 3; i++) {
-      //うまく回転関数が動かないので一旦同じ位置で複数回と手検査します
-      /*
-        while (1) {
-        rover->My_Direction = get_my_direction();
-        target_flag = turn_target_direction((direction_hold + 10 * i), &rover->My_Direction);
-        if (target_flag == 1) {
-          break;
-        } else {
-          continue;
-        }
-        }*/
       volt = analogRead( DISTANCE ) * 5 / 1023.0;
       Serial.println( volt );  //電圧換算表示
       xbee_uart( dev, "volt of distance is " );  //電圧換算表示
@@ -270,7 +244,7 @@ int casing(int landing_flag, ROVER * rover) {
         para_distance = 140.0 / ( volt - 1.10 ) ;
         Serial.print( "success reading! Distance is  " );
         Serial.println( para_distance );
-        distance_flag = 1;     //一方向でも危険物があるとパラシュートとみなしアウト
+        distance_flag = 1;     //一回でも危険物があるとパラシュートとみなしアウト
       }
       delay(300);
     }
@@ -281,13 +255,10 @@ int casing(int landing_flag, ROVER * rover) {
     if (distance_flag == 1) {
       //前方にパラシュートが存在
       //回転する
-      //turn_target_direction(rover->My_Direction + 90, &rover->My_Direction);
-      //うまく回れないので一旦これで
       go_rotate(1000);
-      /*本当は90°直角に回りたいけどいまそこら辺の制御どうなっているかわからないのでとりあえずこれで*/
+     
     } else {
       //前方にパラシュートがない or 近すぎて判別できない
-      rover->My_Direction = get_my_direction();  //現在方角を把握
       break;
     }
     //距離センサの以上orパラシュートがかぶさっているなどなんともしがたい状況になっている
@@ -295,18 +266,11 @@ int casing(int landing_flag, ROVER * rover) {
       break;
     }
   }
-  //方角をさっきの方角に戻す
-  /*一旦コメントアウト
-    rover->My_Direction = get_my_direction();
-    target_flag = turn_target_direction((direction_hold ), &rover->My_Direction);
-  */
-  //先ほど取得した方向へ、しばらく進む
 
-  /*本当は地磁気で角度を取得しながら正確に直進したいがそれが今どうなっているかわからないのでとうまに任せます*/
-  /*キャリブレーションしていないので正確に直進はできないかも。禁止エリアに近づかないようにするのが関の山？*/
+  //先ほど取得した方向へ、しばらく進む
   go_straight(10000);
 
 
   //脱出成功
-  return 1;  /*成功は１を返すように統一しようbyとうま*/
+  return 1;  
 }

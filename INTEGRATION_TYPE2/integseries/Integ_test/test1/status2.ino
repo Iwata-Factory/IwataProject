@@ -1,12 +1,5 @@
-
-int status2(ROVER *rover) {  // Status2 打ち上げの関数
-  return 1;   /*後で消してね*/
-  return (judge_release());
-}
-
-
 int judge_release() {
-  xbee_uart( dev, "judging housyutu\r");
+  xbee_uart( dev,"judging housyutu\r");
   int i = 0;
   int light = 0; //照度センサのカウンタ
   unsigned long t = 0; //一定時間たったら勝手に照度センサ起動
@@ -16,8 +9,8 @@ int judge_release() {
 
     for (i = 0; i < 5; i++) {
       light += digitalRead(LIGHT_PIN);
-      xbee_uart( dev, "count");
-      xbee_uart( dev, light);
+      xbee_uart( dev,"count");
+      xbee_uart( dev,light);
       delay(1000);
       t++;
     }
@@ -36,5 +29,9 @@ int judge_release() {
   return 1;
 }
 
-
+//
+int status2(ROVER *rover) {  // Status2 打ち上げの関数
+  return 1;
+  return (judge_release());
+}
 
