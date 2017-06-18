@@ -250,5 +250,3 @@ double get_direction(GPS* gps, POINT* point) {
   return direct;
 }
 
-
-
