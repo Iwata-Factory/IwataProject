@@ -2,19 +2,29 @@
 int status5(ROVER *rover) {
 
   int i = 0; // do-whileの繰り返し数をカウント
+  GPS gps;
+
+  DRIVE pid;  // DRIVEの初期化
+  pid.right1 = 0;
+  pid.right2 = 0;
+  pid.leght1 = 0;
+  pid.leght2 = 0;
+
+  // 比例定数
+  double kp = 0.0;
+  double ki = 0.0;
+  double kd = 0.0;
+
 
   do {
 
-    judge_invered_revive(); //状態復旧
-
-    if (i % 30 == 0) { // たまにキャリブレーションする
-      tm_calibration();  // 条件が揃ったらキャリブレーション
+    if (i % 10 == 0) {  // status5の6ループごとにキャリブレーションを行う
+      tm_calibration();
     }
 
-    // GPS情報を取得
-    GPS gps;
+    // 目的角を取得
     gps_get(&gps);
-    // GPSが取得した値を自身のステータスに反映する。
+    // GPSが取得した値をROVERのステータスに反映する。
     rover->latitude = gps.latitude;  // 緯度
     rover->longitude = gps.longitude;  //経度
     rover->Target_Direction = gps.Direction;  //ターゲットの方向
@@ -22,31 +32,51 @@ int status5(ROVER *rover) {
 
     write_gps_sd(gps);  // 自身の位置をsdに記録
 
-    time = millis(); //現在の時間を取得
     rover->time_from_start = millis();
     write_timelog_sd(millis(), 5);
 
-    if (rover->distance < 5) { // 5mまで来たら地上2へ
-      return 1;
+    // 目標出力
+    int target_r1 = 250;
+    int target_l1 = 250;
+    
+    for (int j; j < 600; j++) {  // 600 * 200 = 120000(120秒ごと)
+
+      delay(200);
+
+      // 目標値は角度がターゲット方向
+
+      double difference_direction = pid_get_control(rover->Target_Direction, &rover->My_Direction);
+      double difference_target_r1 = 
+
+
+      rover_analog(pid);
+
+
+
+
+
     }
 
-    // 目的の方向を目指して回転を行う。rover->My_Directionは書き換えていく。
-    int turn_result = turn_target_direction(rover->Target_Direction, &rover->My_Direction);
 
-    // 2秒直進
-    go_straight(2000);
 
-    i += 1;
+
+
+
+
+
+
+
 
   } while (1);
 }
+
 
 //（砂に埋まった）とかのスタックした後の脱出アルゴリズム
 /*
    とりあえず自分の状況を理解するためのやつです
    状況がわかったら、またそれに対して適切な処理をしやすくするためflag作っておきましたが、まだ使ってないやつあります
 */
-int escape(double distance_hold, ROVER *rover) {  /* こっちの統合ではdistance_holdをまだ定義してなかったね */
+int escape_wadachi(double distance_hold, ROVER *rover) {  /* こっちの統合ではdistance_holdをまだ定義してなかったね */
 
   GPS gps_stack;   //GPSの構造体
   double distance[2] = { -1, -1};
@@ -102,6 +132,7 @@ int escape(double distance_hold, ROVER *rover) {  /* こっちの統合ではdis
    轍に沿って移動はできるけど轍から逃げられない
 */
 int wadachi(ROVER *rover) {
+
   GPS gps;
 
   double distance_hold = 0;

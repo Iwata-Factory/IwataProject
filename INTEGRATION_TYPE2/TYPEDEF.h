@@ -62,10 +62,10 @@ typedef struct { // 地磁気センサ
 } TM;
 
 typedef struct { // モーター制御
-  int right1 = 1; // 8番ピン対応
-  int right2 = 1; // 9番ピン対応
-  int leght1 = 1; // 10番ピン対応
-  int leght2 = 1; // 11番ピン対応
+  int right1 = 1; // 4番ピン対応
+  int right2 = 1; // 5番ピン対応
+  int leght1 = 1; // 6番ピン対応
+  int leght2 = 1; // 7番ピン対応
 } DRIVE;
 
 #endif

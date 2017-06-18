@@ -353,6 +353,47 @@ int turn_target_direction(double target_direction, double *my_Direction) {
   return 0;
 }
 
+
+/*-----------pid_get_control()--------------------
+  ターゲットとの差を取得
+  ------------------------------------------*/
+
+double pid_get_control(double target_direction, double *my_Direction) {
+
+  int i = 0;  // 回転の試行回数をカウントしていく
+
+
+  i += 1;
+
+  if (target_direction < 0 || 360 <= target_direction) { //target_directionが360以上の場合調整
+    target_direction = (int)target_direction % 360;
+  }
+
+  double dir_result = get_my_direction(); // 自身の方向を取得(deg)。target_directionもdeg
+
+  if (dir_result != -1) {  // 正しく角度が取れたのか確認
+    *my_Direction = dir_result;
+  } else {
+    return 0.0;  // ダメだった場合は回転角度0
+  }
+
+  double rotate_angle = 0;  // 回転量
+  double a_difference = *my_Direction - target_direction;
+
+  if (180 <= a_difference) {
+    rotate_angle = 360 - a_difference;  // 右回転
+  } else if (0 <= a_difference < 180) {
+    rotate_angle = -rotate_angle;  // 左回転
+  } else if (-180 <= a_difference < 0) {
+    rotate_angle = -rotate_angle;  // 右回転
+  } else {
+    rotate_angle = 360 + a_difference;  // 左回転
+  }
+
+  rotate_angle = -rotate_angle
+  return rotate_angle;  // 基準値との差を返す
+}
+
 /*-----------tm_calibration()--------------------
    地磁気のキャリブレーション
    戻り値
