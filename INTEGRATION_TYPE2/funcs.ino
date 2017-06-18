@@ -390,7 +390,7 @@ double pid_get_control(double target_direction, double *my_Direction) {
     rotate_angle = 360 + a_difference;  // 左回転
   }
 
-  rotate_angle = -rotate_angle
+  rotate_angle = -rotate_angle;
   return rotate_angle;  // 基準値との差を返す
 }
 
