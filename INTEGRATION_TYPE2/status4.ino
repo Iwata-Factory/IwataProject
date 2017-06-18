@@ -9,26 +9,26 @@ int status4(ROVER *rover) {  // Status4 着陸の関数
 
   int landing_flag = 0;   //着地判定を何で行ったか
 
-  //暫定的に前回までのやつにしています
-  int t = 0;  //時間経過
-  while (1) {
-    if (determine_landing() == 1) {
-
-      landing_flag = 0;
-
-      break;
-    }
-    //1ループ1分より適当に15分たったら強制的に着陸したものとする
-    t++;
-
-    if (t >= 15) {
-
-
-      landing_flag = 1;
-
-      break;
-    }
-  }
+  //  //暫定的に前回までのやつにしています
+  //  int t = 0;  //時間経過
+  //  while (1) {
+  //    if (determine_landing() == 1) {
+  //
+  //      landing_flag = 0;
+  //
+  //      break;
+  //    }
+  //    //1ループ1分より適当に15分たったら強制的に着陸したものとする
+  //    t++;
+  //
+  //    if (t >= 15) {
+  //
+  //
+  //      landing_flag = 1;
+  //
+  //      break;
+  //    }
+  //  }
 
   //以下パラシュートからの脱出
 
@@ -70,10 +70,10 @@ int determine_landing() {
       // 加速度の大きさを計算
       ac_array[i] = sqrt(pow(ac.x, 2) + pow(ac.y, 2) + pow(ac.z, 2));
 
-
-//      sprintf(xbee_send, "sample of %d is ", i + 1);
+//
+//      sprintf(xbee_send, "sample of %d is ..(only first is valid!!)\r", i + 1);
 //      xbee_uart(dev, xbee_send);
-      //ここにsend_1doubleを入れるとマイコンが再起動します！！
+//      xbee_send_3doubles(ac_array[i],0.0,0.0);  //ここにsend_1double、2doublesを入れるとマイコンが再起動します！応急措置として
       delay(6000); // サンプリングは6秒ごとに
       i += 1;
     } else {

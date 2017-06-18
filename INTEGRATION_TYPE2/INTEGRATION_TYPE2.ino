@@ -26,16 +26,15 @@ void setup() {
   writeI2c(0x02, 0x00, HMC5883L); //HMC5883Lの初期設定0x02レジスタに0x00書き込み
   writeI2c(0x31, 0x00, ADXL345);  //上と同様
   writeI2c(0x2d, 0x08, ADXL345);  //上と同様
-
-  //  xbee関連
-  xbee_init(0);  //初期化
-  xbee_atcb(4);  //ネットワーク初期化
-  xbee_atnj(0);  //孫機のジョイン拒否
-  while (xbee_atai() > 0x01) { //ネットワーク参加状況を確認
-    delay(3000);
-    xbee_atcb(1);  //ネットワーク参加ボタン押下
-  }
-
+  
+    //  xbee関連
+    xbee_init(0);  //初期化
+    xbee_atcb(4);  //ネットワーク初期化
+    xbee_atnj(0);  //孫機のジョイン拒否
+    while (xbee_atai() > 0x01) { //ネットワーク参加状況を確認
+      delay(3000);
+      xbee_atcb(1);  //ネットワーク参加ボタン押下
+    }
   //eeprom関連
   //eep_clear();   //EEPROMのリセット。４KB全てに書き込むので時間かかる。
   EEPROM.write( EEP_STATUS, flag_phase[0] ); // status1で初期化

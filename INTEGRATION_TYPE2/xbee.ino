@@ -22,7 +22,6 @@ void xbee_send_3doubles(double first, double second, double third) {
 
   sprintf( send_double, "%s,%s,%s\r", xbee_first, xbee_second, xbee_third );
   xbee_uart( dev, send_double );  //送信
-  delay(1000);
 }
 
 void xbee_send_2doubles(double first, double second) {
@@ -36,7 +35,6 @@ void xbee_send_2doubles(double first, double second) {
 
   sprintf( send_double, "%s,%s\r", xbee_first, xbee_second );
   xbee_uart( dev, send_double );  //送信
-  delay(1000);
 }
 
 void xbee_send_1double(double first) {
@@ -47,6 +45,5 @@ void xbee_send_1double(double first) {
 
   sprintf( send_double, "%s\r", send_double);
   xbee_uart( dev, send_double );  //送信
-  delay(1000);
 }
 
