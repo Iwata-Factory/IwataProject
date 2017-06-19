@@ -120,7 +120,7 @@ int escape_wadachi(ROVER *rover) {
     gps_get(&gps_stack);
     distance[0] = gps_stack.distance;
     rover->My_Direction = get_my_direction();
-    if (turn_target_direction(rover->My_Direction + 90, &rover->My_Direction) == 1) {
+    if (turn_target_direction_wadachi(rover->My_Direction + 90, &rover->My_Direction) == 1) {
       //回転できる
       flag_direction = 1;
     } else {
@@ -166,13 +166,21 @@ int wadachi(ROVER *rover) {
   double diff_distance = 1000;
   int wadachi_count = 0;
 
-  rover->My_Direction = get_my_direction();
+  
   distance_hold = gps.distance;   //distance保持
   //基本的に下がっては少し右旋回して直進してまた引っかかったら右旋回とやっていき轍を回避できる場所まで行く
-  turn_target_direction(rover->My_Direction + 150, &rover->My_Direction);
-  go_straight(4000);
+  /*バック走できるかは要検証*/
+  go_back(5000);
   rover->My_Direction = get_my_direction();
-  turn_target_direction(rover->My_Direction - 150, &rover->My_Direction);
+  if (judge_invered() == 1){ //反転していない
+    turn_target_direction_wadachi(rover->My_Direction + 90, &rover->My_Direction);
+  } else {//反転している
+    turn_target_direction_wadachi(rover->My_Direction - 90, &rover->My_Direction);
+  }
+  judge_invered_revive();
+  go_straight(5000);
+  rover->My_Direction = get_my_direction();
+  turn_target_direction_wadachi(rover->My_Direction - 90, &rover->My_Direction);
 
 
   gps_get(&gps);

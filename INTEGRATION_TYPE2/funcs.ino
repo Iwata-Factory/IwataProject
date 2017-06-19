@@ -267,7 +267,7 @@ double get_my_direction() {
   Vector2D tm_v;  // 地磁気ベクトル
   Vector2D s;  // 基準ベクトル
 
-//  xbee_uart( dev, "getting sample of rover\r");
+  //  xbee_uart( dev, "getting sample of rover\r");
   for (int i = 0; i < 10; i++) {
     error_c = 0;
     do {
@@ -303,9 +303,9 @@ double get_my_direction() {
         tm_degree =  tm_degree - 90;
       }
 
-//      sprintf(xbee_send, "sample of tm %d is ", i + 1 );  //tm_degreeが文字化けする不具合
-//      xbee_uart(dev, xbee_send);
-//      xbee_send_1double(tm_degree);    //文字化け
+      //      sprintf(xbee_send, "sample of tm %d is ", i + 1 );  //tm_degreeが文字化けする不具合
+      //      xbee_uart(dev, xbee_send);
+      //      xbee_send_1double(tm_degree);    //文字化け
 
       direction_array[i] = tm_degree;  // 外れ値処理のためにradに再変換
 
@@ -317,7 +317,7 @@ double get_my_direction() {
 
     } while (tm.x == 100 || tm.y == 100 || tm.z == 100);
   }
-//  xbee_uart( dev, "calculating\r");
+  //  xbee_uart( dev, "calculating\r");
   my_direction = degree_out(10, direction_array);  // 10サンプルから平均を計算
   //my_direction = rad2deg(my_direction);  // radからdegへ
 
@@ -363,17 +363,17 @@ int turn_target_direction(double target_direction, double *my_Direction) {
     double rotate_angle = 0;  // 回転量
     double a_difference = *my_Direction - target_direction;
 
-//
-//    xbee_uart( dev, "a_difference is\r");
-//    xbee_send_1double(a_difference);
-    
+    //
+    //    xbee_uart( dev, "a_difference is\r");
+    //    xbee_send_1double(a_difference);
+
     if (180 <= a_difference) {
       rotate_angle = 360 - a_difference;  // 右回転
     } else if (30 <= a_difference && a_difference < 180) {
       rotate_angle = -a_difference;  // 左回転
     } else if (-30 <= a_difference && a_difference < 30) {
       rotate_angle = 0;  // 回転しない
-   //   xbee_uart( dev, "angle of rover is acceptable.\r");
+      //   xbee_uart( dev, "angle of rover is acceptable.\r");
       return 1;  // 回転に成功
     } else if (-180 <= a_difference && a_difference < -30) {
       rotate_angle = -a_difference;  // 右回転
@@ -387,8 +387,8 @@ int turn_target_direction(double target_direction, double *my_Direction) {
     rotate_angle = rotate_angle * (12 - i) / 10;  // 回転角度を収束させる
 
 
-//    xbee_uart(dev, "real rotation is\r");
-//    xbee_send_1double(rotate_angle);
+    //    xbee_uart(dev, "real rotation is\r");
+    //    xbee_send_1double(rotate_angle);
 
 
     go_rotate(rotate_angle);  // 回転を行う
@@ -399,6 +399,83 @@ int turn_target_direction(double target_direction, double *my_Direction) {
   } while (i < 10); // 10回回転してもダメだったら失敗
   return 0;
 }
+
+/*
+   wadachi_escape用の方向変換関数
+*/
+int turn_target_direction_wadachi(double target_direction, double *my_Direction) {
+
+  double angle_hold = 0;    //方位保持
+  int i = 0;  // 回転の試行回数をカウントしていく
+  angle_hold = *my_Direction;   
+
+  do {
+
+    delay(1000);
+    i += 1;
+
+    if (target_direction < 0 || 360 <= target_direction) { //target_directionが360以上の場合調整
+      target_direction = (360 * 2 + (int)target_direction) % 360;
+    }
+
+    xbee_uart( dev, "getting angle of rover\r");
+    double dir_result = get_my_direction(); // 自身の方向を取得(deg)。target_directionもdeg
+
+    if (dir_result != -1) {
+      *my_Direction = dir_result;
+    } else {
+      return 0;
+    }
+
+    double rotate_angle = 0;  // 回転量
+    double a_difference = *my_Direction - target_direction;
+    double rotate_difference = 0;
+
+    rotate_difference = fabs(*my_Direction - angle_hold); //
+    
+
+    //
+    //    xbee_uart( dev, "a_difference is\r");
+    //    xbee_send_1double(a_difference);
+
+    if (180 <= a_difference) {
+      rotate_angle = 360 - a_difference;  // 右回転
+    } else if (30 <= a_difference && a_difference < 180) {
+      rotate_angle = -a_difference;  // 左回転
+    } else if (-30 <= a_difference && a_difference < 30) {
+      rotate_angle = 0;  // 回転しない
+      //   xbee_uart( dev, "angle of rover is acceptable.\r");
+      return 1;  // 回転に成功
+    } else if (-180 <= a_difference && a_difference < -30) {
+      rotate_angle = -a_difference;  // 右回転
+    } else {
+      rotate_angle = 360 + a_difference;  // 左回転
+    }
+
+    xbee_uart(dev, "needed rotation is\r");
+    xbee_send_1double(rotate_angle);
+
+
+    //前回から回転できなかったら大きく回転する
+    if (rotate_difference >= 30){
+      rotate_angle = rotate_angle * (12 - i) / 10;  // 回転角度を収束させる
+    } else {
+      rotate_angle = 5000;    //回転できないっぽいのでめっちゃ回す
+    }
+
+    //    xbee_uart(dev, "real rotation is\r");
+    //    xbee_send_1double(rotate_angle);
+
+
+    go_rotate(rotate_angle);  // 回転を行う
+
+    //xbee_uart(dev, "rotate ok\r");
+
+
+  } while (i < 10); // 10回回転してもダメだったら失敗
+  return 0;
+}
+
 
 /*-----------tm_calibration()--------------------
    地磁気のキャリブレーション
@@ -542,6 +619,45 @@ int judge_invered_revive() {
     }
   }
 }
+
+/*
+ * 反転判定のみ
+ * 反転:return 0  正常向き:return 1
+ */
+int judge_invered() {
+
+  xbee_uart( dev, "check revive\r");
+
+  int judge_count = 0;
+
+  while (1) {
+
+    judge_count += 1;
+
+    if (judge_count == 10) {
+      return 0;  // どうしようもない状況に陥ってそう
+    }
+
+    AC ac[10];  // サンプル数は10個とする
+    double z[10] = {1.0};
+
+    for (int i = 0; i < 10; i++) {
+      ac[i] = get_ac();  // 加速度を取得
+      z[i] = ac[i].z;  // zの値に着目
+      delay(50);
+    }
+    double ac_z_ave =  value_ave(10, z);
+
+    if (ac_z_ave < -1.0) {  // この式が真なら反転している。
+      xbee_uart( dev, "revive...\r");
+      return 0;
+    } else {
+      xbee_uart( dev, "No Problem\r");
+      return 1; // 問題なし
+    }
+  }
+}
+
 
 /*-----------set_danger_area()--------------------
    引数の周囲10mを立ち入り禁止エリアに
