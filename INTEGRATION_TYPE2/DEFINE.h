@@ -78,6 +78,10 @@
 #define STATUS_XBEE 0x80
 #define SD_FLAG ("mis_flag.byt")
 
+//新規のdefine
+#define GPS_SPECIAL ("gps_spec.byt")  //節目のGPS（着陸地点、制御の開始・終了地点etc...）
+#define EEP_GPS_INIT 2  //制御開始時のgpsを記録するアドレス実験で何バイト消費するかを実験しないといけない。確かgps_getだと２７バイト
+
 //ニクロム線
 #define NICROM_1 28
 #define NICROM_2 30

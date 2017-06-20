@@ -171,7 +171,7 @@ void loop() {
         rover.time_from_start = millis();  // 機体時間を取得
         write_timelog_sd(rover.time_from_start, 4);
 
-        if (status4(&rover) == 1) {
+        if ( status4(&rover) == 1) {  
           trans_phase(rover.status_number);
           rover.status_number += 1;
           break;

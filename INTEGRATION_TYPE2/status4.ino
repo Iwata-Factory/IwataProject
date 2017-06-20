@@ -1,6 +1,6 @@
 /*
    放出判定行われたのち
-   着地判定とケーシング展開、ケーシングからの脱出シーケンス
+   無風状態でのケーシング展開を目指す。。？
 */
 
 
@@ -8,103 +8,57 @@ int status4(ROVER *rover) {  // Status4 着陸の関数
 
   // 加速度とGPSから判断することになりそう
   speaker(A_TONE);
+  speaker(B_TONE);
+  speaker(A_TONE);
+  speaker(B_TONE);
   int landing_flag = 0;   //着地判定を何で行ったか
 
   //暫定的に前回までのやつにしています
-  int t = 0;  //時間経過
+  int st4_cnt = 0;  //時間経過x
   while (1) {
-    if (determine_landing() == 1) {
+    if ((sensor & STATUS_AC) == STATUS_AC ) {   //AC生存
+      //      xbee_uart(dev, "sampling ac...\r");
 
-      landing_flag = 0;
+      if (determine_landing() == 1) {
 
-      break;
+        xbee_uart(dev, "AC ok\r");
+        break;
+      }
+      //1ループ1分より適当に15分たったら強制的に着陸したものとする
+      st4_cnt++;
+
+      if (st4_cnt >= 15) {  //着陸後１５分経過
+
+        break;
+      }
     }
-    //1ループ1分より適当に15分たったら強制的に着陸したものとする
-    t++;
-
-    if (t >= 15) {
-
-
-      landing_flag = 1;
-
-      break;
+    else { //割と詰んでる状態
+      xbee_uart(dev, "as know as zetsubou\r");//絶望
     }
+    delay(10);
   }
 
   //以下パラシュートからの脱出
 
   casing(landing_flag, rover);
 
-
-  return 1;
-}
-
-// 着陸判定関数を書くファイル
-
-/*-----------determine_landing()--------------------
-  着陸したか判定を行う
-  着陸と判定したら1、そうでなければ0を返す。
-  ------------------------------------------*/
-
-int determine_landing() {
-  
-  xbee_uart( dev, "judging Landing\r");
-
-
-  AC ac; // 宣言
-
-  double ac_array[10]; // サンプルを入れる箱
-
-  // 加速度の和と平均
-  double ac_sum = 0;
-  double ac_ave = 0;
-
-  // 加速度のサンプルを10個取る
-  int i = 0;
-
-  //xbee_uart( dev,"加速度のサンプルを取得します");
-
-  while (i < 10) {
-    ac = get_ac(); // 加速度を取得
-    if (!(ac.x == 100 && ac.y == 100 && ac.z == 100)) {
-      // 値を取れている
-      // 加速度の大きさを計算
-      ac_array[i] = sqrt(pow(ac.x, 2) + pow(ac.y, 2) + pow(ac.z, 2));
-
-
-//      sprintf(xbee_send, "sample of %d is ", i + 1);  //ac_array bug
-//      xbee_uart(dev, xbee_send);
-//      xbee_send_1double(ac_array[i]);  //ここをコメントアウトしないと再起動する（震え）
-      delay(3000); // サンプリングは3秒ごとに
-      i += 1;
-    } else {
-      // 加速度を取得に失敗したら3秒待ってもう一度取る
-      delay(3000);
-    }
-  }
-
-  // 着陸したかの判定
-  for (int i = 0; i < 10; ++i) {
-    ac_sum += ac_array[i];
-  }
-  ac_ave = ac_sum / 10;
-
-  //  xbee_uart( dev,"解析結果:");
-  //  xbee_uart( dev,ac_ave);
-  if (200 <= ac_ave && ac_ave <= 300) {
-    xbee_uart( dev, "land ok\r");
-    return 1; //着陸判定にパス
+// 着陸地点の記録
+  xbee_uart(dev, "finish falling\rlanded!!\rlogging landed point!\r");
+  GPS gps_land;  //着陸地点を記録（必要？？）
+  gps_get(&gps_land);
+  if (write_gps_sd_file(gps_land, GPS_SPECIAL)) { // 自身の位置をsdに記録。新規に関数を作成しました。
+    xbee_uart(dev, "success!!");
   } else {
-    xbee_uart( dev, "land not ok\r");
-    return 0;
+    xbee_uart(dev, "fail...");
   }
+  return 1;
 }
 
 
 /*
- * キャリブレーションしていないので地磁気を使う関数の使用原則禁止
- * turn_target_direction禁止
- */
+   キャリブレーションしていないので地磁気を使う関数の使用原則禁止
+   turn_target_direction禁止
+*/
 
 
 //ケーシング展開関数
@@ -137,7 +91,7 @@ int casing(int landing_flag, ROVER * rover) {
 
     //ケーシングが展開したかの確認シーケンス
     if (landing_flag == 0) { /*比較的風が弱い*/
-      
+
       //ローバーを回転させ回転できる確認する
       rover->My_Direction = get_my_direction();
       direction_hold = rover->My_Direction;
@@ -156,7 +110,7 @@ int casing(int landing_flag, ROVER * rover) {
 
       if (target_flag == 1) {
         //無事に回転できた＞＞ケーシングが展開している
-        
+
         break;
       } else {
         //ケーシングが展開していなくて回転できない
@@ -197,10 +151,10 @@ int casing(int landing_flag, ROVER * rover) {
   //ここから、パラシュートをよけるプロセス
 
   /*反転復帰でパラシュートに絡まる恐れあり、反転のままこのシーケンスをやったほうがいいかも*/
-  judge_invered_revive(); 
+  judge_invered_revive();
 
-//  GPS gps;
-//  gps_get(&gps);    //ここで取得したデータをSDなりに保管して以後近づかないようにしてください
+  //  GPS gps;
+  //  gps_get(&gps);    //ここで取得したデータをSDなりに保管して以後近づかないようにしてください
   set_danger_area();
 
 
@@ -257,7 +211,7 @@ int casing(int landing_flag, ROVER * rover) {
       //前方にパラシュートが存在
       //回転する
       go_rotate(1000);
-     
+
     } else {
       //前方にパラシュートがない or 近すぎて判別できない
       break;
@@ -273,5 +227,5 @@ int casing(int landing_flag, ROVER * rover) {
 
 
   //脱出成功
-  return 1;  
+  return 1;
 }
