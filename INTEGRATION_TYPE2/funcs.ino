@@ -384,7 +384,11 @@ int turn_target_direction(double target_direction, double *my_Direction) {
     xbee_uart(dev, "needed rotation is\r");
     xbee_send_1double(rotate_angle);
 
-    rotate_angle = rotate_angle * (12 - i) / 10;  // 回転角度を収束させる
+    if (i < 6) {
+      rotate_angle = rotate_angle * (10 - i) / 10;  // 回転角度を収束させる
+    } else {
+      rotate_angle = rotate_angle * (10 - 5 - (i/2)) / 10;  // 回転角度を収束させる
+    }
 
 
     //    xbee_uart(dev, "real rotation is\r");

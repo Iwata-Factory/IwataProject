@@ -4,7 +4,7 @@
 //地上走行をどうするかのフラグ
 //ゴーアンドストップなら0
 //PIDなら1にしてね
-# define GROUND1_FLAG 0
+# define GROUND1_FLAG 1
 
 // 定数の定義
 # define GOAL_LATITUDE 35.756165
