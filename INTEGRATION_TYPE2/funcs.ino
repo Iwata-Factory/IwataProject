@@ -206,6 +206,54 @@ int gps_get(GPS* gps) {
 
 }
 
+
+
+/*
+ * gpsの高度を返します
+ * 引数doubleのポインタで渡すとそれに高度を代入します
+ */
+int gps_get_al(double* altitude) {
+  int t = 0;
+  while (1) { //gpsの値が正常になるまで取り続ける
+    int gps_flag = 0;   //gps_getの返り値保存
+    gps_flag = gps_data_get_al(altitude);
+    delay(10);
+    t++;
+    //gpsの値が取れない間どこで引っかかっているのか識別できるようになりました
+    if (gps_flag == 1) { //値が取れたら抜ける
+      break;
+    }
+    if (gps_flag == 2) {
+      ;
+
+      //xbee_uart( dev,"cant communicate with gps\r");
+
+    }
+    if (gps_flag == 3) {
+      ;
+      //gpsとの通信はできているが値が変or GPRMCでない
+
+      //xbee_uart( dev, "gps wrong or not GPRMC\r");
+    }
+    if (gps_flag == 4) {
+      ;
+      speaker(E_TONE);
+      speaker(F_TONE);
+      speaker(E_TONE);
+
+      //通信ができて値も解析されたが緯度経度の値がバグってる
+      //xbee_uart( dev, "wrong Lat or Long\r");
+    }
+    if (t>= 10000){
+      //およそ100秒間ダメなら向ける
+      break;
+    }
+  }
+  return 1;
+}
+
+
+
 /*-----------get_ac()--------------------
    加速度センサーの値を取得
    返り値はAC型
