@@ -141,24 +141,3 @@ void go_back(int go_time) {
     delay(2);
   }
 }
-//void go_straight(int go_time) {
-//  DRIVE go; //DRIVE型の宣言
-//  // 初期化
-//  go.right1 = 0;
-//  go.right2 = 1;
-//  go.leght1 = 0;
-//  go.leght2 = 1;
-//  // 直進
-//  rover_degital(go);
-//  delay(go_time);
-//
-//  // 停止
-//  go.right1 = 1;
-//  go.right2 = 1;
-//  go.leght1 = 1;
-//  go.leght2 = 1;
-//  // 停止
-//  rover_degital(go);
-//  delay(1000);
-//}
-

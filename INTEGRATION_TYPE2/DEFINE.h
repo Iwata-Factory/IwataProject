@@ -29,6 +29,12 @@
 #define M2_1 6 // モーター制御用ピン
 #define M2_2 7 // モーター制御用ピン
 
+// PID制御関連
+#define PID_SURPULS 0.50
+#define PID_KP 1.0
+#define PID_KI 1.0
+#define PID_KD 1.0
+
 //スピーカー関連
 #define BEAT_LONG 300   // 音の長さを指定
 #define TONE_PINNO 33   // 圧電スピーカを接続したピン番号
