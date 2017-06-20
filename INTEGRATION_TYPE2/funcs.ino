@@ -207,6 +207,79 @@ int gps_get(GPS* gps) {
 }
 
 
+//static const int READBUFFERSIZE = 256;
+//static const char DELIMITER = ",";
+
+int AnalyzeLineString_al( char szLineString[], double* altitude) {
+  
+  // $GPGGA
+  if ( 0 != strncmp( "$GPGGA", szLineString, 6 ) )
+  {
+    return 0;
+  }
+  //strtok(char* s1,char* s2):s1文字列内の文字をs2文字列で区切って抽出したトークンの戦闘アドレスを返す
+  //2回目以降はs1にNULLを指定して連続
+  // $GPGGA,085120.307,3541.1493,N,13945.3994,E,1,08,1.0,6.9,M,35.9,M,,0000*5E
+  //UTC,緯度,北緯南緯,経度,東経西経,位置特定品質,使用衛星数,水平精度低下率,アンテナの海抜高さ,
+  strtok( szLineString, DELIMITER );  // $GPGGAを抽出
+  strtok( NULL, DELIMITER );  // UTC時刻を抽出
+  strtok( NULL, DELIMITER ); // 緯度(dddmm.mmmm)
+  strtok( NULL, DELIMITER );  // 北緯か南緯か
+  strtok( NULL, DELIMITER );  // 経度(dddmm.mmmm)
+  strtok(NULL, DELIMITER);    //東経か西経か
+  char* psz_q = strtok(NULL, DELIMITER);   //位置特定品質
+  strtok(NULL, DELIMITER);  //仕様衛星数
+  strtok(NULL, DELIMITER);   //水平精度低下率
+  char* psz_altitude = strtok(NULL, DELIMITER);   //アンテナの海抜高さ
+
+  if ( NULL == psz_altitude )
+  {
+    return 0;
+  }
+  /*
+     通信ができていても生データが通信状況悪いとVになります
+     これが出る場合は屋外とか通信状況よくなるようにしてください
+  */
+  if ( strncmp(*psz_q, '0', 1 ) == 0) {
+    xbee_uart( dev, "BAD communicatin condition of gps...\r");
+    return 0;
+  }
+  *altitude = atof(psz_altitude);
+
+  return 1;
+}
+
+int gps_data_get_al(double* altitude) {
+
+  //  char g_szReadBuffer[READBUFFERSIZE] = "";
+  //  int  g_iIndexChar = 0;
+  char szLineString[READBUFFERSIZE];
+
+  if ( !ReadLineString( g_gps,
+                        g_szReadBuffer, READBUFFERSIZE, g_iIndexChar,
+                        szLineString, READBUFFERSIZE ) )
+  { // 読み取り途中
+    return 2;
+  }
+  // 読み取り完了
+
+  if ( !AnalyzeLineString_al( szLineString, altitude ) )
+  {
+    return 3;
+  }
+
+  // 緯度、経度を読み取れた。
+  // float to string
+  char sz_al[16];
+  dtostrf(*altitude, 13, 6, sz_al);
+
+  //xbee送信
+  xbee_uart(dev, "get altitude:");
+  xbee_uart(dev, sz_al);
+
+  return 1;
+}
+
 
 /*
  * gpsの高度を返します

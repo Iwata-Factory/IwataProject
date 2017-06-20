@@ -9,6 +9,7 @@ int status3(ROVER *rover) {  // Status3 降下の関数
   int st3_time;  // ログ記録判定用
   int landing_flag = 0;  // 着陸判定を何で行ったか
   int st3_cnt = 0;     // 強制脱出用カウンタ。今後は高度等で強制脱出する感じにして廃止していきたい。。。？
+  double st3_alt;
 
   while (1) {
     st3_time = millis();
@@ -16,11 +17,12 @@ int status3(ROVER *rover) {  // Status3 降下の関数
 
 
     if ((sensor & STATUS_GPS) == STATUS_GPS) { //GPS生存(高度取得用。後で実装）
-      if (determine_landing() == 1) {
-
-        xbee_uart(dev, "landing ok (judge from GPS)\r" );
-
-        break;
+      gps_get_al(&st3_alt);
+      if (st3_alt < ALT_REGULATION) {
+        if (judge_fall()) {
+          xbee_uart(dev, "landing ok (judge from GPS)\r" );
+          break;
+        }
       }
 
       st3_cnt++;
@@ -58,14 +60,12 @@ int status3(ROVER *rover) {  // Status3 降下の関数
         break;
       }
     }
-
+    else { //割と詰んでる状態
+      xbee_uart(dev, "as know as zetsubou\r");//絶望
+    }
+    delay(10);
   }
-  else { //割と詰んでる状態
-    xbee_uart(dev, "as know as zetsubou\r");//絶望
-  }
-  delay(10);
-}
-return 1;
+  return 1;
 }
 
 
@@ -136,4 +136,24 @@ int determine_landing() {
    turn_target_direction禁止
 */
 
-int
+
+int judge_fall() {
+  double alt_array[10];
+  double alt_dif = 0.0;
+  int t_init = millis();
+
+  for (int jf_cnt = 0; jf_cnt < 10; jf_cnt++) {
+    if ((millis() - t_init) >= 10000) {
+      break;
+    }
+    gps_get_al(&alt_array[jf_cnt]);
+  }
+  for (int jf_cnt = 0; jf_cnt < 9; jf_cnt++) {
+    alt_dif += alt_array[jf_cnt + 1] - alt_array[jf_cnt];
+    if ( alt_dif > 3.0 ) {
+      return 0;
+    }
+  }
+  return 1;
+}
+

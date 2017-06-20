@@ -15,7 +15,9 @@ int status4(ROVER *rover) {  // Status4 着陸の関数
 
   //暫定的に前回までのやつにしています
   int st4_cnt = 0;  //時間経過x
+  
   while (1) {
+    byte sensor = EEPROM.read(EEP_CENSOR_STATUS);  // センサーの状態はどうなっているか
     if ((sensor & STATUS_AC) == STATUS_AC ) {   //AC生存
       //      xbee_uart(dev, "sampling ac...\r");
 
