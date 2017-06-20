@@ -1,16 +1,8 @@
 /*
-
-  メインプログラム
-
-
-  現在わかっている不具合
-  ・a_differenceの値が表示されない（？と表示）
+メインコード
 */
 
-// 諸々の処理をこれ一文で
 #include "INCLUDE.h"
-
-char xbee_send[63];  //とりあえずのxbee送信用配列
 
 /*
    セットアップ
@@ -92,21 +84,12 @@ void setup() {
 void loop() {
 
   speaker(C_TONE);
-
   delay(2000);
 
   ROVER rover;  // 自身の情報を初期化
   rover.status_number = 1;  // 現在ステータスを1に更新
-  rover.time_from_start = millis();  // 機体時間を取得
-  write_timelog_sd(rover.time_from_start, 1);
-
-  get_censor_status(&rover);  // 自身のステータスを更新する関数
-
-  sprintf(xbee_send, "get data from EEP\rPresent status is %d\r", rover.status_number);
-
-  xbee_uart( dev, xbee_send);
-
-
+  write_timelog_sd(&rover);
+  get_censor_status(&rover);
 
   do {
 
@@ -115,12 +98,11 @@ void loop() {
       case 1:
 
         xbee_uart( dev, "start status1\r");
-
-        rover.time_from_start = millis();  // 機体時間を取得
-        write_timelog_sd(rover.time_from_start, 1);
+        delay(1000);
+        
+        write_timelog_sd(&rover);
 
         if (status1(&rover) == 1) {
-
           xbee_uart( dev, "skip status1\r");
           trans_phase(rover.status_number);
           rover.status_number += 1;
@@ -134,8 +116,7 @@ void loop() {
 
         xbee_uart( dev, "start status2\r");
 
-        rover.time_from_start = millis();  // 機体時間を取得
-        write_timelog_sd(rover.time_from_start, 2);
+        write_timelog_sd(&rover);
 
         if (status2(&rover) == 1) {
 
@@ -151,8 +132,7 @@ void loop() {
 
         xbee_uart( dev, "start status3\r");
 
-        rover.time_from_start = millis();  // 機体時間を取得
-        write_timelog_sd(rover.time_from_start, 3);
+        write_timelog_sd(&rover);
 
         if (status3(&rover) == 1) {
 
@@ -168,8 +148,7 @@ void loop() {
 
         xbee_uart( dev, "start status4\r");
 
-        rover.time_from_start = millis();  // 機体時間を取得
-        write_timelog_sd(rover.time_from_start, 4);
+        write_timelog_sd(&rover);
 
         if (status4(&rover) == 1) {
           trans_phase(rover.status_number);
@@ -183,8 +162,7 @@ void loop() {
 
         xbee_uart( dev, "start status5\r");
 
-        rover.time_from_start = millis();  // 機体時間を取得
-        write_timelog_sd(rover.time_from_start, 5);
+        write_timelog_sd(&rover);
 
         if (status5(&rover) == 1) {
           trans_phase(rover.status_number);
@@ -198,8 +176,7 @@ void loop() {
 
         xbee_uart( dev, "start status6\r");
 
-        rover.time_from_start = millis();  // 機体時間を取得
-        write_timelog_sd(rover.time_from_start, 6);
+        write_timelog_sd(&rover);
 
         if (status6(&rover) == 1) {
 
@@ -216,8 +193,7 @@ void loop() {
   xbee_uart( dev, "reach status7\rEND CONTROL\r");
 
   while (1) {
-    rover.time_from_start = millis();  // 機体時間を取得
-    write_timelog_sd(rover.time_from_start, 7);
+    write_timelog_sd(&rover);
     speaker(HIGH_C);
     speaker(HIGH_C);
     speaker(HIGH_C);

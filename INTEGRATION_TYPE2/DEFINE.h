@@ -119,7 +119,7 @@ double y_def = 1.0;
 // 立ち入り禁止エリア(10個まで生成可能)
 POINT danger_area_points[10];
 
-
+char xbee_send[63];  //とりあえずのxbee送信用配列
 
 SoftwareSerial g_gps( PIN_GPS_Rx, PIN_GPS_Tx); // ArduinoとGPS間のシリアル通信用に
 Servo servo1;
