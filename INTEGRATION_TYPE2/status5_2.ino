@@ -1,6 +1,9 @@
 // ターゲットに近いところを目指す
 int status5_2(ROVER *rover) {
 
+  xbee_uart( dev, "status5_2\r");
+
+
   int i = 0; // do-whileの繰り返し数をカウント
 
   GPS gps;
@@ -19,8 +22,8 @@ int status5_2(ROVER *rover) {
     if (i % 10 == 0) {  // 一定期間ごとにキャリブレーションを実施
       tm_calibration();
     }
-
-    // 目的角を取得
+    xbee_uart(dev, "get_gps\r");
+    // 目的角度を取得
     gps_get(&gps);
     // GPSが取得した値をROVERのステータスに反映する。
     rover->latitude = gps.latitude;  // 緯度
@@ -43,7 +46,7 @@ int status5_2(ROVER *rover) {
 
     double _mv = 0;  // 概念的な制御量
     int mv = 0;  // 制御量
-
+    xbee_uart(dev, "PID START\r");
     // 加速部
     for (int i = 1; i < 256; i++) {
       pid.right1 = 0;
@@ -56,6 +59,18 @@ int status5_2(ROVER *rover) {
 
     for (int j = 0; j < 600; j++) {  // 600 * 200 = 120000(120秒ごと)
 
+      if (j % 150 == 0) {  //30秒に一度ゴール付近にいるか確認
+        gps_get(&gps);  // GPSを取得
+        if (0 <= gps.distance && gps.distance < 30) {
+          pid.right1 = 0;
+          pid.right2 = 0;
+          pid.leght1 = 0;
+          pid.leght2 = 0;
+          rover_analog(pid);
+          return 1;
+        }
+      }
+
       rover_analog(pid);  // 出力を反映
       // 偏差を更新
       dd_n2 = dd_n1;
@@ -65,11 +80,20 @@ int status5_2(ROVER *rover) {
       mv = int(_mv + PID_SURPULS);  // 実際のモーターの制御量(正ならば相対的に右側出力が強くなる)
       arrange_motor_input(&pid, mv);  // 出力を調整
       delay(200);
+
+      if (j % 10) {
+        char m[sizeof(mv)];
+        sprintf(m, "timer: %d\r", mv);
+        xbee_uart( dev, m);
+      }
     }
+
   } while (1);
+  xbee_uart(dev, "PID END\r");
 }
 
-int arrange_motor_input(DRIVE *drive, int mv) {
+
+int arrange_motor_input(DRIVE * drive, int mv) {
 
   mv = arrange_mv(mv);
 
@@ -107,6 +131,3 @@ int arrange_mv(int mv) {  //極端な値を弾く
   }
   return mv;
 }
-
-
-
