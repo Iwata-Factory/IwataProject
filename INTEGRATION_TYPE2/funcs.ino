@@ -203,7 +203,7 @@ int gps_get(GPS* gps) {
       //通信ができて値も解析されたが緯度経度の値がバグってる
       //xbee_uart( dev, "wrong Lat or Long\r");
     }
-    if (t >= 10000){
+    if (t >= 10000) {
       //およそ100秒間取れなければ一旦抜ける
       break;
     }
@@ -213,8 +213,8 @@ int gps_get(GPS* gps) {
 
 
 /*
- * 以下GPSの高度関数
- */
+   以下GPSの高度関数
+*/
 
 // 区切り文字定数
 // センテンスの解析。
@@ -225,7 +225,7 @@ int gps_get(GPS* gps) {
 //static const char DELIMITER = ",";
 
 int AnalyzeLineString_al( char szLineString[], double* altitude) {
-  
+
   // $GPGGA
   if ( 0 != strncmp( "$GPGGA", szLineString, 6 ) )
   {
@@ -295,9 +295,9 @@ int gps_data_get_al(double* altitude) {
 }
 
 /*
- * gpsの高度を返します
- * 引数doubleのポインタで渡すとそれに高度を代入します
- */
+   gpsの高度を返します
+   引数doubleのポインタで渡すとそれに高度を代入します
+*/
 int gps_get_al(double* altitude) {
   int t = 0;
   while (1) { //gpsの値が正常になるまで取り続ける
@@ -330,12 +330,26 @@ int gps_get_al(double* altitude) {
       //通信ができて値も解析されたが緯度経度の値がバグってる
       //xbee_uart( dev, "wrong Lat or Long\r");
     }
-    if (t>= 10000){
+    if (t >= 10000) {
       //およそ100秒間ダメなら向ける
       break;
     }
   }
   return 1;
+}
+
+
+/*-----------get_rover_point(POINT *point)--------------------
+   roverの現在位置を取得
+  ------------------------------------------*/
+int get_rover_point(POINT *point) {
+
+  GPS grp_gps;
+  gps_get(&grp_gps);
+  point->latitude = grp_gps.latitude;
+  point->longitude = grp_gps.longitude;
+  return 1;
+
 }
 
 
@@ -667,46 +681,48 @@ double pid_get_control(double target_direction, double *my_Direction) {
   return rotate_angle;  // 基準値との差を返す
 }
 
+int correct_posture() {
+  xbee_uart( dev, "call correct_posture\r");
+
+  for (int ji = 0; ji < 5; ji++) {  // 状態復旧
+    if (judge_invered() == 1) {
+      xbee_uart( dev, "success correct_posture\r");
+      return 1;  // 問題なし
+    } else {
+      go_straight(5000);
+    }
+  }
+  xbee_uart( dev, "failed correct_posture\r");
+  return 0;  // 反転したまま
+}
+
 
 /*-----------judge_invered()--------------------
    戻り値
-   1:異常なし、もしくは復帰完了
-   0:ひっくりかえったまま
+   1:異常なし
+   0:ひっくりかえっってる
   ------------------------------------------*/
 
-int judge_invered_revive() {
+int judge_invered() {
 
-  xbee_uart( dev, "call judge_invered_revive\r");
+  xbee_uart( dev, "call judge_invered\r");
 
-  int judge_count = 0;
+  AC ac[10];  // サンプル数は10個とする
+  double z[10] = {1.0};
 
-  while (1) {
+  for (int i = 0; i < 10; i++) {
+    ac[i] = get_ac();  // 加速度を取得
+    z[i] = ac[i].z;  // zの値に着目
+    delay(50);
+  }
+  double ac_z_ave =  value_ave(10, z);
 
-    judge_count += 1;
-
-    if (judge_count == 10) {
-      xbee_uart( dev, "false judge_invered_revive\r");
-      return 0;  // どうしようもない状況に陥ってそう
-    }
-
-    AC ac[10];  // サンプル数は10個とする
-    double z[10] = {1.0};
-
-    for (int i = 0; i < 10; i++) {
-      ac[i] = get_ac();  // 加速度を取得
-      z[i] = ac[i].z;  // zの値に着目
-      delay(50);
-    }
-    double ac_z_ave =  value_ave(10, z);
-
-    if (ac_z_ave < -1.0) {  // この式が真なら反転している。
-      xbee_uart( dev, "revive ---> go straighr\r");
-      go_straight(5000); // 5秒直進で復旧してほしい
-      continue;
-    } else {
-      xbee_uart( dev, "success judge_invered_revive\r");
-      return 1; // 問題なし
-    }
+  if (ac_z_ave < -1.0) {  // この式が真なら反転している。
+    xbee_uart( dev, "revive ---> go straighr\r");
+    return 0;
+  } else {
+    xbee_uart( dev, "success judge_invered_revive\r");
+    return 1; // 問題なし
   }
 }
 

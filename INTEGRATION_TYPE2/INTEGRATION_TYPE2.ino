@@ -1,5 +1,5 @@
 /*
-メインコード
+  メインコード
 */
 
 #include "INCLUDE.h"
@@ -74,6 +74,12 @@ void setup() {
   set.leght2 = 1;
   rover_degital(set);
 
+  //ニクロム線のピンモード
+  pinMode(NICROM_1, OUTPUT);
+  pinMode(NICROM_2, OUTPUT);
+  digitalWrite(NICROM_1, LOW);  //明示的なオフ
+  digitalWrite(NICROM_2, LOW);
+
 }
 
 
@@ -97,7 +103,7 @@ void loop() {
 
         xbee_uart( dev, "start status1\r");
         delay(1000);
-        
+
         write_timelog_sd(&rover);
 
         if (status1(&rover) == 1) {

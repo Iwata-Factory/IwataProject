@@ -12,8 +12,12 @@ int status5(ROVER *rover) {
 
   do {
 
-    judge_invered_revive(); //状態復旧
-
+    if(correct_posture() == 1){
+      ;
+    } else {
+      ;
+    }
+    
     if (i % 30 == 0) { // たまにキャリブレーションする
       tm_calibration();  // 条件が揃ったらキャリブレーション
     }
