@@ -91,6 +91,9 @@
 //SD関連
 #define SS 53
 
+// SDが挿入されているかどうかを判定（回路は未実装）
+#define SD_INSERT 25  //SDが挿入されているかを判定する回路からの入力１なら挿入中？？ （回路未実装）
+
 // その他
 #define SERIAL_BAUDRATE 9600 //シリアル通信のデータ送信レートを9600bpsに定義するための定数(ArduinoとPC)
 #define pi 3.14159265359

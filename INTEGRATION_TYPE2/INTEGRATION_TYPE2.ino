@@ -67,6 +67,9 @@ void setup() {
   pinMode(M2_1, OUTPUT);
   pinMode(M2_2, OUTPUT);
 
+  // SD挿入是非用ピンの設定
+  pinMode(SD_INSERT, INPUT);
+
   DRIVE set;
   set.right1 = 1;
   set.right2 = 1;
