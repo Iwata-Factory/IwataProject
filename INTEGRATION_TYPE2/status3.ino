@@ -144,10 +144,18 @@ int judge_fall() {
 
   for (int jf_cnt = 0; jf_cnt < 10; jf_cnt++) {
     if ((millis() - t_init) >= 10000) {
-      break;
+      xbee_uart(dev, "judge_fall: timeout\r");
+      return 0;
     }
     gps_get_al(&alt_array[jf_cnt]);
+    xbee_send_1double(alt_array[jf_cnt]);  // ここでバグるかもしれない（動作確認まだ）なので注意
+    delay(500); 
   }
+  
+   xbee_uart(dev, "initial alt is\r");
+//   sprintf(xbee_send, "%lf\r", alt_array[0]);
+//   xbee_uart(dev, xbee_send);          // xbee_send_1doubleでリブートするバグ！！
+  
   for (int jf_cnt = 0; jf_cnt < 9; jf_cnt++) {
     alt_dif += alt_array[jf_cnt + 1] - alt_array[jf_cnt];
     if ( alt_dif > 3.0 ) {
