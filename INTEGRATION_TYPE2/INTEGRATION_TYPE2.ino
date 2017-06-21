@@ -86,6 +86,11 @@ void setup() {
   set.leght2 = 1;
   rover_degital(set);
 
+  //ニクロム線のピンモード
+  pinMode(NICROM_1, OUTPUT);
+  pinMode(NICROM_2, OUTPUT);
+  digitalWrite(NICROM_1, LOW);  //明示的なオフ
+  digitalWrite(NICROM_2, LOW);
 }
 
 
