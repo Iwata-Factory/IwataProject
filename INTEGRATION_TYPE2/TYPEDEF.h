@@ -27,7 +27,6 @@ typedef struct {  // 機体自身の情報を定義
 
 } ROVER;
 
-
 typedef struct {
   double latitude = -1.0;
   double longitude = -1.0;

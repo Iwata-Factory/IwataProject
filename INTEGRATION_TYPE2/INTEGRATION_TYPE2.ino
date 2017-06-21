@@ -1,10 +1,6 @@
 /*
 
   メインプログラム
-
-
-  現在わかっている不具合
-  ・a_differenceの値が表示されない（？と表示）
 */
 
 // 諸々の処理をこれ一文で
@@ -47,7 +43,6 @@ void setup() {
   while (1) {
     if (!SD.begin(chipSelect)) {
       sd_ok_counter += 1;
-
       xbee_uart( dev, "Card failed, or not present\r");
       // 失敗、何もしない
       delay(1000);
@@ -57,9 +52,7 @@ void setup() {
         break;
       }
     } else {
-
       xbee_uart( dev, "SD OK\r");
-
       break;
     }
   }
@@ -70,7 +63,6 @@ void setup() {
   pinMode(DISTANCE, INPUT);
   //サーボモーター用のピン
   servo1.attach(26);
-
   xbee_uart( dev, "setup done\rchange to main phase\r");
 
   // モーター用ピンの設定
@@ -89,6 +81,10 @@ void setup() {
 }
 
 
+
+
+
+
 void loop() {
 
   speaker(C_TONE);
@@ -103,7 +99,6 @@ void loop() {
   get_censor_status(&rover);  // 自身のステータスを更新する関数
 
   sprintf(xbee_send, "get data from EEP\rPresent status is %d\r", rover.status_number);
-
   xbee_uart( dev, xbee_send);
 
 
@@ -120,7 +115,6 @@ void loop() {
         write_timelog_sd(rover.time_from_start, 1);
 
         if (status1(&rover) == 1) {
-
           xbee_uart( dev, "skip status1\r");
           trans_phase(rover.status_number);
           rover.status_number += 1;
@@ -131,14 +125,12 @@ void loop() {
         break;
 
       case 2:
-
         xbee_uart( dev, "start status2\r");
 
         rover.time_from_start = millis();  // 機体時間を取得
         write_timelog_sd(rover.time_from_start, 2);
 
         if (status2(&rover) == 1) {
-
           xbee_uart( dev, "clear status2\r");
           trans_phase(rover.status_number);
           rover.status_number += 1;
@@ -148,14 +140,12 @@ void loop() {
         }
 
       case 3:
-
         xbee_uart( dev, "start status3\r");
 
         rover.time_from_start = millis();  // 機体時間を取得
         write_timelog_sd(rover.time_from_start, 3);
 
         if (status3(&rover) == 1) {
-
           xbee_uart( dev, "skip status3\r");
           trans_phase(rover.status_number);
           rover.status_number += 1;
@@ -165,7 +155,6 @@ void loop() {
         }
 
       case 4:
-
         xbee_uart( dev, "start status4\r");
 
         rover.time_from_start = millis();  // 機体時間を取得
@@ -180,29 +169,36 @@ void loop() {
         }
 
       case 5:
-
         xbee_uart( dev, "start status5\r");
 
         rover.time_from_start = millis();  // 機体時間を取得
         write_timelog_sd(rover.time_from_start, 5);
 
-        if (status5(&rover) == 1) {
-          trans_phase(rover.status_number);
-          rover.status_number += 1;
-          break;
-        } else {
-          break;
+        if (GROUND1_FLAG == 0) {
+          if (status5(&rover) == 1) {
+            trans_phase(rover.status_number);
+            rover.status_number += 1;
+            break;
+          } else {
+            break;
+          }
+        } else if (GROUND1_FLAG == 1) {
+          if (status5_2(&rover) == 1) {
+            trans_phase(rover.status_number);
+            rover.status_number += 1;
+            break;
+          } else {
+            break;
+          }
         }
 
       case 6:
-
         xbee_uart( dev, "start status6\r");
 
         rover.time_from_start = millis();  // 機体時間を取得
         write_timelog_sd(rover.time_from_start, 6);
 
         if (status6(&rover) == 1) {
-
           xbee_uart( dev, "skip status6\r");
           trans_phase(rover.status_number);
           rover.status_number += 1;
@@ -212,9 +208,7 @@ void loop() {
         }
     }
   } while (0 < rover.status_number < 7);
-
   xbee_uart( dev, "reach status7\rEND CONTROL\r");
-
   while (1) {
     rover.time_from_start = millis();  // 機体時間を取得
     write_timelog_sd(rover.time_from_start, 7);
