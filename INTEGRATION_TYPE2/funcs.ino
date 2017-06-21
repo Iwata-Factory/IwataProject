@@ -254,7 +254,7 @@ int AnalyzeLineString_al( char szLineString[], double* altitude) {
      通信ができていても生データが通信状況悪いとVになります
      これが出る場合は屋外とか通信状況よくなるようにしてください
   */
-  if ( strncmp(*psz_q, '0', 1 ) == 0) {
+  if ( strncmp(*psz_q, 0, 1 ) == 0) {
     xbee_uart( dev, "BAD communicatin condition of gps...\r");
     return 0;
   }
