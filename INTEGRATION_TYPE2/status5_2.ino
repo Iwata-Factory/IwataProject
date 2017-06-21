@@ -33,8 +33,7 @@ int status5_2(ROVER *rover) {
 
     write_gps_sd(gps);  // 自身の位置をsdに記録
 
-    rover->time_from_start = millis();
-    write_timelog_sd(millis(), 5);
+    write_timelog_sd(rover);
 
     turn_target_direction(rover->Target_Direction, &rover->My_Direction);  // 目的地を向く
 

@@ -4,11 +4,11 @@
 //地上走行をどうするかのフラグ
 //ゴーアンドストップなら0
 //PIDなら1にしてね
-# define GROUND1_FLAG 1
+#define GROUND1_FLAG 0
 
 // 定数の定義
-# define GOAL_LATITUDE 35.756165
-# define GOAL_LONGITUDE 139.770740
+#define GOAL_LATITUDE 35.756165
+#define GOAL_LONGITUDE 139.770740
 
 //GPS関連
 #define PIN_GPS_Rx  10 // GPSのシリアル通信でデータを受信するピン
@@ -130,6 +130,7 @@ double y_def = 1.0;
 // 立ち入り禁止エリア(10個まで生成可能)
 POINT danger_area_points[10];
 
+char xbee_send[63];  //とりあえずのxbee送信用配列
 
 SoftwareSerial g_gps( PIN_GPS_Rx, PIN_GPS_Tx); // ArduinoとGPS間のシリアル通信用に
 Servo servo1;

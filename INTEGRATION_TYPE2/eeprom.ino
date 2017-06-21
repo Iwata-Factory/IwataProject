@@ -1,7 +1,6 @@
 
 
 void eep_clear() {       //EEPのすべてのアドレスに０書き込み
-
   int adr_cnt = 0;
   for (int i = 0 ; i < EEPROM.length() ; i++) {
     EEPROM.write(i, 0);
@@ -9,7 +8,6 @@ void eep_clear() {       //EEPのすべてのアドレスに０書き込み
 }
 
 //古いフラグと比較したのち書き込みを行います。
-
 /*
    読み込みについては
    EEPROM.read(EEP_STATUS);
@@ -19,11 +17,9 @@ boolean EEP_STATUSwrite(int adr, byte oldflag, byte newflag) {
   byte flagread = EEPROM.read(adr);
   if ( oldflag == flagread ) {
     EEPROM.write( adr, newflag );
-    //xbee_uart(dev, "success writing!!" );
     return true;
   }
   else {
-    xbee_uart(dev,"invalid flag" );
     return false;
   }
 }
@@ -37,7 +33,6 @@ boolean EEP_STATUSwrite(int adr, byte oldflag, byte newflag) {
 */
 int eep_gpswrite( int adr, GPS gps ) {
   EEPROM.put( adr, gps );
-  //xbee_uart(dev,"success writeing gps in EEP.");
   adr += sizeof(gps);   //実験してしまえば必要なさ？？
   return adr + 1;
 }
@@ -45,7 +40,6 @@ int eep_gpswrite( int adr, GPS gps ) {
 int eep_doublewrite( int adr, double Speed ) {
   EEPROM.put(adr, Speed );
   adr += sizeof(Speed);
-  //xbee_uart(dev,"success writing (double)!!");
 
   return adr + 1;
 }
@@ -53,7 +47,6 @@ int eep_doublewrite( int adr, double Speed ) {
 int eep_acwrite( int adr, AC ac ) {
   EEPROM.put(adr, ac);
   adr += sizeof(ac);
-  //xbee_uart(dev,"success writing ac!!");
 
   return adr + 1;
 }
@@ -61,7 +54,6 @@ int eep_acwrite( int adr, AC ac ) {
 int eep_tmwrite( int adr, TM tm ) {
   EEPROM.put(adr, tm);
   adr += sizeof(tm);
-  //xbee_uart(dev,"success writing tm!!");
 
   return adr + 1;
 }

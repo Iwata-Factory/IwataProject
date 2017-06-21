@@ -9,8 +9,8 @@
 #include <xbee.h>  //このライブラリはslackを参照して各自PCに入れてください。
 #include <EEPROM.h>
 #include <Servo.h>
-
 #include "TYPEDEF.h"
+
 #include "DEFINE.h"
 
 #endif

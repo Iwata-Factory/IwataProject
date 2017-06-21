@@ -49,9 +49,8 @@ int status4(ROVER *rover) {  // Status4 着陸の関数
   ------------------------------------------*/
 
 int determine_landing() {
-  
-  xbee_uart( dev, "judging Landing\r");
 
+  xbee_uart( dev, "call determine_landing\r");
 
   AC ac; // 宣言
 
@@ -72,11 +71,6 @@ int determine_landing() {
       // 値を取れている
       // 加速度の大きさを計算
       ac_array[i] = sqrt(pow(ac.x, 2) + pow(ac.y, 2) + pow(ac.z, 2));
-
-
-//      sprintf(xbee_send, "sample of %d is ", i + 1);  //ac_array bug
-//      xbee_uart(dev, xbee_send);
-//      xbee_send_1double(ac_array[i]);  //ここをコメントアウトしないと再起動する（震え）
       delay(3000); // サンプリングは3秒ごとに
       i += 1;
     } else {
@@ -94,23 +88,25 @@ int determine_landing() {
   //  xbee_uart( dev,"解析結果:");
   //  xbee_uart( dev,ac_ave);
   if (200 <= ac_ave && ac_ave <= 300) {
-    xbee_uart( dev, "land ok\r");
+    xbee_uart( dev, "success determine_landing\r");
     return 1; //着陸判定にパス
   } else {
-    xbee_uart( dev, "land not ok\r");
+    xbee_uart( dev, "false determine_landing\r");
     return 0;
   }
 }
 
 
 /*
- * キャリブレーションしていないので地磁気を使う関数の使用原則禁止
- * turn_target_direction禁止
- */
+   キャリブレーションしていないので地磁気を使う関数の使用原則禁止
+   turn_target_direction禁止
+*/
 
 
 //ケーシング展開関数
 int casing(int landing_flag, ROVER * rover) {
+
+  xbee_uart( dev, "call casing\r");
 
   int target_flag = 0;
   int nicrom_count = 0;
@@ -130,7 +126,6 @@ int casing(int landing_flag, ROVER * rover) {
     xbee_uart(dev, "nicrom end\n");
     speaker(G_TONE);
 
-
     if (nicrom_count >= 10) {
       //たぶんニクロム線がイカれているとかで異常事態
       break;
@@ -139,7 +134,7 @@ int casing(int landing_flag, ROVER * rover) {
 
     //ケーシングが展開したかの確認シーケンス
     if (landing_flag == 0) { /*比較的風が弱い*/
-      
+
       //ローバーを回転させ回転できる確認する
       rover->My_Direction = get_my_direction();
       direction_hold = rover->My_Direction;
@@ -158,7 +153,7 @@ int casing(int landing_flag, ROVER * rover) {
 
       if (target_flag == 1) {
         //無事に回転できた＞＞ケーシングが展開している
-        
+
         break;
       } else {
         //ケーシングが展開していなくて回転できない
@@ -199,10 +194,10 @@ int casing(int landing_flag, ROVER * rover) {
   //ここから、パラシュートをよけるプロセス
 
   /*反転復帰でパラシュートに絡まる恐れあり、反転のままこのシーケンスをやったほうがいいかも*/
-  judge_invered_revive(); 
+  judge_invered_revive();
 
-//  GPS gps;
-//  gps_get(&gps);    //ここで取得したデータをSDなりに保管して以後近づかないようにしてください
+  //  GPS gps;
+  //  gps_get(&gps);    //ここで取得したデータをSDなりに保管して以後近づかないようにしてください
   set_danger_area();
 
 
@@ -259,7 +254,7 @@ int casing(int landing_flag, ROVER * rover) {
       //前方にパラシュートが存在
       //回転する
       go_rotate(1000);
-     
+
     } else {
       //前方にパラシュートがない or 近すぎて判別できない
       break;
@@ -275,5 +270,5 @@ int casing(int landing_flag, ROVER * rover) {
 
 
   //脱出成功
-  return 1;  
+  return 1;
 }
