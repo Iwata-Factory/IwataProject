@@ -6,7 +6,11 @@
 
 int status4(ROVER *rover) {  // Status4 着陸の関数
 
-  return 1;
+  if (_S4_ == 0) {
+    xbee_uart( dev, "skip status4\r");
+    delay(1000);
+    return 1;
+  }
   
   // 加速度とGPSから判断することになりそう
   speaker(A_TONE);

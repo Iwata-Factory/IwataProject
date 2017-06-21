@@ -1,6 +1,12 @@
 // ターゲットに近いところを目指す
 int status5_2(ROVER *rover) {
 
+  if (_S5_ == 0) {
+    xbee_uart( dev, "skip status5_2\r");
+    delay(1000);
+    return 1;
+  }
+
   xbee_uart( dev, "status5_2\r");
 
 

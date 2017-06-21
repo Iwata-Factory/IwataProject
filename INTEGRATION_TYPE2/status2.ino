@@ -1,7 +1,13 @@
 
 int status2(ROVER *rover) {  // Status2 打ち上げの関数
-  return 1;   /*後で消してね*/
-  //return (judge_release());
+
+  if (_S2_ == 0) {
+    xbee_uart( dev, "skip status2\r");
+    delay(1000);
+    return 1;
+  }
+
+  return (judge_release());
 }
 
 

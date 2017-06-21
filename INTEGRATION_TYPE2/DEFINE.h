@@ -1,11 +1,6 @@
 #ifndef __DEFINE_H__
 #define __DEFINE_H__
 
-//地上走行をどうするかのフラグ
-//ゴーアンドストップなら0
-//PIDなら1にしてね
-#define GROUND1_FLAG 0
-
 // 定数の定義
 #define GOAL_LATITUDE 35.756165
 #define GOAL_LONGITUDE 139.770740
@@ -95,8 +90,6 @@
 
 //SD関連
 #define SS 53
-
-
 
 // その他
 #define SERIAL_BAUDRATE 9600 //シリアル通信のデータ送信レートを9600bpsに定義するための定数(ArduinoとPC)

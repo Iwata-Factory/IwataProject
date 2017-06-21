@@ -1,6 +1,12 @@
 // ターゲットに近いところを目指す
 int status5(ROVER *rover) {
 
+  if (_S5_ == 0) {
+    xbee_uart( dev, "skip status5\r");
+    delay(1000);
+    return 1;
+  }
+
   int i = 0; // do-whileの繰り返し数をカウント
   double last_distance = 0;  // スタック判定用
 
@@ -116,7 +122,7 @@ int escape_stack(ROVER *rover) {
   if ((flag_distance == 0) && (flag_direction == 1)) {
     //回転等はできるが進めない
     //たぶん轍
-    if (wadachi(rover) == 1) {
+    if (escape_from_wadachi(rover) == 1) {
       xbee_uart(dev, "success escape_wadachi\r");
       return 1;
     } else {
@@ -124,20 +130,20 @@ int escape_stack(ROVER *rover) {
       return 0;
     }
   }
-  
+
   if (j == 3) {  // 試行回数3回で終了
     xbee_uart(dev, "false escape_wadachi\r");
     return 0;
   }
-  
+
 }
 
 /*
    轍に沿って移動はできるけど轍から逃げられない
 */
-int wadachi(ROVER *rover) {
+int escape_from_wadachi(ROVER *rover) {
 
-  xbee_uart(dev, "call wadachi\r");
+  xbee_uart(dev, "call escape_from_wadachi\r");
 
   GPS gps;
 
@@ -169,7 +175,7 @@ int wadachi(ROVER *rover) {
       wadachi_count++;
     } else {
       //轍の引っ掛かりの回避に成功]
-      xbee_uart(dev, "success wadachi\r");
+      xbee_uart(dev, "success escape_from_wadachi\r");
       return 1;
     }
 
@@ -178,7 +184,7 @@ int wadachi(ROVER *rover) {
       go_straight(5000);
     }
     if (wadachi_count % 11 == 0) { // 失敗
-      xbee_uart(dev, "false wadachi\r");
+      xbee_uart(dev, "false escape_from_wadachi\r");
       return 0;
     }
   }

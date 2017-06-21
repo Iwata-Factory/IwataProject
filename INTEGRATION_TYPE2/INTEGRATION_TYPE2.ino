@@ -78,9 +78,6 @@ void setup() {
 
 
 
-
-
-
 void loop() {
 
   speaker(C_TONE);
@@ -104,7 +101,6 @@ void loop() {
         write_timelog_sd(&rover);
 
         if (status1(&rover) == 1) {
-          xbee_uart( dev, "skip status1\r");
           trans_phase(rover.status_number);
           rover.status_number += 1;
           break;
@@ -133,7 +129,6 @@ void loop() {
         write_timelog_sd(&rover);
 
         if (status3(&rover) == 1) {
-          xbee_uart( dev, "skip status3\r");
           trans_phase(rover.status_number);
           rover.status_number += 1;
           break;
@@ -183,7 +178,6 @@ void loop() {
         write_timelog_sd(&rover);
 
         if (status6(&rover) == 1) {
-          xbee_uart( dev, "skip status6\r");
           trans_phase(rover.status_number);
           rover.status_number += 1;
           break;

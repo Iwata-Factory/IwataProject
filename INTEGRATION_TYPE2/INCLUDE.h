@@ -10,7 +10,7 @@
 #include <EEPROM.h>
 #include <Servo.h>
 #include "TYPEDEF.h"
-
+#include "FLAG.h"
 #include "DEFINE.h"
 
 #endif

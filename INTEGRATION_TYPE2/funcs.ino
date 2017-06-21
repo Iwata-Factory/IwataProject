@@ -761,7 +761,7 @@ int check_danger_area() {
       // 禁止エリアまでの距離算出
       double danger_distance = get_distance(&check_gps, &danger_area_points[i]);
 
-      if (danger_distance < 10) {  // 10m以内に居たらやばい
+      if (danger_distance < 7) {  // 7m以内に居たらやばい
 
         xbee_uart( dev, "DANGER ---> try escape\r");
 

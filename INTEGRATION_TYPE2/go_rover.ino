@@ -116,6 +116,7 @@ void go_straight(int go_time) {
   rover_degital(go);
 }
 
+
 void go_back(int go_time) {
   DRIVE go; //DRIVE型の宣言
   // 初期化
