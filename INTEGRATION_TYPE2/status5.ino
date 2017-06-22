@@ -12,12 +12,12 @@ int status5(ROVER *rover) {
 
   do {
 
-    if(correct_posture() == 1){
+    if (correct_posture() == 1) {
       ;
     } else {
       ;
     }
-    
+
     if (i % 30 == 0) { // たまにキャリブレーションする
       tm_calibration();  // 条件が揃ったらキャリブレーション
     }
@@ -41,7 +41,7 @@ int status5(ROVER *rover) {
     } else {
       delay(3000);
       if (fabs(gps.distance - last_distance) < 3.0) {  //Trueでスタック
-        escape_stack(rover);
+        stack_check_state(rover);
         delay(3000);
         last_distance = gps.distance;
       } else {
@@ -69,130 +69,4 @@ int status5(ROVER *rover) {
 
   } while (1);
 }
-
-
-//（砂に埋まった）とかのスタックした後の脱出アルゴリズム
-/*
-   とりあえず自分の状況を理解するためのやつです
-   状況がわかったら、またそれに対して適切な処理をしやすくするためflag作っておきましたが、まだ使ってないやつあります
-*/
-int escape_stack(ROVER *rover) {
-
-  xbee_uart(dev, "call escape_wadachi\r");
-
-  GPS gps_stack;   //GPSの構造体
-  double distance[2] = { -1, -1};
-  double dif_distance = 0;
-
-  int flag_direction = 0;
-  int flag_distance = 0;
-  int j = 0;    //試行回数
-
-
-  while (1) {
-    //まずは自分がどういう状況か確認
-    //自己位置が変化できるか
-    j += 1;
-    gps_get(&gps_stack);
-    distance[0] = gps_stack.distance;
-    rover->My_Direction = get_my_direction();
-    if (turn_target_direction(rover->My_Direction + 90, &rover->My_Direction) == 1) {
-      //回転できる
-      flag_direction = 1;
-    } else {
-      //回転できない
-      flag_direction = 0;
-    }
-    //次にとりあえず走ってみる
-    go_straight(4000);
-
-    gps_get(&gps_stack);
-
-    distance[1] = gps_stack.distance;
-
-    dif_distance = fabs(distance[1] - distance[0]);
-
-    if (dif_distance <= 2) {
-      //スタックしたまま
-      flag_distance = 0;
-    } else {
-      //脱出成功
-      flag_distance = 1;
-      xbee_uart(dev, "success escape_wadachi\r");
-      return 1;
-    }
-  }
-
-  if ((flag_distance == 0) && (flag_direction == 1)) {
-    //回転等はできるが進めない
-    //たぶん轍
-    if (escape_from_wadachi(rover) == 1) {
-      xbee_uart(dev, "success escape_wadachi\r");
-      return 1;
-    } else {
-      xbee_uart(dev, "false escape_wadachi\r");
-      return 0;
-    }
-  }
-
-  if (j == 3) {  // 試行回数3回で終了
-    xbee_uart(dev, "false escape_wadachi\r");
-    return 0;
-  }
-
-}
-
-/*
-   轍に沿って移動はできるけど轍から逃げられない
-*/
-int escape_from_wadachi(ROVER *rover) {
-
-  xbee_uart(dev, "call escape_from_wadachi\r");
-
-  GPS gps;
-
-  double distance_hold = 0;
-  double diff_distance = 1000;
-  int wadachi_count = 0;
-
-  while (1) {
-
-    rover->My_Direction = get_my_direction();
-    distance_hold = gps.distance;   //distance保持
-    //基本的に下がっては少し右旋回して直進してまた引っかかったら右旋回とやっていき轍を回避できる場所まで行く
-    turn_target_direction(rover->My_Direction + 150, &rover->My_Direction);
-    go_straight(4000);
-    rover->My_Direction = get_my_direction();
-    turn_target_direction(rover->My_Direction - 150, &rover->My_Direction);
-
-    gps_get(&gps);
-
-    distance_hold = gps.distance;   //distance保持
-    go_straight(5000);
-
-    gps_get(&gps);
-
-    diff_distance = fabs(distance_hold - gps.distance);    //轍回避行動後に
-
-    if (diff_distance <= 2) {
-      //轍に引っかかったままなのでもう一度同じ動き
-      wadachi_count++;
-    } else {
-      //轍の引っ掛かりの回避に成功]
-      xbee_uart(dev, "success escape_from_wadachi\r");
-      return 1;
-    }
-
-    if (wadachi_count % 5 == 0) { //ダメなのが続いたらランダムに進んでみる
-      go_rotate(wadachi_count * 200);
-      go_straight(5000);
-    }
-    if (wadachi_count % 11 == 0) { // 失敗
-      xbee_uart(dev, "false escape_from_wadachi\r");
-      return 0;
-    }
-  }
-}
-
-
 

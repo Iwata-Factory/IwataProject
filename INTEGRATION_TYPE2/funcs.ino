@@ -839,3 +839,100 @@ int escape_danger_area(GPS *gps, POINT *point) {
   return 1;  // 成功を返す
 }
 
+
+/*stack_check_state()
+ * スタックしたら呼び出す
+   とりあえず自分がどうなっているか把握する
+   go_straight_flag: 直進出来るか
+   rotate_flag: 回転できるか
+
+*/
+int stack_check_state(ROVER *rover) {
+
+  xbee_uart(dev, "call stack_check_state\r");
+
+
+  int go_straight_flag = 0;  // フラグ定義
+  int rotate_flag = 0;
+
+  GPS gps_scs;
+  POINT point_scs;
+  get_rover_point(&point_scs);  // 位置を記録
+
+  go_straight(10000);  // とりあえず10秒進んで見る
+  gps_get(&gps_scs);  // GPS位置を取得
+
+  if (get_distance(&gps_scs, &point_scs) < 3) {
+    go_straight_flag = 0;
+  } else {
+    go_straight_flag = 1;
+  }
+
+  rover->My_Direction = get_my_direction();
+  if (turn_target_direction(rover->My_Direction + 90, &rover->My_Direction) == 1) {
+    rotate_flag = 1;
+  } else {
+    rotate_flag = 0;
+  }
+
+  int result = choose_behavior(rover, go_straight_flag, go_straight_flag);  // 何をするべきか決定する
+
+  xbee_uart(dev, "end stack_check_state\r");
+  return result;
+
+}
+
+/*choose_behavior()
+   現状を受けて行動を選択
+*/
+
+int choose_behavior(ROVER *rover, int go_straight_flag, int rotate_flag) {
+  if (go_straight_flag == 1) {  // 問題なし
+    return 1;
+  } else if ((go_straight_flag = 0) && (rotate_flag = 1)) {  // 回転は出来るが進めない(恐らく轍の中にいる)
+    return escape_from_wadachi(rover);
+  } else {   // 死亡(ランダムにする？)
+    return 0;
+  }
+}
+
+
+/*escape_from_wadachi()
+  轍からの脱出
+
+  走る→進めないなら少し後退→右旋回→
+
+*/
+int escape_from_wadachi(ROVER *rover) {
+  xbee_uart(dev, "call escape_from_wadachi\r");
+
+  POINT point_efw;
+  GPS gps_efw;
+  int try_counter = 0;
+
+  get_rover_point(&point_efw);  // 初期位置を記録
+
+  do {
+
+    go_straight(10000);  // 10秒進む
+    gps_get(&gps_efw);  // GPSを取得
+
+    if (get_distance(&gps_efw, &point_efw) < 5) {
+      go_back(1000);  // 少し下がる
+      rover->My_Direction = get_my_direction();
+      turn_target_direction(rover->My_Direction + 90, &rover->My_Direction);  // 90度回転
+    } else {
+      ;  // 何もしない
+    }
+
+    try_counter += 1;
+
+    if (try_counter = 10) {
+      xbee_uart(dev, "false escape_from_wadachi\r");
+      return 0;
+    }
+
+  } while (15 < get_distance(&gps_efw, &point_efw));
+  xbee_uart(dev, "success escape_from_wadachi\r");
+  return 1;
+}
