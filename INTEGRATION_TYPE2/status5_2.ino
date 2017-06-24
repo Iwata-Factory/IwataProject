@@ -62,7 +62,7 @@ int status5_2(ROVER *rover) {
       delay(2);
     }
 
-    for (int j = 0; j < 600; j++) {  // 600 * 200 = 120000(120秒ごと)
+    for (int j = 0; j < 100; j++) {
 
       if (j % 150 == 0) {  //30秒に一度ゴール付近にいるか確認
         gps_get(&gps);  // GPSを取得
@@ -81,16 +81,44 @@ int status5_2(ROVER *rover) {
       dd_n2 = dd_n1;
       dd_n1 = dd_n;
       dd_n = pid_get_control(rover->Target_Direction, &rover->My_Direction);
+
+      xbee_send_1double(dd_n);
+
+      if (90 < fabs(dd_n)) {
+        xbee_uart( dev, "larger than 90\r");
+
+        for (int i = 250; i > 0; i = i - 5) {
+          pid.right1 = 0;
+          pid.right2 = i;
+          pid.leght1 = 0;
+          pid.leght2 = i;
+          rover_analog(pid);
+          delay(7);
+        }
+
+        turn_target_direction(rover->Target_Direction, &rover->My_Direction);
+
+        for (int i = 1; i < 256; i++) {
+          pid.right1 = 0;
+          pid.right2 = i;
+          pid.leght1 = 0;
+          pid.leght2 = i;
+          rover_analog(pid);
+          delay(2);
+        }
+        continue;
+      }
+
       _mv = PID_KP * (dd_n - dd_n1) + PID_KI * dd_n + PID_KD * ((dd_n - dd_n1) - (dd_n1 - dd_n2));  // 概念的制御量を求める
       mv = int(_mv + PID_SURPULS);  // 実際のモーターの制御量(正ならば相対的に右側出力が強くなる)
       arrange_motor_input(&pid, mv);  // 出力を調整
-      delay(200);
+      delay(500);
 
-      if (j % 10) {
-        char m[sizeof(mv)];
-        sprintf(m, "timer: %d\r", mv);
-        xbee_uart( dev, m);
-      }
+      //      if (j % 10) {
+      //        char m[sizeof(mv)];
+      //        //sprintf(m, "timer: %d\r", mv);
+      //        xbee_uart( dev, m);
+      //      }
     }
 
   } while (1);
@@ -115,6 +143,9 @@ int arrange_motor_input(DRIVE * drive, int mv) {
     } else {
       drive->right2 = 255;
       drive->leght2 = drive->leght2 + mv - difference_target_r2;
+      if (drive->leght2 < 200) {
+        drive->leght2 = 200;
+      }
     }
   } else {
     mv = -1 * mv;  // 正の値に直す
@@ -123,6 +154,9 @@ int arrange_motor_input(DRIVE * drive, int mv) {
     } else {
       drive->leght2 = 255;
       drive->right2 = drive->right2 + mv - difference_target_l2;
+      if (drive->right2 < 200) {
+        drive->right2 = 200;
+      }
     }
   }
   return 1;

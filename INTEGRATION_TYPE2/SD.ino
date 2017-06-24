@@ -15,7 +15,7 @@
    SDに時間を保存
 */
 int write_timelog_sd(ROVER *rover) {
-  xbee_uart(dev, "call write_timelog_sd" );
+  xbee_uart(dev, "call write_timelog_sd\r" );
   rover->time_from_start = millis();  // 機体時間を取得
   int i = 0; // 試行回数記録用
   while (i < 30) { // 30回SDカードを開けなかったら諦める
@@ -28,20 +28,20 @@ int write_timelog_sd(ROVER *rover) {
       dataFile.print(",status:");
       dataFile.println(rover->status_number);
       dataFile.close();
-      xbee_uart(dev, "success write_timelog_sd" );
+      xbee_uart(dev, "success write_timelog_sd\r" );
       return 1; // 成功を返す
     } else {
       i += 1;
     }
   }
-  xbee_uart(dev, "false write_timelog_sd" );
+  xbee_uart(dev, "false write_timelog_sd\r" );
   return 0; // 失敗を返す
 }
 
 
 // 加速度を記録
 int write_ac_sd(AC ac) {
-  xbee_uart(dev, "call write_ac_sd" );
+  xbee_uart(dev, "call write_ac_s\r" );
   int i = 0; // 試行回数記録用
   while (i < 30) { // 30回SDカードを開けなかったら諦める
     File dataFile = SD.open(LOG_AC, FILE_WRITE);
@@ -52,20 +52,20 @@ int write_ac_sd(AC ac) {
       dataFile.println(ac.y);
       dataFile.println(ac.z);
       dataFile.close();
-      xbee_uart(dev, "success write_ac_sd" );
+      xbee_uart(dev, "success write_ac_sd\r" );
       return 1; // 成功を返す
     } else {
       i += 1;
     }
   }
-  xbee_uart(dev, "false write_ac_sd" );
+  xbee_uart(dev, "false write_ac_sd\r" );
   return 0; // 失敗を返す
 }
 
 
 // 地磁気を記録
 int write_tm_sd(TM tm) {
-  xbee_uart(dev, "call write_tm_sd" );
+  xbee_uart(dev, "call write_tm_sd\r" );
   int i = 0; // 試行回数記録用
   while (i < 30) { // 30回SDカードを開けなかったら諦める
     File dataFile = SD.open(LOG_TM, FILE_WRITE);
@@ -76,27 +76,24 @@ int write_tm_sd(TM tm) {
       dataFile.println(tm.y);
       dataFile.println(tm.z);
       dataFile.close();
-      xbee_uart(dev, "success write_tm_sd" );
+      xbee_uart(dev, "success write_tm_sd\r" );
       return 1; // 成功を返す
     } else {
       i += 1;
     }
   }
-  xbee_uart(dev, "false write_tm_sd" );
+  xbee_uart(dev, "false write_tm_sd\r" );
   return 0; // 失敗を返す
 }
 
 // GPSを記録
-int write_gps_sd(GPS gps, int critical_flag = 0) {  // criticalな処理を記述したい場合はフラグを立てて下さい
-  xbee_uart(dev, "call write_gps_sd" );
+int write_gps_sd(GPS gps) {  // criticalな処理を記述したい場合はフラグを立てて下さい
+  xbee_uart(dev, "call write_gps_sd\r" );
   int i = 0; // 試行回数記録用
   while (i < 30) { // 30回SDカードを開けなかったら諦める
-    File dataFile;
-    if (critical_flag == 0) {
-          File dataFile = SD.open(LOG_GPS, FILE_WRITE);
-    } else {
-          File dataFile = SD.open(LOG_CRITICAL, FILE_WRITE);
-    }
+
+    File dataFile = SD.open(LOG_GPS, FILE_WRITE);
+
     if (dataFile) { // ファイルが開けたときの処理
       dataFile.seek(dataFile.size());
       dataFile.println("*"); // 記録の境目
@@ -108,24 +105,14 @@ int write_gps_sd(GPS gps, int critical_flag = 0) {  // criticalな処理を記�
       dataFile.println(gps.Direction, 4);
       dataFile.println(gps.distance, 4);
 
-      switch (critical_flag) {  // critical な記述
-          case 1:
-          dataFile.println("landing");
-            break;
-          case 2:
-          dataFile.println("near goal");
-            break;
-      }
-
-
       dataFile.close();
-      xbee_uart(dev, "succes write_gps_sd" );
+      xbee_uart(dev, "succes write_gps_sd\r" );
       return 1; // 成功を返す
     } else {
       i += 1;
     }
   }
-  xbee_uart(dev, "false write_gps_sd" );
+  xbee_uart(dev, "false write_gps_sd\r" );
   return 0; // 失敗を返す
 }
 

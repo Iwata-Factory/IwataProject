@@ -80,7 +80,9 @@ int ReadLineString( SoftwareSerial& serial,
                     char szLineString[], const int ciLineStringSize ) {
   while ( 1 )
   {
+
     char c = serial.read();
+
     if ( -1 == c )
     {
       break;
@@ -175,24 +177,20 @@ int gps_get(GPS* gps) {
     //gpsの値が取れない間どこで引っかかっているのか識別できるようになりました
     if (gps_flag == 1) { //値が取れたら抜ける
 
-      xbee_uart(dev, "LATI, LONG\r");
-      xbee_send_2doubles(gps->latitude, gps->longitude);
-      xbee_uart(dev, "DISTANCE, DIRECTION\r");
-      xbee_send_2doubles(gps->distance, gps->Direction);
-
       break;
     }
     if (gps_flag == 2) {
       ;
 
-      //xbee_uart( dev,"cant communicate with gps\r");
+//      xbee_uart( dev, "cant communicate with gps\r");
 
     }
     if (gps_flag == 3) {
       ;
       //gpsとの通信はできているが値が変or GPRMCでない
 
-      //xbee_uart( dev, "gps wrong or not GPRMC\r");
+//      xbee_uart( dev, "gps wrong or not GPRMC\r");
+
     }
     if (gps_flag == 4) {
       ;
@@ -201,7 +199,8 @@ int gps_get(GPS* gps) {
       speaker(E_TONE);
 
       //通信ができて値も解析されたが緯度経度の値がバグってる
-      //xbee_uart( dev, "wrong Lat or Long\r");
+//      xbee_uart( dev, "wrong Lat or Long\r");
+
     }
     if (t >= 10000) {
       //およそ100秒間取れなければ一旦抜ける
@@ -288,7 +287,7 @@ int gps_data_get_al(double* altitude) {
   dtostrf(*altitude, 13, 6, sz_al);
 
   //xbee送信
-  xbee_uart(dev, "get altitude:");
+  xbee_uart(dev, "get altitude\r:");
   xbee_uart(dev, sz_al);
 
   return 1;
@@ -405,7 +404,7 @@ TM get_tm() {
 
 double get_my_direction() {
 
-  xbee_uart( dev, " : call get_my_direction() ");
+  xbee_uart( dev, "call get_my_direction() \r");
 
   double my_direction = -1.0;  // 返り値
   double direction_array[10] = { -1.0}; // 自身の方向を10サンプル取得する
@@ -464,7 +463,7 @@ double get_my_direction() {
 
   my_direction = degree_out(10, direction_array);  // 10サンプルから平均を計算
 
-  xbee_uart( dev, " : direction of rover is ");
+  xbee_uart( dev, " direction of rover is ");
   xbee_send_1double(my_direction);
 
   return my_direction;  // 単位はdeg
@@ -483,7 +482,7 @@ double get_my_direction() {
 
 int turn_target_direction(double target_direction, double *my_Direction, int branch = 0) {
 
-  xbee_uart( dev, " : call turn_target_direction() ");
+  xbee_uart( dev, "call turn_target_direction() \r");
 
   int i = 0;  // 回転の試行回数をカウントしていく
 
@@ -512,7 +511,7 @@ int turn_target_direction(double target_direction, double *my_Direction, int bra
     } else if (20 <= a_difference && a_difference < 180) {
       rotate_angle = -a_difference;  // 左回転
     } else if (-20 <= a_difference && a_difference < 20) {
-      xbee_uart( dev, " : success turn_target_direction() ");
+      xbee_uart( dev, "success turn_target_direction() \r");
       rotate_angle = 0;  // 回転しない
 
       return 1;  // 回転に成功
@@ -522,17 +521,17 @@ int turn_target_direction(double target_direction, double *my_Direction, int bra
       rotate_angle = 360 + a_difference;  // 左回転
     }
 
-    xbee_uart(dev, "needed rotation is\r");
+    xbee_uart(dev, "needed rotation is ");
     xbee_send_1double(rotate_angle);
-    if(branch == 0){
-    rotate_angle = rotate_angle * (10 - i) / 10;  // 回転角度を収束させる
-    go_rotate(rotate_angle);  // 回転を行う
+    if (branch == 0) {
+      rotate_angle = rotate_angle * (10 - i) / 10;  // 回転角度を収束させる
+      go_rotate(rotate_angle);  // 回転を行う
     } else {//発散ver
       rotate_angle = rotate_angle * (10 * i) / 10;
       go_rotate(rotate_angle);
     }
   } while (i < 5); // 10回回転してもダメだったら失敗
-  xbee_uart( dev, " : false turn_target_direction() ");
+  xbee_uart( dev, " false turn_target_direction() \r");
   return 0;
 }
 
@@ -546,7 +545,11 @@ int turn_target_direction(double target_direction, double *my_Direction, int bra
 
 int tm_calibration() {
 
-  xbee_uart( dev, " : call tm_calibration");
+  if (CALIBRATION_FLAG == 0) {
+    return 1;
+  }
+
+  xbee_uart( dev, " call tm_calibration\r");
 
   AC ac_calib;  // キャリブレーション時の水平判定用
   int count_calib = 0;  // 非水平カウント用
@@ -628,12 +631,12 @@ int tm_calibration() {
       tm_x_offset = (max_x + min_x) / 2;
       tm_y_offset = (max_y + min_y) / 2;
 
-      xbee_uart( dev, " : x_def, y_def ");
+      xbee_uart( dev, "x_def, y_def \r");
       xbee_send_2doubles(x_def, y_def);
-      xbee_uart( dev, " : tm_x_offset, tm_y_offset ");
+      xbee_uart( dev, "tm_x_offset, tm_y_offset \r");
       xbee_send_2doubles(tm_x_offset, tm_y_offset);
       delay(500);
-      xbee_uart( dev, " : success tm_calibration");
+      xbee_uart( dev, "success tm_calibration\r");
       return 1;
 
     } else {
@@ -649,11 +652,6 @@ int tm_calibration() {
   ------------------------------------------*/
 
 double pid_get_control(double target_direction, double *my_Direction) {
-
-  int i = 0;  // 回転の試行回数をカウントしていく
-
-
-  i += 1;
 
   if (target_direction < 0 || 360 <= target_direction) { //target_directionが360以上の場合調整
     target_direction = (int)target_direction % 360;
@@ -767,6 +765,10 @@ int set_danger_area() {
 
 int check_danger_area() {
 
+  if (DANGER_AREA_FRAG == 1) {
+    return 1;
+  }
+
   xbee_uart( dev, "call check_danger_are\r");
 
   GPS check_gps;
@@ -844,13 +846,17 @@ int escape_danger_area(GPS *gps, POINT *point) {
 
 
 /*stack_check_state()
- * スタックしたら呼び出す
+   スタックしたら呼び出す
    とりあえず自分がどうなっているか把握する
    go_straight_flag: 直進出来るか
    rotate_flag: 回転できるか
 
 */
 int stack_check_state(ROVER *rover) {
+
+  if (STACK_ESCAPE_FLAG == 0) {
+    return 1;
+  }
 
   xbee_uart(dev, "call stack_check_state\r");
 
@@ -934,12 +940,16 @@ int escape_from_wadachi(ROVER *rover) {
 
     try_counter += 1;
 
-    if (10 <=try_counter) {
+    if (10 <= try_counter) {
       xbee_uart(dev, "false escape_from_wadachi\r");
       return 0;
     }
 
   } while (15 < get_distance(&gps_efw, &point_efw));
   xbee_uart(dev, "success escape_from_wadachi\r");
+  return 1;
+}
+
+int no_x_bee(byte a, char b) { // xbeeを潰す関数
   return 1;
 }

@@ -2,8 +2,8 @@
 #define __DEFINE_H__
 
 // 定数の定義
-#define GOAL_LATITUDE 35.756165
-#define GOAL_LONGITUDE 139.770740
+#define GOAL_LATITUDE 35.756432
+#define GOAL_LONGITUDE 139.770160
 
 // 海抜制限
 #define ALT_REGULATION 6.0
@@ -14,7 +14,7 @@
 #define LOG_AC ("aclog.txt")
 #define LOG_TM ("tmlog.txt")
 #define LOG_GPS ("gpslog.txt")
-#define LOG_CRITICAL ("critical.txt")
+#define LOG_CRITICAL ("critical.txt")  // 現在使っていない
 
 //GPS関連
 #define PIN_GPS_Rx  10 // GPSのシリアル通信でデータを受信するピン
@@ -23,7 +23,7 @@
 #define LATITUDE_MAXIMUM 45  //緯度の最大値
 #define LONGITUDE_MINIMUM 133  //経度の最小値
 #define LONGITUDE_MAXIMUM 143  //経度の最大値
-#define GPSBAUDRATE 14400 //シリアル通信のデータ送信レートを9600bpsに定義するための定数(GPSとArduino)
+#define GPSBAUDRATE 9600 //シリアル通信のデータ送信レートを9600bpsに定義するための定数(GPSとArduino)
 #define READBUFFERSIZE  (256)
 #define DELIMITER   (",")  // 区切り文字定数
 
@@ -37,8 +37,8 @@
 //モーター関連
 #define M1_1 4 // モーター制御用ピン
 #define M1_2 5 // モーター制御用ピン
-#define M2_1 6 // モーター制御用ピン
-#define M2_2 7 // モーター制御用ピン
+#define M2_1 7 // モーター制御用ピン
+#define M2_2 6 // モーター制御用ピン
 
 // PID制御関連
 #define PID_SURPULS 0.500

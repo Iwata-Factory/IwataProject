@@ -35,12 +35,24 @@ int status5(ROVER *rover) {
     rover->Target_Direction = gps.Direction;  //ターゲットの方向
     rover->distance = gps.distance;  // ターゲットまでの距離
 
+    xbee_uart( dev, "Latitude");
+    xbee_send_1double(rover->latitude);
+    xbee_uart( dev, "Longitude");
+    xbee_send_1double(rover->longitude);
+    xbee_uart( dev, "Distance");
+    xbee_send_1double(rover->distance);
+    xbee_uart( dev, "Direction");
+    xbee_send_1double(rover->Target_Direction);
+
+
+
+
     // スタック判定
     if (i == 0) {  // last_distanceの初期値を生成
       last_distance  = gps.distance;
     } else {
       delay(3000);
-      if (fabs(gps.distance - last_distance) < 3.0) {  //Trueでスタック
+      if (fabs(gps.distance - last_distance) < 2.0) {  //Trueでスタック
         stack_check_state(rover);
         delay(3000);
         last_distance = gps.distance;
@@ -52,14 +64,19 @@ int status5(ROVER *rover) {
     write_gps_sd(gps);
     write_timelog_sd(rover);
 
-    if (0 <= rover->distance && rover->distance < 15) { // 15mまで来たら地上2へ
+    if (0 <= rover->distance && rover->distance < 5) { // 5mまで来たら地上2へ
       xbee_uart( dev, "near goal\r");
       return 1;
     }
 
     // 目的の方向を目指して回転を行う。rover->My_Directionは書き換えていく。
     turn_target_direction(rover->Target_Direction, &rover->My_Direction);
-    go_straight(7000); // 7秒直進
+    if (10 < last_distance) {
+      go_straight(6000); // 6秒直進
+    } else {
+      go_straight(3000); // 3秒直進
+    }
+
 
     speaker(E_TONE);
     speaker(F_TONE);

@@ -20,12 +20,14 @@ void setup() {
   writeI2c(0x2d, 0x08, ADXL345);  //上と同様
 
   //  xbee関連
-  xbee_init(0);  //初期化
-  xbee_atcb(4);  //ネットワーク初期化
-  xbee_atnj(0);  //孫機のジョイン拒否
-  while (xbee_atai() > 0x01) { //ネットワーク参加状況を確認
-    delay(3000);
-    xbee_atcb(1);  //ネットワーク参加ボタン押下
+  if (XBEE_SWITCH == 1) {
+    xbee_init(0);  //初期化
+    xbee_atcb(4);  //ネットワーク初期化
+    xbee_atnj(0);  //孫機のジョイン拒否
+    while (xbee_atai() > 0x01) { //ネットワーク参加状況を確認
+      delay(3000);
+      xbee_atcb(1);  //ネットワーク参加ボタン押下
+    }
   }
 
   //eeprom関連

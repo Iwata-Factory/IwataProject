@@ -1,7 +1,10 @@
 int xbee_timer() {            //xbeeで現在時刻を送信ただ、millisだと秒で最大通信量に到達？？（未検証）
+  if (XBEE_SWITCH == 0){
+    return 1;
+  }
   int xbtim = millis();
   char timer[sizeof(time)];
-  sprintf(timer, "timer: %d\r", time);
+  //sprintf(timer, "timer: %d\r", time);
   xbee_uart( dev, timer); //millisでは即上限に到達すると思われる。（未検証）
   return xbtim;
 }
@@ -10,6 +13,9 @@ int xbee_timer() {            //xbeeで現在時刻を送信ただ、millisだ�
 //integrationにてinclude,グローバル,setupを確認のこと。
 
 void xbee_send_3doubles(double first, double second, double third) {
+  if (XBEE_SWITCH == 0){
+    return 1;
+  }
   char send_double[48];
   char xbee_first[16];  //get_gpsと同じ定義をするのは二度手間では。。？
   char xbee_second[16];
@@ -26,6 +32,9 @@ void xbee_send_3doubles(double first, double second, double third) {
 }
 
 void xbee_send_2doubles(double first, double second) {
+  if (XBEE_SWITCH == 0){
+    return 1;
+  }
   char send_double[32];
   char xbee_first[16];  //get_gpsと同じ定義をするのは二度手間では。。？
   char xbee_second[16];
@@ -40,6 +49,10 @@ void xbee_send_2doubles(double first, double second) {
 }
 
 void xbee_send_1double(double first) {
+
+  if (XBEE_SWITCH == 0){
+    return 1;
+  }
   char send_double[16];  //get_gpsと同じ定義をするのは二度手間では。。？
 
   //小数点6けたで表示する
