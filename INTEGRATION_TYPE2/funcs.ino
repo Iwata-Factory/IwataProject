@@ -481,7 +481,7 @@ double get_my_direction() {
   失敗:0
   ------------------------------------------*/
 
-int turn_target_direction(double target_direction, double *my_Direction) {
+int turn_target_direction(double target_direction, double *my_Direction, int branch = 0) {
 
   xbee_uart( dev, " : call turn_target_direction() ");
 
@@ -524,10 +524,13 @@ int turn_target_direction(double target_direction, double *my_Direction) {
 
     xbee_uart(dev, "needed rotation is\r");
     xbee_send_1double(rotate_angle);
-
+    if(branch == 1){
     rotate_angle = rotate_angle * (10 - i) / 10;  // 回転角度を収束させる
     go_rotate(rotate_angle);  // 回転を行う
-
+    } else {//発散ver
+      rotate_angle = rotate_angle * (10 * i) / 10;
+      go_rotate(rotate_angle);
+    }
   } while (i < 5); // 10回回転してもダメだったら失敗
   xbee_uart( dev, " : false turn_target_direction() ");
   return 0;
@@ -909,6 +912,7 @@ int escape_from_wadachi(ROVER *rover) {
   POINT point_efw;
   GPS gps_efw;
   int try_counter = 0;
+  boolean turn_flag = 0;
 
   get_rover_point(&point_efw);  // 初期位置を記録
 
@@ -918,16 +922,19 @@ int escape_from_wadachi(ROVER *rover) {
     gps_get(&gps_efw);  // GPSを取得
 
     if (get_distance(&gps_efw, &point_efw) < 5) {
-      go_back(1000);  // 少し下がる
+      go_back(4000);  // 少し下がる
       rover->My_Direction = get_my_direction();
-      turn_target_direction(rover->My_Direction + 90, &rover->My_Direction);  // 90度回転
+      turn_flag = turn_target_direction(rover->My_Direction + 120, &rover->My_Direction, try_counter);  // 90度回転
+      go_straight(5000);
+      rover->My_Direction = get_my_direction();
+      turn_target_direction(rover->My_Direction - 100, &rover->My_Direction, ~turn_flag);
     } else {
       ;  // 何もしない
     }
 
     try_counter += 1;
 
-    if (try_counter = 10) {
+    if (try_counter >= 10) {
       xbee_uart(dev, "false escape_from_wadachi\r");
       return 0;
     }
