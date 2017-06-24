@@ -174,11 +174,14 @@ int gps_get(GPS* gps) {
     t++;
     //gpsの値が取れない間どこで引っかかっているのか識別できるようになりました
     if (gps_flag == 1) { //値が取れたら抜ける
+      //
+      //      xbee_uart(dev, "LATI, LONG\r");
+      //      xbee_send_2doubles(gps->latitude, gps->longitude);
+      //      xbee_uart(dev, "DISTANCE, DIRECTION\r");
+      //      xbee_send_2doubles(gps->distance, gps->Direction);
 
-      xbee_uart(dev, "LATI, LONG\r");
-      xbee_send_2doubles(gps->latitude, gps->longitude);
-      xbee_uart(dev, "DISTANCE, DIRECTION\r");
-      xbee_send_2doubles(gps->distance, gps->Direction);
+      xbprintf("LAT: %f, LONG: %f", gps->latitude, gps->longitude);
+      xbprintf("DISTANCE: %f,DIRECTION: %f", gps->distance, gps->Direction);
 
       break;
     }
@@ -524,9 +527,9 @@ int turn_target_direction(double target_direction, double *my_Direction, int bra
 
     xbee_uart(dev, "needed rotation is\r");
     xbee_send_1double(rotate_angle);
-    if(branch == 0){
-    rotate_angle = rotate_angle * (10 - i) / 10;  // 回転角度を収束させる
-    go_rotate(rotate_angle);  // 回転を行う
+    if (branch == 0) {
+      rotate_angle = rotate_angle * (10 - i) / 10;  // 回転角度を収束させる
+      go_rotate(rotate_angle);  // 回転を行う
     } else {//発散ver
       rotate_angle = rotate_angle * (10 * i) / 10;
       go_rotate(rotate_angle);
@@ -844,7 +847,7 @@ int escape_danger_area(GPS *gps, POINT *point) {
 
 
 /*stack_check_state()
- * スタックしたら呼び出す
+   スタックしたら呼び出す
    とりあえず自分がどうなっているか把握する
    go_straight_flag: 直進出来るか
    rotate_flag: 回転できるか
@@ -934,7 +937,7 @@ int escape_from_wadachi(ROVER *rover) {
 
     try_counter += 1;
 
-    if (10 <=try_counter) {
+    if (10 <= try_counter) {
       xbee_uart(dev, "false escape_from_wadachi\r");
       return 0;
     }

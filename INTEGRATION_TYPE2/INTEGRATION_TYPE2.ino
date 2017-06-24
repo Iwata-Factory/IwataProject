@@ -80,6 +80,17 @@ void setup() {
   digitalWrite(NICROM_1, LOW);  //明示的なオフ
   digitalWrite(NICROM_2, LOW);
 
+  xbee_uart(dev, "test print\rgreeting pi and SERIAL_BAUDRATE\r");  // ５４文字までしか送れないうことが判明
+  xbprintf("Hello!!");
+  xbprintf("%lf",pi);  // double型を送ることができていない、、
+  xbprintf("%d", int(pi));
+  
+  dtostrf(pi,8,6, xbee_send );  // 文字列に変換
+  xbprintf("%s", xbee_send);
+  
+  xbprintf("%d",SERIAL_BAUDRATE);
+  xbprintf("lined: %s,%lf,%d\r","Hello", pi, SERIAL_BAUDRATE);
+
 }
 
 

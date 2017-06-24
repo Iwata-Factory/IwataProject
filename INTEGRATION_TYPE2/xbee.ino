@@ -50,3 +50,13 @@ void xbee_send_1double(double first) {
   delay(2);
 }
 
+void xbprintf(char *fmt, ...) {
+  char xb_buf[XBEE_BUFFERSIZE];
+  va_list args;
+  va_start (args, fmt);
+  vsnprintf(xb_buf, XBEE_BUFFERSIZE, fmt, args);
+  va_end (args);
+  xbee_uart(dev,xb_buf);
+  xbee_uart(dev, "\r");
+}
+
