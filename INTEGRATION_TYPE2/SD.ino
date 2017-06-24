@@ -87,7 +87,7 @@ int write_tm_sd(TM tm) {
 }
 
 // GPSを記録
-int write_gps_sd(GPS gps, int critical_flag = 0) {
+int write_gps_sd(GPS gps, int critical_flag = 0) {  // criticalな処理を記述したい場合はフラグを立てて下さい
   xbee_uart(dev, "call write_gps_sd" );
   int i = 0; // 試行回数記録用
   while (i < 30) { // 30回SDカードを開けなかったら諦める
@@ -145,7 +145,7 @@ int read_ac_sd(AC ac[100], int num) {
   int i = 0; // 試行回数記録用
   while (i < 30) { // 30回SDカードを開けなかったら諦める
 
-    File dataFile = SD.open("aclog.txt", FILE_READ);
+    File dataFile = SD.open(LOG_AC, FILE_READ);
 
     if (dataFile) { // ファイルが開けたときの処理
       int now_pos = dataFile.size(); // now_pos は自身の位置を表す
@@ -219,7 +219,7 @@ int read_tm_sd(TM tm[100], int num) {
   int i = 0; // 試行回数記録用
   while (i < 30) { // 30回SDカードを開けなかったら諦める
 
-    File dataFile = SD.open("tmlog.txt", FILE_READ);
+    File dataFile = SD.open(LOG_TM, FILE_READ);
 
     if (dataFile) { // ファイルが開けたときの処理
       int now_pos = dataFile.size(); // now_pos は自身の位置を表す
@@ -300,7 +300,7 @@ int read_gps_sd(GPS gps[100], int num) {
   int i = 0; // 試行回数記録用
   while (i < 30) { // 30回SDカードを開けなかったら諦める
 
-    File dataFile = SD.open("gpslog.txt", FILE_READ);
+    File dataFile = SD.open(LOG_GPS, FILE_READ);
 
     if (dataFile) { // ファイルが開けたときの処理
       int now_pos = dataFile.size(); // now_pos は自身の位置を表す
