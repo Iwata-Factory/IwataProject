@@ -25,7 +25,7 @@ int judge_release() {
       light += digitalRead(LIGHT_PIN);
       xbee_uart( dev, "count\r");
       sprintf(xbee_send, "%d\r", i);
-      xbee_uart( dev,xbee_send);
+      xbee_uart( dev, xbee_send);
       delay(1000);
       t++;
     }

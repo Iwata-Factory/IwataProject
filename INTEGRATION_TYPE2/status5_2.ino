@@ -41,7 +41,7 @@ int status5_2(ROVER *rover) {
 
     write_timelog_sd(rover);
 
-    turn_target_direction(rover->Target_Direction, &rover->My_Direction);  // 目的地を向く
+    turn_target_direction(rover->Target_Direction, &rover->My_Direction, 0);  // 目的地を向く
 
 
     // 偏差の初期化
@@ -96,7 +96,7 @@ int status5_2(ROVER *rover) {
           delay(7);
         }
 
-        turn_target_direction(rover->Target_Direction, &rover->My_Direction);
+        turn_target_direction(rover->Target_Direction, &rover->My_Direction, 0);
 
         for (int i = 1; i < 256; i++) {
           pid.right1 = 0;

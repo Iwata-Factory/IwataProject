@@ -35,14 +35,15 @@ int status5(ROVER *rover) {
     rover->Target_Direction = gps.Direction;  //ターゲットの方向
     rover->distance = gps.distance;  // ターゲットまでの距離
 
-    xbee_uart( dev, "Latitude");
-    xbee_send_1double(rover->latitude);
-    xbee_uart( dev, "Longitude");
-    xbee_send_1double(rover->longitude);
-    xbee_uart( dev, "Distance");
-    xbee_send_1double(rover->distance);
-    xbee_uart( dev, "Direction");
-    xbee_send_1double(rover->Target_Direction);
+    // xbee_printf が問題なければ後で消します
+    // xbee_uart( dev, "Latitude");
+    // xbee_send_1double(rover->latitude);
+    // xbee_uart( dev, "Longitude");
+    // xbee_send_1double(rover->longitude);
+    // xbee_uart( dev, "Distance");
+    // xbee_send_1double(rover->distance);
+    // xbee_uart( dev, "Direction");
+    // xbee_send_1double(rover->Target_Direction);
 
 
 
@@ -70,7 +71,7 @@ int status5(ROVER *rover) {
     }
 
     // 目的の方向を目指して回転を行う。rover->My_Directionは書き換えていく。
-    turn_target_direction(rover->Target_Direction, &rover->My_Direction);
+    turn_target_direction(rover->Target_Direction, &rover->My_Direction, 0);
     if (10 < last_distance) {
       go_straight(6000); // 6秒直進
     } else {

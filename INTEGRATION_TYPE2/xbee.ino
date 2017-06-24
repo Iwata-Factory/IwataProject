@@ -1,5 +1,5 @@
 int xbee_timer() {            //xbeeで現在時刻を送信ただ、millisだと秒で最大通信量に到達？？（未検証）
-  if (XBEE_SWITCH == 0){
+  if (XBEE_SWITCH == 0) {
     return 1;
   }
   int xbtim = millis();
@@ -13,7 +13,7 @@ int xbee_timer() {            //xbeeで現在時刻を送信ただ、millisだ�
 //integrationにてinclude,グローバル,setupを確認のこと。
 
 void xbee_send_3doubles(double first, double second, double third) {
-  if (XBEE_SWITCH == 0){
+  if (XBEE_SWITCH == 0) {
     return 1;
   }
   char send_double[48];
@@ -32,7 +32,7 @@ void xbee_send_3doubles(double first, double second, double third) {
 }
 
 void xbee_send_2doubles(double first, double second) {
-  if (XBEE_SWITCH == 0){
+  if (XBEE_SWITCH == 0) {
     return 1;
   }
   char send_double[32];
@@ -50,7 +50,7 @@ void xbee_send_2doubles(double first, double second) {
 
 void xbee_send_1double(double first) {
 
-  if (XBEE_SWITCH == 0){
+  if (XBEE_SWITCH == 0) {
     return 1;
   }
   char send_double[16];  //get_gpsと同じ定義をするのは二度手間では。。？
@@ -61,5 +61,17 @@ void xbee_send_1double(double first) {
   sprintf( send_double, "%s\r", send_double);
   xbee_uart( dev, send_double );  //送信
   delay(2);
+
+
 }
 
+
+void xbprintf(char *fmt, ...) {
+  char xb_buf[XBEE_BUFFERSIZE];
+  va_list args;
+  va_start (args, fmt);
+  vsnprintf(xb_buf, XBEE_BUFFERSIZE, fmt, args);
+  va_end (args);
+  xbee_uart(dev, xb_buf);
+  xbee_uart(dev, "\r");
+}

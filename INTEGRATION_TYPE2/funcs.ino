@@ -176,20 +176,21 @@ int gps_get(GPS* gps) {
     t++;
     //gpsの値が取れない間どこで引っかかっているのか識別できるようになりました
     if (gps_flag == 1) { //値が取れたら抜ける
-
+      xbprintf("LAT: %f, LONG: %f", gps->latitude, gps->longitude);
+      xbprintf("DISTANCE: %f,DIRECTION: %f", gps->distance, gps->Direction);
       break;
     }
     if (gps_flag == 2) {
       ;
 
-//      xbee_uart( dev, "cant communicate with gps\r");
+      //      xbee_uart( dev, "cant communicate with gps\r");
 
     }
     if (gps_flag == 3) {
       ;
       //gpsとの通信はできているが値が変or GPRMCでない
 
-//      xbee_uart( dev, "gps wrong or not GPRMC\r");
+      //      xbee_uart( dev, "gps wrong or not GPRMC\r");
 
     }
     if (gps_flag == 4) {
@@ -199,7 +200,7 @@ int gps_get(GPS* gps) {
       speaker(E_TONE);
 
       //通信ができて値も解析されたが緯度経度の値がバグってる
-//      xbee_uart( dev, "wrong Lat or Long\r");
+      //      xbee_uart( dev, "wrong Lat or Long\r");
 
     }
     if (t >= 10000) {
@@ -480,7 +481,7 @@ double get_my_direction() {
   失敗:0
   ------------------------------------------*/
 
-int turn_target_direction(double target_direction, double *my_Direction, int branch = 0) {
+int turn_target_direction(double target_direction, double *my_Direction, int branch) {
 
   xbee_uart( dev, "call turn_target_direction() \r");
 
@@ -526,7 +527,7 @@ int turn_target_direction(double target_direction, double *my_Direction, int bra
     if (branch == 0) {
       rotate_angle = rotate_angle * (10 - i) / 10;  // 回転角度を収束させる
       go_rotate(rotate_angle);  // 回転を行う
-    } else {//発散ver
+    } else { //発散ver
       rotate_angle = rotate_angle * (10 * i) / 10;
       go_rotate(rotate_angle);
     }
@@ -828,7 +829,7 @@ int escape_danger_area(GPS *gps, POINT *point) {
 
   do {
 
-    int turn_result = turn_target_direction(escape_direction, &escape_my_direction);  //危険エリアの真逆を向く
+    int turn_result = turn_target_direction(escape_direction, &escape_my_direction, 0);  //危険エリアの真逆を向く
     go_straight(4000);  // 4秒直進
     danger_distance = get_distance(gps, point);  //再度距離を取る
 
@@ -878,7 +879,7 @@ int stack_check_state(ROVER *rover) {
   }
 
   rover->My_Direction = get_my_direction();
-  if (turn_target_direction(rover->My_Direction + 90, &rover->My_Direction) == 1) {
+  if (turn_target_direction(rover->My_Direction + 90, &rover->My_Direction, 0) == 1) {
     rotate_flag = 1;
   } else {
     rotate_flag = 0;
@@ -933,7 +934,7 @@ int escape_from_wadachi(ROVER *rover) {
       turn_flag = turn_target_direction(rover->My_Direction + 120, &rover->My_Direction, try_counter);  // 120度回転
       go_straight(5000);
       rover->My_Direction = get_my_direction();
-      turn_target_direction(rover->My_Direction - 100, &rover->My_Direction, ~turn_flag);
+      turn_target_direction(rover->My_Direction - 100, &rover->My_Direction, turn_flag);
     } else {
       ;  // 何もしない
     }

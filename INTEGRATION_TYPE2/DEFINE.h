@@ -102,6 +102,9 @@
 //SD関連
 #define SS 53
 
+//XBEE関連
+#define XBEE_BUFFERSIZE 63
+
 // その他
 #define SERIAL_BAUDRATE 9600 //シリアル通信のデータ送信レートを9600bpsに定義するための定数(ArduinoとPC)
 #define pi 3.14159265359
@@ -134,7 +137,7 @@ double y_def = 1.0;
 // 立ち入り禁止エリア(10個まで生成可能)
 POINT danger_area_points[10];
 
-char xbee_send[63];  //とりあえずのxbee送信用配列
+char xbee_send[XBEE_BUFFERSIZE];  //とりあえずのxbee送信用配列
 
 SoftwareSerial g_gps( PIN_GPS_Rx, PIN_GPS_Tx); // ArduinoとGPS間のシリアル通信用に
 Servo servo1;

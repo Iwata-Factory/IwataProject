@@ -139,9 +139,9 @@ double rad_ave(const int array_num, double* value) {
 
 //角度の外れ値を１ことってその平均をだす(ラジアン)
 /*
- * 引数 deg
- * 戻り値　deg
- */
+   引数 deg
+   戻り値　deg
+*/
 double rad_out(const int array_num, double* value) {
   int i = 0;
   int j = 0;
@@ -239,7 +239,7 @@ double get_distance(GPS* gps, POINT* point) {
 }
 
 /*
- * 緯度経度から指定した地点までの方角を測定する
+   緯度経度から指定した地点までの方角を測定する
 */
 double get_direction(GPS* gps, POINT* point) {
   double direct = 0;
