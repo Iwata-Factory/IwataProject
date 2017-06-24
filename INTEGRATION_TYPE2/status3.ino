@@ -148,7 +148,7 @@ int judge_fall() {
       return 0;
     }
     gps_get_al(&alt_array[jf_cnt]);
-    xbee_send_1double(alt_array[jf_cnt]);  // ここでバグるかもしれない（動作確認まだ）なので注意
+    xbee_send_1double(alt_array[jf_cnt]);  // ここでバグるかもしれない（動作確認まだ）なので注意 ここが送られてこない！！
     delay(500); 
   }
   
