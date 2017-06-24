@@ -524,7 +524,7 @@ int turn_target_direction(double target_direction, double *my_Direction, int bra
 
     xbee_uart(dev, "needed rotation is\r");
     xbee_send_1double(rotate_angle);
-    if(branch == 1){
+    if(branch == 0){
     rotate_angle = rotate_angle * (10 - i) / 10;  // 回転角度を収束させる
     go_rotate(rotate_angle);  // 回転を行う
     } else {//発散ver
