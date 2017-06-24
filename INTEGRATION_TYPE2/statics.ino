@@ -46,7 +46,6 @@ double value_median(const int array_num, double* value) {
 */
 double value_ave(const int array_num, double* value) {
 
-
   descending_sort(array_num, value);    //並び替え
 
   int i = 0;

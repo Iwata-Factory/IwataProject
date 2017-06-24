@@ -5,7 +5,7 @@
 #include "INCLUDE.h"
 
 /*
-   セットアップ
+   セットアップ　　
 */
 void setup() {
 
@@ -98,6 +98,10 @@ void loop() {
   get_censor_status(&rover);
 
   do {
+
+    // ここでセンサーの状態チェックを走らせる
+    get_censor_status(&rover);  // 最新のセンサーの状態を取得
+
 
     switch (rover.status_number) {
 
