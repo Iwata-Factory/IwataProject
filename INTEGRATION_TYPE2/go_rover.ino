@@ -12,7 +12,6 @@ void rover_degital(DRIVE drive) {
   digitalWrite(M2_1, drive.leght1);
   digitalWrite(M2_2, drive.leght2);
 }
-
 /*-----------rover_analog(DRIVE)--------------------
   DRIVE型の引数
   analog write　の時

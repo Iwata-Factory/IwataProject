@@ -5,6 +5,17 @@
 #define GOAL_LATITUDE 35.756165
 #define GOAL_LONGITUDE 139.770740
 
+// 海抜制限
+#define ALT_REGULATION 6.0
+
+
+//SD関連
+#define LOG_TIME ("timelog.txt")
+#define LOG_AC ("aclog.txt")
+#define LOG_TM ("tmlog.txt")
+#define LOG_GPS ("gpslog.txt")
+#define LOG_CRITICAL ("critical.txt")
+
 //GPS関連
 #define PIN_GPS_Rx  10 // GPSのシリアル通信でデータを受信するピン
 #define PIN_GPS_Tx  12 // GPSのシリアル通信でデータを送信するピン
