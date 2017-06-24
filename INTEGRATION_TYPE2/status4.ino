@@ -49,9 +49,9 @@ int status4(ROVER *rover) {  // Status4 着陸の関数
   GPS gps_land;  //着陸地点を記録（必要？？）
   gps_get(&gps_land);
   if (write_gps_sd_file(gps_land, GPS_SPECIAL)) { // 自身の位置をsdに記録。新規に関数を作成しました。
-    xbee_uart(dev, "success!!");
+    xbee_uart(dev, "success!!\r");
   } else {
-    xbee_uart(dev, "fail...");
+    xbee_uart(dev, "fail...\r");
   }
   return 1;
 }

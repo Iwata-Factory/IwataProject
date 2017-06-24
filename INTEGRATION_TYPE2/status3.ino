@@ -17,6 +17,7 @@ int status3(ROVER *rover) {  // Status3 降下の関数
 
 
     if ((sensor & STATUS_GPS) == STATUS_GPS) { //GPS生存(高度取得用。後で実装）
+      xbee_uart(dev, "gps alive\r");
       gps_get_al(&st3_alt);
       if (st3_alt < ALT_REGULATION) {
         if (judge_fall()) {
@@ -27,9 +28,9 @@ int status3(ROVER *rover) {  // Status3 降下の関数
 
       st3_cnt++;
 
-      if (st3_cnt >= 15) {  //15分経過したら強制脱出。この前にGPS高度で判定を取る段階も作るべき！！
+      if (st3_cnt >= 5) {  //15分経過したら強制脱出。この前にGPS高度で判定を取る段階も作るべき！！
 
-        xbee_uart(dev, "forced to break\r");
+        xbee_uart(dev, "status3:forced to break\n");
         break;
 
       }
@@ -37,9 +38,9 @@ int status3(ROVER *rover) {  // Status3 降下の関数
         GPS gps;
         gps_get(&gps);      //無限ウープに陥る可能性あり
         if (write_gps_sd(gps)) { // 自身の位置をsdに記録
-          xbee_uart(dev, "success!!");
+          xbee_uart(dev, "success!!\r");
         } else {
-          xbee_uart(dev, "fail...");
+          xbee_uart(dev, "fail...\r");
         }
       }
     }
@@ -55,7 +56,7 @@ int status3(ROVER *rover) {  // Status3 降下の関数
       //1ループ1分より適当に15分たったら強制的に着陸したものとする
       st3_cnt++;
 
-      if (st3_cnt >= 15) {
+      if (st3_cnt >= 5) {  //ここのカウント数は割と適当
 
         break;
       }
@@ -148,7 +149,7 @@ int judge_fall() {
       return 0;
     }
     gps_get_al(&alt_array[jf_cnt]);
-    xbee_send_1double(alt_array[jf_cnt]);  // ここでバグるかもしれない（動作確認まだ）なので注意 ここが送られてこない！！
+    xbee_send_1double(alt_array[jf_cnt]);  // ここでバグるかもしれない（動作確認まだ）なので注意
     delay(500); 
   }
   

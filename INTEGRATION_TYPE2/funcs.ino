@@ -53,7 +53,7 @@ int AnalyzeLineString( char szLineString[], GPS* gps) {
      これが出る場合は屋外とか通信状況よくなるようにしてください
   */
   if ( strncmp(*gps_status, 'V', 1 ) == 0) {
-    xbee_uart( dev, "BAD communicatin condition of gps...\r");
+    //xbee_uart( dev, "BAD communicatin condition of gps...\r");
   }
   gps->utc = atof(psz_utc);
   gps->Speed = atof(psz_Speed);
@@ -299,14 +299,14 @@ int gps_get_al(double* altitude) {
     if (gps_flag == 2) {
       ;
 
-      //xbee_uart( dev,"cant communicate with gps\r");
+//      xbee_uart( dev,"cant communicate with gps\r");
 
     }
     if (gps_flag == 3) {
       ;
       //gpsとの通信はできているが値が変or GPRMCでない
 
-      //xbee_uart( dev, "gps wrong or not GPRMC\r");
+//      xbee_uart( dev, "gps wrong or not GPGGA\r");
     }
     if (gps_flag == 4) {
       ;
@@ -315,10 +315,11 @@ int gps_get_al(double* altitude) {
       speaker(E_TONE);
 
       //通信ができて値も解析されたが緯度経度の値がバグってる
-      //xbee_uart( dev, "wrong Lat or Long\r");
+//      xbee_uart( dev, "wrong altitude\r");
     }
     if (t>= 10000){
       //およそ100秒間ダメなら向ける
+      xbee_uart(dev, "gps_get_al:forced to break\r");
       break;
     }
   }
