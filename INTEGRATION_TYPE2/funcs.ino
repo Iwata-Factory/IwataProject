@@ -924,7 +924,7 @@ int escape_from_wadachi(ROVER *rover) {
     if (get_distance(&gps_efw, &point_efw) < 5) {
       go_back(4000);  // 少し下がる
       rover->My_Direction = get_my_direction();
-      turn_flag = turn_target_direction(rover->My_Direction + 120, &rover->My_Direction, try_counter);  // 90度回転
+      turn_flag = turn_target_direction(rover->My_Direction + 120, &rover->My_Direction, try_counter);  // 120度回転
       go_straight(5000);
       rover->My_Direction = get_my_direction();
       turn_target_direction(rover->My_Direction - 100, &rover->My_Direction, ~turn_flag);
@@ -934,7 +934,7 @@ int escape_from_wadachi(ROVER *rover) {
 
     try_counter += 1;
 
-    if (try_counter >= 10) {
+    if (10 <=try_counter) {
       xbee_uart(dev, "false escape_from_wadachi\r");
       return 0;
     }
