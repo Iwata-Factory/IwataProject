@@ -25,8 +25,7 @@ int status5_2(ROVER *rover) {
   accel();  // ローバースタート
 
   // 実験用に区切り文字を書き込む
-  char panctuation = '*';
-  write_devision_sd(panctuation);
+  write_devision_sd(0.0, 1);
 
   do {
 
@@ -49,7 +48,7 @@ int status5_2(ROVER *rover) {
     this_my_direction = get_my_direction();
     this_devision = get_angle_devision(this_my_direction, rover->Target_Direction);  // 自分から見た偏差を取得
 
-    write_devision_sd(this_devision);  // 偏差を記録（実験用）
+    write_devision_sd(this_devision, 0);  // 偏差を記録（実験用）
 
     total2zero(&total_devision);
 
@@ -116,13 +115,17 @@ int total2zero(double *this_d) {
 
 // PIDでの偏差を記録していく
 /*実験用の関数であとで消しますbyとうま*/
-int write_devision_sd(double devision) {
+int write_devision_sd(double devision, int flag) {
   int i = 0; // 試行回数記録用
   while (i < 5) { // 5回SDカードを開けなかったら諦める
     File dataFile = SD.open("devlog.txt", FILE_WRITE);
     if (dataFile) { // ファイルが開けたときの処理
       dataFile.seek(dataFile.size());
-      dataFile.println(devision);
+      if (flag == 0) {
+        dataFile.println(devision);
+      } else {
+        dataFile.println("start sample");
+      }
       dataFile.close();
       return 1; // 成功を返す
     } else {
