@@ -12,12 +12,13 @@ int status3(ROVER *rover) {  // Status3 降下の関数(着陸判定を行う)
 
   /* GPSはいつから取れるようになるんでしょうね by とうま */
 
-  write_timelog_sd(rover);  //  ログを残す
-
   do {
     get_censor_status(rover);  // 最新のセンサーの状態を取得
 
     switch_num = get_switch(rover);
+
+    write_timelog_sd(rover);  //  ログを残す
+
 
     switch (switch_num) {
 
@@ -35,7 +36,7 @@ int status3(ROVER *rover) {  // Status3 降下の関数(着陸判定を行う)
 
       case 3:
         landing_flag = judge_landing_by_ac();
-        xbee_uart( dev, "end judge_landing_by_ac\r");
+        xbee_uart( dev, "end judge_landing_by_ac\r");  // 加速度センサによる着陸判定
         delay(30000);
         break;
 
@@ -103,7 +104,7 @@ int judge_landing_by_gps_detail() {
     xbee_send_1double(alt_array[i]);  // ここでバグるかもしれない（動作確認まだ）なので注意
     delay(1000);
 
-    if ((0 < i) && ( 3 < (alt_array[i + 1] - alt_array[i]))) {
+    if ((0 < i) && ( 3 < (alt_array[i] - alt_array[i - 1]))) {
       return 0;  // まだ降下中である。
     }
   }
