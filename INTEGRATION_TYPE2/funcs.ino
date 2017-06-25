@@ -504,22 +504,10 @@ int turn_target_direction(double target_direction, double *my_Direction, int bra
       return 0;
     }
 
-    double rotate_angle = 0;  // 回転量
-    double a_difference = *my_Direction - target_direction;
+    double rotate_angle = get_angle_devision(*my_Direction, target_direction);
 
-    if (180 <= a_difference) {
-      rotate_angle = 360 - a_difference;  // 右回転
-    } else if (20 <= a_difference && a_difference < 180) {
-      rotate_angle = -a_difference;  // 左回転
-    } else if (-20 <= a_difference && a_difference < 20) {
-      xbee_uart( dev, "success turn_target_direction() \r");
-      rotate_angle = 0;  // 回転しない
-
-      return 1;  // 回転に成功
-    } else if (-180 <= a_difference && a_difference < -20) {
-      rotate_angle = -a_difference;  // 右回転
-    } else {
-      rotate_angle = 360 + a_difference;  // 左回転
+    if ((-20 < rotate_angle) && (rotate_angle < 20)) {
+      rotate_angle = 0;
     }
 
     xbee_uart(dev, "needed rotation is ");
@@ -528,12 +516,31 @@ int turn_target_direction(double target_direction, double *my_Direction, int bra
       rotate_angle = rotate_angle * (10 - i) / 10;  // 回転角度を収束させる
       go_rotate(rotate_angle);  // 回転を行う
     } else { //発散ver
-      rotate_angle = rotate_angle * (10 * i) / 10;
+      rotate_angle = rotate_angle * (i + 1);
       go_rotate(rotate_angle);
     }
-  } while (i < 5); // 10回回転してもダメだったら失敗
+  } while (i < 5); // 5回回転してもダメだったら失敗
   xbee_uart( dev, " false turn_target_direction() \r");
   return 0;
+}
+
+
+/*-----------get_angle_devision()--------------------
+   自分の方位からみた目的方位への角度を返す
+  ------------------------------------------*/
+double get_angle_devision(double my_Direction, double target_direction) {
+
+  double a_difference = my_Direction - target_direction;
+
+  if (180 <= a_difference) {
+    return (360 - a_difference);  // 右回転
+  } else if (0 <= a_difference && a_difference < 180) {
+    return (-a_difference);  // 左回転
+  } else if (-180 <= a_difference && a_difference < 0) {
+    return (-a_difference);  // 右回転
+  } else {
+    return (-1 * (360 + a_difference));  // 左回転
+  }
 }
 
 /*-----------tm_calibration()--------------------
@@ -542,7 +549,6 @@ int turn_target_direction(double target_direction, double *my_Direction, int bra
    1:成功
    0:失敗
   ------------------------------------------*/
-
 
 int tm_calibration() {
 
@@ -954,3 +960,17 @@ int escape_from_wadachi(ROVER *rover) {
 int no_x_bee(byte a, char b) { // xbeeを潰す関数
   return 1;
 }
+
+
+
+
+/*
+   スピーカーになります
+   tone(ピン番号, 音の周波数, 音の長さ)
+*/
+void speaker(int TONE) {
+  tone(TONE_PINNO, TONE, BEAT_LONG);
+  delay(BEAT_LONG);
+}
+
+

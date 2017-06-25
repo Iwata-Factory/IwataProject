@@ -39,7 +39,7 @@ void go_rotate(double rotate) {
   int rotate_time = 0; // 旋回する時間 /* これを求めるアルゴリズムの用意は必要 */
 
   // どちら向きに回転するかを判断
-  if (0 < rotate) {
+  if (0 < rotate) {  // 右
     turn.right1 = 0;
     turn.right2 = 1;
     turn.leght1 = 1;
@@ -47,7 +47,7 @@ void go_rotate(double rotate) {
 
     rotate_time = (rotate / 400) * 1000;
 
-  } else {
+  } else {  // 左
     turn.right1 = 1;
     turn.right2 = 0;
     turn.leght1 = 0;
@@ -145,5 +145,50 @@ void go_back(int go_time) {
   go.leght2 = 1;
   rover_degital(go);
 }
+
+
+/*-----------加速を行う--------------------
+  ------------------------------------------*/
+
+void accel() {
+  DRIVE go; //DRIVE型の宣言
+  // 初期化
+  go.right1 = 0;
+  go.right2 = 0;
+  go.leght1 = 0;
+  go.leght2 = 0;
+  for (int i = 1; i < 256; i++) {
+    go.right1 = 0;
+    go.right2 = i;
+    go.leght1 = 0;
+    go.leght2 = i;
+    rover_analog(go);
+    delay(2);
+  }
+}
+
+/*-----------ブレーキをかける--------------------
+  ------------------------------------------*/
+void brake() {
+  DRIVE go; //DRIVE型の宣言
+  // 初期化
+  go.right1 = 0;
+  go.right2 = 0;
+  go.leght1 = 0;
+  go.leght2 = 0;
+
+  for (int i = 255; i > 0; i--) {
+    go.right1 = 0;
+    go.right2 = i;
+    go.leght1 = 0;
+    go.leght2 = i;
+    rover_analog(go);
+    delay(7);
+  }
+}
+
+
+
+
 
 

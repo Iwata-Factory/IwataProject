@@ -9,164 +9,125 @@ int status5_2(ROVER *rover) {
 
   xbee_uart( dev, "status5_2\r");
 
-
-  int i = 0; // do-whileの繰り返し数をカウント
-
   GPS gps;
   DRIVE pid;  // DRIVEの初期化
 
+  tm_calibration();  // キャリブレーションの実施
+
+  double this_my_direction = 0.0;  // 今回の自分の方位
+  double this_devision = 0.0;  // 偏差
+  double total_devision = 0.0;  // 偏差の累積値
+  double control_amount = 0.0;  // 制御量
+  double motor_control = 0.0;  // モーター制御量
+
+  int i = 0; // do-whileの繰り返し数をカウント
+  xbee_uart( dev, "(PID) START\r");
+  accel();  // ローバースタート
+
+  // 実験用に区切り文字を書き込む
+  char panctuation = '*';
+  write_devision_sd(panctuation);
+
   do {
 
-    // 一旦停止
-    pid.right1 = 0;
-    pid.right2 = 0;
-    pid.leght1 = 0;
-    pid.leght2 = 0;
-    rover_analog(pid);
+    if (i % 50 == 0) {  // delayないし50回くらいごとにGPS更新
 
+      xbee_uart( dev, "(PID) GET GPS NEW\r");
 
-    if (i % 10 == 0) {  // 一定期間ごとにキャリブレーションを実施
-      tm_calibration();
+      gps_get(&gps);  // GPSを取る
+      // GPSが取得した値をROVERのステータスに反映する。
+      rover->latitude = gps.latitude;  // 緯度
+      rover->longitude = gps.longitude;  //経度
+      rover->Target_Direction = gps.Direction;  //ターゲットの方向
+      rover->distance = gps.distance;  // ターゲットまでの距離
+      write_gps_sd(gps);  // 自身の位置をsdに記録
+
     }
-    xbee_uart(dev, "get_gps\r");
-    // 目的角度を取得
-    gps_get(&gps);
-    // GPSが取得した値をROVERのステータスに反映する。
-    rover->latitude = gps.latitude;  // 緯度
-    rover->longitude = gps.longitude;  //経度
-    rover->Target_Direction = gps.Direction;  //ターゲットの方向
-    rover->distance = gps.distance;  // ターゲットまでの距離
-
-    write_gps_sd(gps);  // 自身の位置をsdに記録
 
     write_timelog_sd(rover);
 
-    turn_target_direction(rover->Target_Direction, &rover->My_Direction, 0);  // 目的地を向く
+    this_my_direction = get_my_direction();
+    this_devision = get_angle_devision(this_my_direction, rover->Target_Direction);  // 自分から見た偏差を取得
 
+    write_devision_sd(this_devision);  // 偏差を記録（実験用）
 
-    // 偏差の初期化
-    double dd_n = 0;
-    double dd_n1 = 0;
-    double dd_n2 = 0;
+    total2zero(&total_devision);
 
-    double _mv = 0;  // 概念的な制御量
-    int mv = 0;  // 制御量
-    xbee_uart(dev, "PID START\r");
-    // 加速部
-    for (int i = 1; i < 256; i++) {
-      pid.right1 = 0;
-      pid.right2 = i;
-      pid.leght1 = 0;
-      pid.leght2 = i;
-      rover_analog(pid);
-      delay(2);
-    }
+    control_amount = get_control(this_devision, total_devision);  // 制御量を取得
 
-    for (int j = 0; j < 100; j++) {
+    get_motor_control(&pid, control_amount); // DRIVE pid の値を調整
+    rover_analog(pid);  // 出力に反映
 
-      if (j % 150 == 0) {  //30秒に一度ゴール付近にいるか確認
-        gps_get(&gps);  // GPSを取得
-        if (0 <= gps.distance && gps.distance < 30) {
-          pid.right1 = 0;
-          pid.right2 = 0;
-          pid.leght1 = 0;
-          pid.leght2 = 0;
-          rover_analog(pid);
-          return 1;
-        }
-      }
+    total_devision += this_devision;  // 偏差を足していく
 
-      rover_analog(pid);  // 出力を反映
-      // 偏差を更新
-      dd_n2 = dd_n1;
-      dd_n1 = dd_n;
-      dd_n = pid_get_control(rover->Target_Direction, &rover->My_Direction);
+  } while (10 < rover->distance); // とりあえず今はこれで
 
-      xbee_send_1double(dd_n);
+  xbee_uart( dev, "(PID) END\r");
 
-      if (90 < fabs(dd_n)) {
-        xbee_uart( dev, "larger than 90\r");
+  brake();  // 止まる
 
-        for (int i = 250; i > 0; i = i - 5) {
-          pid.right1 = 0;
-          pid.right2 = i;
-          pid.leght1 = 0;
-          pid.leght2 = i;
-          rover_analog(pid);
-          delay(7);
-        }
+  return 1;
 
-        turn_target_direction(rover->Target_Direction, &rover->My_Direction, 0);
-
-        for (int i = 1; i < 256; i++) {
-          pid.right1 = 0;
-          pid.right2 = i;
-          pid.leght1 = 0;
-          pid.leght2 = i;
-          rover_analog(pid);
-          delay(2);
-        }
-        continue;
-      }
-
-      _mv = PID_KP * (dd_n - dd_n1) + PID_KI * dd_n + PID_KD * ((dd_n - dd_n1) - (dd_n1 - dd_n2));  // 概念的制御量を求める
-      mv = int(_mv + PID_SURPULS);  // 実際のモーターの制御量(正ならば相対的に右側出力が強くなる)
-      arrange_motor_input(&pid, mv);  // 出力を調整
-      delay(500);
-
-      //      if (j % 10) {
-      //        char m[sizeof(mv)];
-      //        //sprintf(m, "timer: %d\r", mv);
-      //        xbee_uart( dev, m);
-      //      }
-    }
-
-  } while (1);
-  xbee_uart(dev, "PID END\r");
 }
 
 
-int arrange_motor_input(DRIVE * drive, int mv) {
+// 制御量を取得(正負どちらの値もありえる)
+double get_control(double this_d, double total_d) {
+  double amount_control = PID_KP * (this_d + PID_KI * total_d);
+  return (amount_control);
+}
 
-  mv = arrange_mv(mv);
+// モーターの出力を弄る関数
+int get_motor_control(DRIVE *pid_drive, double control_amount) {
 
-  // 目標標準出力と現在の出力との差を算出
-  int target_r2 = 255;
-  int target_l2 = 255;
-  int difference_target_r2 = target_r2 - drive->right2;
-  int difference_target_l2 = target_l2 - drive->leght2;
+  // 初期の量
+  pid_drive->right1 = 255;
+  pid_drive->right2 = 0;
+  pid_drive->leght1 = 255;
+  pid_drive->leght2 = 0;
 
-  if (0 < mv) {  // 出力の調整
-
-    if (mv <= difference_target_r2) {
-      drive->right2 += mv;
-    } else {
-      drive->right2 = 255;
-      drive->leght2 = drive->leght2 + mv - difference_target_r2;
-      if (drive->leght2 < 200) {
-        drive->leght2 = 200;
-      }
+  if (control_amount <= 0) {  // 左側の出力を弱くすれば良い
+    pid_drive->leght1 -= fabs(control_amount);
+    if (pid_drive->leght1 < 0) {
+      pid_drive->leght1 = 0;
     }
-  } else {
-    mv = -1 * mv;  // 正の値に直す
-    if (mv <= difference_target_l2) {
-      drive->leght2 += mv;
-    } else {
-      drive->leght2 = 255;
-      drive->right2 = drive->right2 + mv - difference_target_l2;
-      if (drive->right2 < 200) {
-        drive->right2 = 200;
-      }
+  } else {  // 右側の出力を弱くすれば良い
+    pid_drive->right1 -= fabs(control_amount);
+    if (pid_drive->right1 < 0) {
+      pid_drive->right1 = 0;
     }
   }
   return 1;
 }
 
-int arrange_mv(int mv) {  //極端な値を弾く
-  if (15 < mv) {
-    mv = 15;
-  } else if (mv < -15) {
-    mv = -15;
+
+// 偏差が小さい時は偏差の累積値を0にする関数
+int total2zero(double *this_d) {
+  if (fabs(*this_d) < 15) { // 方位が合ってきたら累積値を0にする
+    xbee_uart( dev, "(PID) TOTAL ---> 0.0\r");
+    *this_d = 0.0;
+    return 1;
+  } else {
+    return 0;
   }
-  return mv;
+}
+
+
+
+// PIDでの偏差を記録していく
+/*実験用の関数であとで消しますbyとうま*/
+int write_devision_sd(double devision) {
+  int i = 0; // 試行回数記録用
+  while (i < 5) { // 5回SDカードを開けなかったら諦める
+    File dataFile = SD.open("devlog.txt", FILE_WRITE);
+    if (dataFile) { // ファイルが開けたときの処理
+      dataFile.seek(dataFile.size());
+      dataFile.println(devision);
+      dataFile.close();
+      return 1; // 成功を返す
+    } else {
+      i += 1;
+    }
+  }
+  return 0; // 失敗を返す
 }
