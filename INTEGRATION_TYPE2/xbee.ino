@@ -14,7 +14,7 @@ int xbee_timer() {            //xbeeで現在時刻を送信ただ、millisだ�
 
 void xbee_send_3doubles(double first, double second, double third) {
   if (XBEE_SWITCH == 0) {
-    return 1;
+    return;
   }
   char send_double[48];
   char xbee_first[16];  //get_gpsと同じ定義をするのは二度手間では。。？
@@ -33,7 +33,7 @@ void xbee_send_3doubles(double first, double second, double third) {
 
 void xbee_send_2doubles(double first, double second) {
   if (XBEE_SWITCH == 0) {
-    return 1;
+    return;
   }
   char send_double[32];
   char xbee_first[16];  //get_gpsと同じ定義をするのは二度手間では。。？
@@ -51,7 +51,7 @@ void xbee_send_2doubles(double first, double second) {
 void xbee_send_1double(double first) {
 
   if (XBEE_SWITCH == 0) {
-    return 1;
+    return;
   }
   char send_double[16];  //get_gpsと同じ定義をするのは二度手間では。。？
 
