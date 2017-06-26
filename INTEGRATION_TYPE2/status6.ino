@@ -7,10 +7,26 @@ int status6(ROVER *rover) {
   }
 
   POINT first_point;
-  POINT check_point[8];
+  POINT check_point[8];   //現在地の周りの緯度経度を設定
+  int i = 0;
+  int check_flag = 0;
   
+  GPS gps;
+  gps_get(&gps);
+  // GPSが取得した値を自身のステータスに反映する。
+  rover->latitude = gps.latitude;  // 緯度
+  rover->longitude = gps.longitude;  //経度
+
+  //現在地の周りを設定
   get_rover_point(&first_point);
   set_goal(&first_point, check_point);
+
+  check_flag = check_goal(rover);
+  if (check_flag == 1){
+    get_goal(rover);
+  }
+
+
   return 1;
 }
 
@@ -87,6 +103,8 @@ double get_goal(ROVER *rover) {
       rover_degital(turn);
       delay(1000);
       rover->My_Direction = get_my_direction();
+      //とりあえず取得した方向に進む
+      go_straight(para_distance*1000);
       return 1;
     }
     delay(1);
@@ -103,17 +121,17 @@ double get_goal(ROVER *rover) {
 
 }
 /*---------set_goal(POINT *forst_point)----
- * status6に入った場所から周囲にチェック緯度経度を設定
- * およそ5mの距離の場所にセット
- ------------------------------------------*/
-int set_goal(POINT *first_point, POINT *check_point){
+   status6に入った場所から周囲にチェック緯度経度を設定
+   およそ5mの距離の場所にセット
+  ------------------------------------------*/
+int set_goal(POINT *first_point, POINT *check_point) {
   double dif = 0.00005;  //緯度経度の差（およそ5m離れる）
   double rad = 0;
   int i = 0;
 
-  for (i = 0; i < 8; i++){
+  for (i = 0; i < 8; i++) {
     check_point[i].latitude = first_point->latitude + dif * cos(2 * pi * i / 8);
-    check_point[i].longitude = first_point->longitude + dif * sin(2 * pi * i /8);
+    check_point[i].longitude = first_point->longitude + dif * sin(2 * pi * i / 8);
   }
   return 1;
 }
