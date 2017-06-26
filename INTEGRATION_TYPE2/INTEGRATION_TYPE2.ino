@@ -35,10 +35,12 @@ void setup() {
   EEPROM.write( EEP_CENSOR_STATUS, 0xff);  //eepのflag類の初期化
 
   //SD関連
+  //SD判定回路のピンモード
+  pinMode(SD_INSERT, INPUT);
   pinMode(SS, OUTPUT);
   int sd_ok_counter = 0;
   while (1) {
-    if (!SD.begin(chipSelect)) {
+    if (!SD.begin(chipSelect) || digitalRead(SD_INSERT)) {
       sd_ok_counter += 1;
       xbee_uart( dev, "Card failed, or not present\r");
       // 失敗、何もしない
@@ -60,7 +62,6 @@ void setup() {
   pinMode(DISTANCE, INPUT);
   //サーボモーター用のピン
   servo1.attach(26);
-  xbee_uart( dev, "setup done\rchange to main phase\r");
 
   // モーター用ピンの設定
   pinMode(M1_1, OUTPUT);
@@ -80,6 +81,8 @@ void setup() {
   pinMode(NICROM_2, OUTPUT);
   digitalWrite(NICROM_1, LOW);  //明示的なオフ
   digitalWrite(NICROM_2, LOW);
+
+  xbee_uart( dev, "setup done\rchange to main phase\r");
 
 }
 
