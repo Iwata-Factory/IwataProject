@@ -403,12 +403,18 @@ TM get_tm() {
   失敗したら負の値を返却
   ------------------------------------------*/
 
-double get_my_direction() {
+double get_my_direction(int num) {
 
   xbee_uart( dev, "call get_my_direction() \r");
 
+  if (num < 1) {  // 不正な引数をキャッチ
+    xbee_uart( dev, "unjustice argument");
+    xbprintf(num);
+    return -1;
+  }
+
   double my_direction = -1.0;  // 返り値
-  double direction_array[10] = { -1.0}; // 自身の方向を10サンプル取得する
+  double direction_array[num] = { -1.0}; // 自身の方向をnumサンプル取得するための配列を宣言
 
   int error_c = 0;  // 何回地磁気取得に失敗したか
 
@@ -416,25 +422,21 @@ double get_my_direction() {
   Vector2D tm_v;  // 地磁気ベクトル
   Vector2D s;  // 基準ベクトル
 
-  for (int i = 0; i < 10; i++) {
+  for (int i = 0; i < num; i++) {
     error_c = 0;
     do {
-      delay(200);
-
-      s.x = 1.0;
+      //      delay(200);　　/*delayいらないねbyとうま */
+      s.x = 1.0;  // 基準となりベクトルを初期化
       s.y = 0.0;
 
       tm.x = 100; tm.y = 100; tm.z = 100;
-      tm = get_tm();
-
-      tm_v.x = 2 * (tm.x - tm_x_offset) / x_def;
+      tm = get_tm();  // 生データを取得
+      
+      tm_v.x = 2 * (tm.x - tm_x_offset) / x_def;  // 楕円→円
       tm_v.y = 2 * (tm.y - tm_y_offset) / y_def;
-
       double tm_v_size = vector2d_size(tm_v);
-
-      tm_v.x = tm_v.x / tm_v_size;  // tm_vの大きさは1
+      tm_v.x = tm_v.x / tm_v_size;  // 正規化
       tm_v.y = tm_v.y / tm_v_size;
-
       double inner_product = vector2d_inner(tm_v, s);  // 内積を取る
       double tm_degree = rad2deg(acos(inner_product));  // 角度を得る(0~π)
 
@@ -444,25 +446,25 @@ double get_my_direction() {
       } else {
         tm_degree = int(tm_degree + TM_DIFFERENCE) % 360;
       }
-
       if (tm_degree < 90) {
         tm_degree = tm_degree - 90 + 360;
       } else {
         tm_degree =  tm_degree - 90;
       }
 
-      direction_array[i] = tm_degree;  // 外れ値処理のためにradに再変換
-
+      direction_array[i] = tm_degree;
       error_c += 1;
-
-      if (error_c == 100) {  // 100回連続で取得失敗したら失敗を返す
+      if (error_c == (num * 10)) {  // num * 10 回連続で取得失敗したら失敗を返す
         return -1;
       }
-
     } while (tm.x == 100 || tm.y == 100 || tm.z == 100);
   }
 
-  my_direction = degree_out(10, direction_array);  // 10サンプルから平均を計算
+  if (num == 1) {
+    my_direction = direction_array[0];
+  } else {
+    my_direction = degree_out(num, direction_array);  // numサンプルから平均を計算
+  }
 
   xbee_uart( dev, " direction of rover is ");
   xbee_send_1double(my_direction);
@@ -496,7 +498,7 @@ int turn_target_direction(double target_direction, double *my_Direction, int bra
       target_direction = (360 * 2 + (int)target_direction) % 360;
     }
 
-    double dir_result = get_my_direction(); // 自身の方向を取得(deg)。target_directionもdeg
+    double dir_result = get_my_direction(10); // 自身の方向を取得(deg)。target_directionもdeg
 
     if (dir_result != -1) {
       *my_Direction = dir_result;
@@ -640,10 +642,10 @@ int tm_calibration() {
 
       xbee_uart( dev, "x_def, y_def \r");
 
-      dtostrf(x_def, 10,6,xbee_send);
+      dtostrf(x_def, 10, 6, xbee_send);
       xbee_uart(dev, xbee_send);
 
-      dtostrf(y_def, 10,6, xbee_send);
+      dtostrf(y_def, 10, 6, xbee_send);
       xbee_uart(dev, xbee_send);
       xbee_uart( dev, "tm_x_offset, tm_y_offset \r");
       xbee_send_2doubles(tm_x_offset, tm_y_offset);
@@ -669,7 +671,7 @@ double pid_get_control(double target_direction, double *my_Direction) {
     target_direction = (int)target_direction % 360;
   }
 
-  double dir_result = get_my_direction(); // 自身の方向を取得(deg)。target_directionもdeg
+  double dir_result = get_my_direction(10); // 自身の方向を取得(deg)。target_directionもdeg
 
   if (dir_result != -1) {  // 正しく角度が取れたのか確認
     *my_Direction = dir_result;
@@ -834,7 +836,7 @@ int escape_danger_area(GPS *gps, POINT *point) {
   xbee_uart( dev, "call escape_danger_area\r");
 
   double escape_direction = get_direction(gps, point) + 180.0;  // 危険エリアの中心とは真逆の角度を指定
-  double escape_my_direction = get_my_direction();  // 自身の角度を取得
+  double escape_my_direction = get_my_direction(10);  // 自身の角度を取得
   double danger_distance = 0.0;
   int escape_count = 0;
 
@@ -889,7 +891,7 @@ int stack_check_state(ROVER *rover) {
     go_straight_flag = 1;
   }
 
-  rover->My_Direction = get_my_direction();
+  rover->My_Direction = get_my_direction(10);
   if (turn_target_direction(rover->My_Direction + 90, &rover->My_Direction, 0) == 1) {
     rotate_flag = 1;
   } else {
@@ -941,10 +943,10 @@ int escape_from_wadachi(ROVER *rover) {
 
     if (get_distance(&gps_efw, &point_efw) < 5) {
       go_back(4000);  // 少し下がる
-      rover->My_Direction = get_my_direction();
+      rover->My_Direction = get_my_direction(10);
       turn_flag = turn_target_direction(rover->My_Direction + 120, &rover->My_Direction, try_counter);  // 120度回転
       go_straight(5000);
-      rover->My_Direction = get_my_direction();
+      rover->My_Direction = get_my_direction(10);
       turn_target_direction(rover->My_Direction - 100, &rover->My_Direction, turn_flag);
     } else {
       ;  // 何もしない

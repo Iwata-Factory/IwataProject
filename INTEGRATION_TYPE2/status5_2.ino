@@ -15,24 +15,23 @@ int status5_2(ROVER *rover) {
   tm_calibration();  // キャリブレーションの実施
 
   double this_my_direction = 0.0;  // 今回の自分の方位
+  double last_devision = 0.0; // 一回前の偏差
   double this_devision = 0.0;  // 偏差
   double total_devision = 0.0;  // 偏差の累積値
   double control_amount = 0.0;  // 制御量
   double motor_control = 0.0;  // モーター制御量
 
-  int i = 0; // do-whileの繰り返し数をカウント
+  write_devision_sd(0.0, 1);   // 実験のためテキストに区切り文字を書き込む
+
+
   xbee_uart( dev, "(PID) START\r");
   accel();  // ローバースタート
 
-  // 実験用に区切り文字を書き込む
-  write_devision_sd(0.0, 1);
-
+  int i = 0; // do-whileの繰り返し数をカウント
   do {
 
-    if (i % 50 == 0) {  // delayないし50回くらいごとにGPS更新
-
+    if (i % 50 == 0) {  // 50回くらいごとにGPS情報更新
       xbee_uart( dev, "(PID) GET GPS NEW\r");
-
       gps_get(&gps);  // GPSを取る
       // GPSが取得した値をROVERのステータスに反映する。
       rover->latitude = gps.latitude;  // 緯度
@@ -40,35 +39,34 @@ int status5_2(ROVER *rover) {
       rover->Target_Direction = gps.Direction;  //ターゲットの方向
       rover->distance = gps.distance;  // ターゲットまでの距離
       write_gps_sd(gps);  // 自身の位置をsdに記録
-
     }
 
-    write_timelog_sd(rover);
+    write_timelog_sd(rover);  // ログを残す
 
-    this_my_direction = get_my_direction();
+    this_my_direction = get_my_direction(1);  // 応答性を考えてサンプル数は1つ
     this_devision = get_angle_devision(this_my_direction, rover->Target_Direction);  // 自分から見た偏差を取得
 
-    write_devision_sd(this_devision, 0);  // 偏差を記録（実験用）
+    if (60 < fabs(this_devision - last_devision)) {  // これをキャッチした場合は恐らく外れた値を取ったということ
+      continue;  // do whileの先頭へ戻る
+    }
 
-    total2zero(&total_devision, i);
-
+    write_devision_sd(this_devision, 0);  // 偏差を記録（実験用→書き込む時間が有る分パラメタ変わってしまううかも）
+    total2zero(&total_devision, i);  // 一定期間ごとに積分を0にする
     control_amount = get_control(this_devision, total_devision);  // 制御量を取得
-
     get_motor_control(&pid, control_amount); // DRIVE pid の値を調整
     rover_analog(pid);  // 出力に反映
+    total_devision += this_devision;  // 積分の偏差を足していく
+    last_devision = this_devision;  // 今回の偏差を記録
 
-    total_devision += this_devision;  // 偏差を足していく
+    i += 1;  // 繰り返し数を増やす
 
     delay(50);
 
-  } while (10 < rover->distance); // とりあえず今はこれで
+  } while (10 < rover->distance); // 10m以内に入ったらループを抜ける
 
   xbee_uart( dev, "(PID) END\r");
-
   brake();  // 止まる
-
-  return 1;
-
+  return 1;  // ステータス6へ
 }
 
 
@@ -78,7 +76,7 @@ double get_control(double this_d, double total_d) {
   return (amount_control);
 }
 
-// モーターの出力を弄る関数
+// モーターの出力を弄る関数(255から幾らどちらをいくら減算するか制御する
 int get_motor_control(DRIVE *pid_drive, double control_amount) {
 
   // 初期の量
