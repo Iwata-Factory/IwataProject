@@ -12,7 +12,7 @@
 #define _S3_ 0
 #define _S4_ 0
 #define _S5_ 1
-#define _S6_ 1
+#define _S6_ 0
 
 #define XBEE_SWITCH 1  // 0にするとxbeeを全て無視します
 

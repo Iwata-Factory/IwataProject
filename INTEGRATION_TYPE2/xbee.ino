@@ -12,9 +12,9 @@ int xbee_timer() {            //xbeeで現在時刻を送信ただ、millisだ�
 //６月１日時点でのテストはまだ。
 //integrationにてinclude,グローバル,setupを確認のこと。
 
-void xbee_send_3doubles(double first, double second, double third) {
+int xbee_send_3doubles(double first, double second, double third) {
   if (XBEE_SWITCH == 0) {
-    return 1;
+    return 0;
   }
   char send_double[48];
   char xbee_first[16];  //get_gpsと同じ定義をするのは二度手間では。。？
@@ -29,11 +29,12 @@ void xbee_send_3doubles(double first, double second, double third) {
   sprintf( send_double, "%s,%s,%s\r", xbee_first, xbee_second, xbee_third );
   xbee_uart( dev, send_double );  //送信
   delay(2);
+  return 1;
 }
 
-void xbee_send_2doubles(double first, double second) {
+int xbee_send_2doubles(double first, double second) {
   if (XBEE_SWITCH == 0) {
-    return 1;
+    return 0;
   }
   char send_double[32];
   char xbee_first[16];  //get_gpsと同じ定義をするのは二度手間では。。？
@@ -46,12 +47,13 @@ void xbee_send_2doubles(double first, double second) {
   sprintf( send_double, "%s,%s\r", xbee_first, xbee_second );
   xbee_uart( dev, send_double );  //送信
   delay(2);
+  return 1;
 }
 
-void xbee_send_1double(double first) {
+int xbee_send_1double(double first) {
 
   if (XBEE_SWITCH == 0) {
-    return 1;
+    return 0;
   }
   char send_double[16];  //get_gpsと同じ定義をするのは二度手間では。。？
 
@@ -61,7 +63,7 @@ void xbee_send_1double(double first) {
   sprintf( send_double, "%s\r", send_double);
   xbee_uart( dev, send_double );  //送信
   delay(2);
-
+  return 1;
 
 }
 

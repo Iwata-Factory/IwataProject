@@ -639,7 +639,12 @@ int tm_calibration() {
       tm_y_offset = (max_y + min_y) / 2;
 
       xbee_uart( dev, "x_def, y_def \r");
-      xbee_send_2doubles(x_def, y_def);
+
+      dtostrf(x_def, 10,6,xbee_send);
+      xbee_uart(dev, xbee_send);
+
+      dtostrf(y_def, 10,6, xbee_send);
+      xbee_uart(dev, xbee_send);
       xbee_uart( dev, "tm_x_offset, tm_y_offset \r");
       xbee_send_2doubles(tm_x_offset, tm_y_offset);
       delay(500);

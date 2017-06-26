@@ -41,10 +41,10 @@
 #define M2_2 6 // モーター制御用ピン
 
 // PID制御関連
-#define PID_SURPULS 0.500
-#define PID_KP 0.100
-#define PID_KI 0.400
-#define PID_KD 0.100
+#define PID_SURPULS 0.400
+#define PID_KP 0.003
+#define PID_KI 0.100
+#define PID_KD 0.000
 
 //スピーカー関連
 #define BEAT_LONG 300   // 音の長さを指定
@@ -129,10 +129,11 @@ byte flag_phase[8] = {
 };
 const int chipSelect = 4;
 // 地磁気のキャリブレーションに関するやつ
-double tm_x_offset = 0.0;
-double tm_y_offset = 0.0;
-double x_def = 1.0;
-double y_def = 1.0;
+// 6/26工房前にて
+double tm_x_offset = -92.0;
+double tm_y_offset = -102.0;
+double x_def = 688.0;
+double y_def = 710.0;
 
 // 立ち入り禁止エリア(10個まで生成可能)
 POINT danger_area_points[10];

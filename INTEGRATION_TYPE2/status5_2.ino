@@ -50,7 +50,7 @@ int status5_2(ROVER *rover) {
 
     write_devision_sd(this_devision, 0);  // 偏差を記録（実験用）
 
-    total2zero(&total_devision);
+    total2zero(&total_devision, i);
 
     control_amount = get_control(this_devision, total_devision);  // 制御量を取得
 
@@ -58,6 +58,8 @@ int status5_2(ROVER *rover) {
     rover_analog(pid);  // 出力に反映
 
     total_devision += this_devision;  // 偏差を足していく
+
+    delay(50);
 
   } while (10 < rover->distance); // とりあえず今はこれで
 
@@ -80,20 +82,20 @@ double get_control(double this_d, double total_d) {
 int get_motor_control(DRIVE *pid_drive, double control_amount) {
 
   // 初期の量
-  pid_drive->right1 = 255;
-  pid_drive->right2 = 0;
-  pid_drive->leght1 = 255;
-  pid_drive->leght2 = 0;
+  pid_drive->right1 = 0;
+  pid_drive->right2 = 255;
+  pid_drive->leght1 = 0;
+  pid_drive->leght2 = 255;
 
   if (control_amount <= 0) {  // 左側の出力を弱くすれば良い
-    pid_drive->leght1 -= fabs(control_amount);
-    if (pid_drive->leght1 < 0) {
-      pid_drive->leght1 = 0;
+    pid_drive->leght2 -= fabs(control_amount);
+    if (pid_drive->leght2 < 0) {
+      pid_drive->leght2 = 0;
     }
   } else {  // 右側の出力を弱くすれば良い
-    pid_drive->right1 -= fabs(control_amount);
-    if (pid_drive->right1 < 0) {
-      pid_drive->right1 = 0;
+    pid_drive->right2 -= fabs(control_amount);
+    if (pid_drive->right2 < 0) {
+      pid_drive->right2 = 0;
     }
   }
   return 1;
@@ -101,8 +103,8 @@ int get_motor_control(DRIVE *pid_drive, double control_amount) {
 
 
 // 偏差が小さい時は偏差の累積値を0にする関数
-int total2zero(double *this_d) {
-  if (fabs(*this_d) < 15) { // 方位が合ってきたら累積値を0にする
+int total2zero(double *this_d, int i) {
+  if ((fabs(*this_d) < 15) || i % 30 == 0) { // 方位が合ってきたら累積値を0にする
     xbee_uart( dev, "(PID) TOTAL ---> 0.0\r");
     *this_d = 0.0;
     return 1;
