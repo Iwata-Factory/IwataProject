@@ -61,7 +61,7 @@ int status5_2(ROVER *rover) {
 
     delay(50);
 
-  } while (10 < rover->distance); // とりあえず今はこれで
+  } while ((rover->distance < 0) || (10 < rover->distance)); // 10m以内に入ったらループを抜ける
 
   xbee_uart( dev, "(PID) END\r");
 
