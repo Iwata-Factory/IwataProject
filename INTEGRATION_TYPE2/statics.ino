@@ -232,18 +232,39 @@ double vector2d_inner(Vector2D v1, Vector2D v2) {
 */
 double get_distance(GPS* gps, POINT* point) {
   double distance = 0;
-  //一応方角も出せるようにしておきました
   distance = sqrt(pow(point->longitude - gps->longitude, 2) + pow(point->latitude - gps->latitude, 2)) * 99096.44, 0;
 
   return distance;
 }
 
 /*
+   緯度経度から指定した地点までの距離を測定する（hyubeniの公式を使用）
+*/
+double get_distance_by_hyubeni(GPS* gps, POINT* point) {
+
+  // WGS84 (GPS)より
+  double A = 6378137.000;  // 長半径
+  double B = 6356752.314245;  // 短半径
+  double E2 = 0.00669437999019758;  // 第一離心率のべき乗
+
+  double d_lat = point->latitude - gps->latitude ;  // 二地点の緯度の差
+  double d_lng = point->longitude - gps->longitude;  // 経度の差
+  double ave_lat = deg2rad((point->latitude + gps->latitude)/2);  // 緯度の平均 (ラジアンで)
+   // 公式を適用
+  double w = sqrt(1 - E2 * pow((sin(ave_lat)), 2));
+  double m = (A * (1 - E2))/pow(w, 3);
+  double n = A/w;
+  double distance = sqrt(pow((d_lat * m), 2) + pow(d_lng * n * cos(ave_lat), 2)); 
+
+  return distance;
+}
+
+
+/*
    緯度経度から指定した地点までの方角を測定する
 */
 double get_direction(GPS* gps, POINT* point) {
   double direct = 0;
-  //一応方角も出せるようにしておきました
   direct = (int)(atan2((point->longitude - gps->longitude) * 1.23, (point->latitude - gps->latitude)) * 57.3 + 360) % 360;
 
   return direct;
