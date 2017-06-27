@@ -240,7 +240,7 @@ double get_distance(GPS* gps, POINT* point) {
 /*
    緯度経度から指定した地点までの距離を測定する（hyubeniの公式を使用）
 */
-double get_distance_by_hyubeni(GPS* gps, POINT* point) {
+double get_distance_by_sphere(GPS* gps, POINT* point) {
 
   // WGS84 (GPS)より
   double A = 6378137.000;  // 長半径
@@ -269,4 +269,25 @@ double get_direction(GPS* gps, POINT* point) {
 
   return direct;
 }
+
+/*
+   緯度経度から指定した地点までの方角を測定する(球面三角法)
+*/
+double get_direction_by_sphere(GPS* gps, POINT* point) {
+
+  double y = cos(deg2rad(point->latitude)) * sin(deg2rad(point->longitude - gps->longitude));
+  double x1 = cos(deg2rad(gps->latitude)) * sin(deg2rad(point->latitude));
+  double x2 = sin(deg2rad(gps->latitude)) * cos(deg2rad(point->latitude)) * cos(deg2rad(point->longitude - gps->longitude));
+  double x = x1 - x2;
+  double direct = rad2deg(atan2(y, x));  // 逆正接を計算
+
+  //0~360に直す
+  if (direct < 0) {
+    direct = direct + 360.0;
+  } else {
+    ;
+  }
+  return direct;
+}
+
 
