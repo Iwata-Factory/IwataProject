@@ -102,11 +102,11 @@ int get_motor_control(DRIVE *pid_drive, double control_amount) {
 }
 
 
-// 偏差が小さい時は偏差の累積値を0にする関数
-int total2zero(double *this_d, int i) {
-  if ((fabs(*this_d) < 15) || i % 30 == 0) { // 方位が合ってきたら累積値を0にする
+// 偏差が小さい時もしくは入力切り替え30回ごとに偏差の累積値を0にする関数
+int total2zero(double *total_devision, int i) {
+  if ((fabs(*total_devision) < 15) || i % 30 == 0) { // 方位が合ってきたら累積値を0にする
     xbee_uart( dev, "(PID) TOTAL ---> 0.0\r");
-    *this_d = 0.0;
+    *total_devision = 0.0;
     return 1;
   } else {
     return 0;
@@ -118,6 +118,11 @@ int total2zero(double *this_d, int i) {
 // PIDでの偏差を記録していく
 /*実験用の関数であとで消しますbyとうま*/
 int write_devision_sd(double devision, int flag) {
+
+  if (SD_LOG_FLAG == 0){  // スキップ
+    return 0;
+  }
+
   int i = 0; // 試行回数記録用
   while (i < 5) { // 5回SDカードを開けなかったら諦める
     File dataFile = SD.open("devlog.txt", FILE_WRITE);

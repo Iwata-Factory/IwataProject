@@ -35,6 +35,7 @@ void setup() {
   EEPROM.write( EEP_CENSOR_STATUS, 0xff);  //eepのflag類の初期化
 
   //SD関連
+  if (SD_LOG_FLAG == 1){
   pinMode(SS, OUTPUT);
   int sd_ok_counter = 0;
   while (1) {
@@ -53,6 +54,7 @@ void setup() {
       break;
     }
   }
+}
 
   //照度センサ用のピン
   pinMode(LIGHT_PIN, INPUT);

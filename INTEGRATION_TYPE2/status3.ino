@@ -25,25 +25,31 @@ int status3(ROVER *rover) {  // Status3 降下の関数(着陸判定を行う)
       case 1:
         landing_flag = judge_landing_by_gps();  // GPS1による着陸判定
         xbee_uart( dev, "end judge_landing_by_gps\r");
-        delay(30000);
+        // delay(30000);  // 本番では多めにdelay取った方がいいかも？
+        delay(3000);
         break;
 
       case 2:  /* GPS1と2の振る舞いの違いを実装する必要がありますね by とうま*/
         landing_flag = judge_landing_by_gps();  // GPS2による着陸判定
         xbee_uart( dev, "end judge_landing_by_gps\r");
-        delay(30000);
+        // delay(30000);
+        delay(3000);
+
         break;
 
       case 3:
         landing_flag = judge_landing_by_ac();
         xbee_uart( dev, "end judge_landing_by_ac\r");  // 加速度センサによる着陸判定
-        delay(30000);
+        // delay(30000);
+        delay(3000);
+
         break;
 
       case 4:  // 着陸判定にかかるセンサ系の死亡
         xbee_uart( dev, "sensor death ---> wait\r");
         delay(60000);  // 1分待つ
         // ここで治ったか判定する関数を回します。//
+        check_realive();
         break;
     }
   } while (landing_flag == 0);
@@ -79,6 +85,11 @@ int judge_landing_by_gps() {
 
   xbee_uart( dev, "call judge_landing_by_gps\r");
 
+  if (LAND_JUDGE_FLAG == 0){
+    xbee_uart( dev, "skip judge_landing_by_gps\r");
+    return 1;
+  }
+
 
   double alt = 100;
   gps_get_al(&alt);  // 高度を一旦取得
@@ -94,7 +105,6 @@ int judge_landing_by_gps() {
 int judge_landing_by_gps_detail() {
 
   xbee_uart( dev, "call judge_landing_by_gps_detail\r");
-
 
   double alt_array[10] = {0.0};
   double alt_dif = 0.0;
@@ -121,6 +131,11 @@ int judge_landing_by_gps_detail() {
 int judge_landing_by_ac() {
 
   xbee_uart( dev, "call judge_landing_by_ac\r");
+
+  if (LAND_JUDGE_FLAG == 0){
+    xbee_uart( dev, "skip judge_landing_by_ac\r");
+    return 1;
+  }
 
   AC ac; // 宣言
 
@@ -158,5 +173,15 @@ int judge_landing_by_ac() {
     xbee_uart( dev, "false determine_landing\r");
     return 0;
   }
+}
+
+// センサーの生死というか、復活を判定(現在実体なし)
+int check_realive(){
+  xbee_uart( dev, "call check_realive\r");
+  if (LAND_JUDGE_FLAG == 0){
+    xbee_uart( dev, "skip check_realive\r");
+  return 1;
+  }
+  return 0;
 }
 

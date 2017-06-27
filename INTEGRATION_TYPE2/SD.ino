@@ -8,13 +8,18 @@
 
   記録系:write
 
-  読み取る系:read
+  読み取る系:read(使っていない)
 */
 
 /*
    SDに時間を保存
 */
 int write_timelog_sd(ROVER *rover) {
+
+  if (SD_LOG_FLAG == 0){  // スキップ
+    return 0;
+  }
+
   xbee_uart(dev, "call write_timelog_sd\r" );
   rover->time_from_start = millis();  // 機体時間を取得
   int i = 0; // 試行回数記録用
@@ -41,6 +46,11 @@ int write_timelog_sd(ROVER *rover) {
 
 // 加速度を記録
 int write_ac_sd(AC ac) {
+
+  if (SD_LOG_FLAG == 0) {  // スキップ
+    return 0;
+  }
+
   xbee_uart(dev, "call write_ac_s\r" );
   int i = 0; // 試行回数記録用
   while (i < 30) { // 30回SDカードを開けなかったら諦める
@@ -65,6 +75,11 @@ int write_ac_sd(AC ac) {
 
 // 地磁気を記録
 int write_tm_sd(TM tm) {
+
+  if (SD_LOG_FLAG == 0){  // スキップ
+    return 0;
+  }
+
   xbee_uart(dev, "call write_tm_sd\r" );
   int i = 0; // 試行回数記録用
   while (i < 30) { // 30回SDカードを開けなかったら諦める
@@ -87,7 +102,12 @@ int write_tm_sd(TM tm) {
 }
 
 // GPSを記録
-int write_gps_sd(GPS gps) {  // criticalな処理を記述したい場合はフラグを立てて下さい
+int write_gps_sd(GPS gps) { 
+
+  if (SD_LOG_FLAG == 0){  // スキップ
+    return 0;
+  }
+
   xbee_uart(dev, "call write_gps_sd\r" );
   int i = 0; // 試行回数記録用
   while (i < 30) { // 30回SDカードを開けなかったら諦める
