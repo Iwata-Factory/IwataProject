@@ -56,6 +56,8 @@ void setup() {
   }
 }
 
+  write_critical_sd(0);
+
   //照度センサ用のピン
   pinMode(LIGHT_PIN, INPUT);
   //距離センサ用のピン
@@ -144,6 +146,7 @@ void loop() {
         if (status3(&rover) == 1) {
           trans_phase(rover.status_number);
           rover.status_number += 1;
+          write_critical_sd(1);  // 着陸終了
           break;
         } else {
           break;
@@ -193,6 +196,7 @@ void loop() {
         if (status6(&rover) == 1) {
           trans_phase(rover.status_number);
           rover.status_number += 1;
+          write_critical_sd(2);  // 制御終了
           break;
         } else {
           break;

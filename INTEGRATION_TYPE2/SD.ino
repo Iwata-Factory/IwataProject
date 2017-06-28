@@ -136,6 +136,76 @@ int write_gps_sd(GPS gps) {
   return 0; // 失敗を返す
 }
 
+// クリティカルなログを記録
+int write_critical_sd(int flag) { 
+
+  if (SD_LOG_FLAG == 0){  // スキップ
+    return 0;
+  }
+
+  unsigned long time = millis();  // 機体時間を取得
+  GPS gps;
+
+  if (flag != 0) {  // セットアップ時以外はGPSを取る
+    gps_get(&gps);
+  }
+
+  xbee_uart(dev, "call write_critical_sd\r" );
+  int i = 0; // 試行回数記録用
+  while (i < 30) { // 30回SDカードを開けなかったら諦める
+
+    File dataFile = SD.open(LOG_CRITICAL, FILE_WRITE);
+
+    if (dataFile) { // ファイルが開けたときの処理
+      dataFile.seek(dataFile.size());
+
+      switch (flag) {
+
+      case 0:  // セットアップ時
+      dataFile.println("**end_setup**"); 
+      dataFile.println("arduino-time");
+      dataFile.println(time);
+
+      case 1:
+      dataFile.println("**landing**"); // 記録開始
+      dataFile.println("arduino-time");
+      dataFile.println(time);
+      dataFile.println("utc");
+      dataFile.println(gps.utc, 4);  // 下4桁
+      dataFile.println("lat");
+      dataFile.println(gps.latitude, 4);
+      dataFile.println("lng");
+      dataFile.println(gps.longitude, 4);
+      dataFile.println("distance");
+      dataFile.println(gps.distance, 4);
+
+      case 2:
+      dataFile.println("**end**"); // 記録開始
+      dataFile.println("arduino-time");
+      dataFile.println(time);
+      dataFile.println("utc");
+      dataFile.println(gps.utc, 4);  // 下4桁
+      dataFile.println("lat");
+      dataFile.println(gps.latitude, 4);
+      dataFile.println("lng");
+      dataFile.println(gps.longitude, 4);
+      dataFile.println("distance");
+      dataFile.println(gps.distance, 4);
+
+    }
+
+    dataFile.close();
+    xbee_uart(dev, "succes write_critical_sd\r" );
+      return 1; // 成功を返す
+    } else {
+      i += 1;
+    }
+  }
+  xbee_uart(dev, "false write_critical_sd\r" );
+  return 0; // 失敗を返す
+}
+
+
 
 // 加速度を読み取る
 // 第一引数:値を入れる構造体の配列
