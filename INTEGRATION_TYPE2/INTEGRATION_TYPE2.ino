@@ -59,7 +59,6 @@ void setup() {
   pinMode(DISTANCE, INPUT);
   //サーボモーター用のピン
   servo1.attach(26);
-  xbee_uart( dev, "setup done\rchange to main phase\r");
 
   // モーター用ピンの設定
   pinMode(M1_1, OUTPUT);
@@ -82,8 +81,7 @@ void setup() {
 
   xbee_uart(dev, "test print\rgreeting pi and SERIAL_BAUDRATE\r");  // ５４文字までしか送れないうことが判明
   xbprintf("Hello!!");
-  xbprintf("%lf",pi);  // double型を送ることができていない、、
-  xbprintf("%d", int(pi));
+  xbprintf("%5.6lf",pi);  // double型を送ることができていない、、
   
   dtostrf(pi,8,6, xbee_send );  // 文字列に変換
   xbprintf("%s", xbee_send);
@@ -91,6 +89,7 @@ void setup() {
   xbprintf("%d",SERIAL_BAUDRATE);
   xbprintf("lined: %s,%lf,%d\r","Hello", pi, SERIAL_BAUDRATE);
 
+  xbee_uart( dev, "setup done\rchange to main phase\r");
 }
 
 
