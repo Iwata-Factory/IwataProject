@@ -270,7 +270,7 @@ double get_distance_by_sphere(GPS* gps, POINT* point) {
 
 
 // get_directionとget_direction_by_sphereの呼び出し元
-double direct_get(GPS* gps, POINT* point) {
+double direction_get(GPS* gps, POINT* point) {
   if (SPHERE_FLAG == 0) {
     return get_direction(gps, point);
   } else {

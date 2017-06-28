@@ -854,7 +854,7 @@ int escape_danger_area(GPS *gps, POINT *point) {
 
   xbee_uart( dev, "call escape_danger_area\r");
 
-  double escape_direction = get_direction(gps, point) + 180.0;  // 危険エリアの中心とは真逆の角度を指定
+  double escape_direction = direction_get(gps, point) + 180.0;  // 危険エリアの中心とは真逆の角度を指定
   double escape_my_direction = get_my_direction();  // 自身の角度を取得
   double danger_distance = 0.0;
   int escape_count = 0;
@@ -993,8 +993,7 @@ int no_x_bee(byte a, char b) { // xbeeを潰す関数
 
 
 /*
-   スピーカーになります
-   tone(ピン番号, 音の周波数, 音の長さ)
+   スピーカーになります.tone_(ピン番号, 音の周波数, 音の長さ)
 */
 void speaker(int TONE) {
   tone(TONE_PINNO, TONE, BEAT_LONG);
