@@ -12,7 +12,7 @@ int status5(ROVER *rover) {
 
   do {
 
-    if (correct_posture() == 1) {
+    if (correct_posture() == 1) {  // 判定修正
       ;
     } else {
       ;
@@ -22,7 +22,7 @@ int status5(ROVER *rover) {
       tm_calibration();  // 条件が揃ったらキャリブレーション
     }
 
-    if (4 <= i) {  // 4回目からは危険エリアチェック
+    if (5 <= i) {  // 5回目からは危険エリアチェック
       check_danger_area();
     }
 
@@ -46,26 +46,26 @@ int status5(ROVER *rover) {
     // xbee_send_1double(rover->Target_Direction);
 
 
-
-
     // スタック判定
     if (i == 0) {  // last_distanceの初期値を生成
       last_distance  = gps.distance;
     } else {
-      delay(3000);
       if (fabs(gps.distance - last_distance) < 2.0) {  //Trueでスタック
         stack_check_state(rover);
-        delay(3000);
-        last_distance = gps.distance;
+        continue;
       } else {
-        last_distance = gps.distance;
+        last_distance = gps.distance; // スタックで無かった時はlast_distanceを更新
       }
+    }
+
+    if (last_distance < 1.5) {  // status6へ
+      break;
     }
 
     write_gps_sd(gps);
     write_timelog_sd(rover);
 
-    if (0 <= rover->distance && rover->distance < 5) { // 5mまで来たら地上2へ
+    if (0 <= rover->distance && rover->distance < 10) { // 10mまで来たら地上2へ
       xbee_uart( dev, "near goal\r");
       return 1;
     }
@@ -75,9 +75,8 @@ int status5(ROVER *rover) {
     if (10 < last_distance) {
       go_straight(6000); // 6秒直進
     } else {
-      go_straight(3000); // 3秒直進
+      go_straight(1000); // 3秒直進
     }
-
 
     speaker(E_TONE);
     speaker(F_TONE);
@@ -86,5 +85,8 @@ int status5(ROVER *rover) {
     i += 1;
 
   } while (1);
+
+  return 1;
+
 }
 

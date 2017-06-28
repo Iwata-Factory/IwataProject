@@ -130,7 +130,7 @@ void go_back(int go_time) {
     go.leght1 = i;
     go.leght2 = 0;
     rover_analog(go);
-    delay(2);
+    delay(1);
   }
   go.right1 = 1;
   go.right2 = 0;
@@ -186,6 +186,27 @@ void brake() {
     delay(7);
   }
 }
+
+/*-----------ブレーキをかける--------------------
+  ------------------------------------------*/
+void go_suddenly_brake(int times) {
+  DRIVE go; //DRIVE型の宣言
+  // 初期化
+  go.right1 = 0;
+  go.right2 = 1;
+  go.leght1 = 0;
+  go.leght2 = 1;
+  rover_degital(go);
+  delay(times);
+  go.right1 = 0;
+  go.right2 = 0;
+  go.leght1 = 0;
+  go.leght2 = 0;
+  rover_degital(go);
+
+}
+
+
 
 
 

@@ -702,7 +702,7 @@ int correct_posture() {
       xbee_uart( dev, "success correct_posture\r");
       return 1;  // 問題なし
     } else {
-      go_straight(5000);
+      go_suddenly_brake(3000);  // 急発進急停止
     }
   }
   xbee_uart( dev, "failed correct_posture\r");
@@ -731,7 +731,7 @@ int judge_invered() {
   double ac_z_ave =  value_ave(10, z);
 
   if (ac_z_ave < -1.0) {  // この式が真なら反転している。
-    xbee_uart( dev, "revive ---> go straighr\r");
+    xbee_uart( dev, "revive ---> go_suddenly_brake \r");
     return 0;
   } else {
     xbee_uart( dev, "success judge_invered_revive\r");
@@ -746,6 +746,7 @@ int judge_invered() {
    0:引数おかしい
   ------------------------------------------*/
 
+
 int set_danger_area() {
 
   xbee_uart( dev, "call set_danger_area\r");
@@ -754,17 +755,37 @@ int set_danger_area() {
   GPS danger_gps;
   gps_get(&danger_gps);
 
-  for (int i = 0; i < 10; i++) {
-    if ((danger_area_points[i].latitude == -1.0 && danger_area_points[i].longitude == -1.0)) {
-      danger_area_points[i].latitude = danger_gps.latitude;
-      danger_area_points[i].longitude = danger_gps.longitude;
-      xbee_uart( dev, "success set_danger_area\r");
-      return 1;  // 登録完了
+  for (int i = 9; i  > 1; i--) {  // リングバッファ
+      danger_area_points[i].latitude = danger_area_points[i-1].latitude;
+      danger_area_points[i].longitude = danger_area_points[i-1].longitude;
     }
-  }
+
+  danger_area_points[0].latitude = danger_gps.latitude;
+  danger_area_points[0].longitude = danger_gps.longitude;
+  
   xbee_uart( dev, "false set_danger_area\r");
   return 0;  // 登録が10箇所埋まっている
 }
+
+// int set_danger_area() {
+
+//   xbee_uart( dev, "call set_danger_area\r");
+
+//   /* GPSとれなかったら死ぬからそのままでも良いけどgps_getの無限ループは避けたいbyとうま */
+//   GPS danger_gps;
+//   gps_get(&danger_gps);
+
+//   for (int i = 0; i < 9; i++) {
+//     if ((danger_area_points[i].latitude == -1.0 && danger_area_points[i].longitude == -1.0)) {
+//       danger_area_points[i].latitude = danger_gps.latitude;
+//       danger_area_points[i].longitude = danger_gps.longitude;
+//       xbee_uart( dev, "success set_danger_area\r");
+//       return 1;  // 登録完了
+//     }
+//   }
+//   xbee_uart( dev, "false set_danger_area\r");
+//   return 0;  // 登録が10箇所埋まっている
+// }
 
 
 /*-----------check_danger_area()--------------------
@@ -823,7 +844,7 @@ int check_danger_area() {
 
 
 /*-----------escape_danger_area()--------------------
-   引数の周囲10mを立ち入り禁止エリアに
+   立ち入り禁止エリアから逃げる
    戻り値
    1:成功
    0:失敗
@@ -878,7 +899,7 @@ int stack_check_state(ROVER *rover) {
 
   GPS gps_scs;
   POINT point_scs;
-  get_rover_point(&point_scs);  // 位置を記録
+  get_rover_point(&point_scs);  // GPSで位置を記録
 
   go_straight(10000);  // とりあえず10秒進んで見る
   gps_get(&gps_scs);  // GPS位置を取得
@@ -911,6 +932,7 @@ int choose_behavior(ROVER *rover, int go_straight_flag, int rotate_flag) {
   if (go_straight_flag == 1) {  // 問題なし
     return 1;
   } else if ((go_straight_flag = 0) && (rotate_flag = 1)) {  // 回転は出来るが進めない(恐らく轍の中にいる)
+    set_danger_area();  // 危険エリアにしておく
     return escape_from_wadachi(rover);
   } else {   // 死亡(ランダムにする？)
     return 0;
@@ -940,12 +962,13 @@ int escape_from_wadachi(ROVER *rover) {
     gps_get(&gps_efw);  // GPSを取得
 
     if (get_distance(&gps_efw, &point_efw) < 5) {
-      go_back(4000);  // 少し下がる
+      go_back(2000);  // 少し下がる
       rover->My_Direction = get_my_direction();
-      turn_flag = turn_target_direction(rover->My_Direction + 120, &rover->My_Direction, try_counter);  // 120度回転
+      turn_flag = turn_target_direction(rover->My_Direction + 120, &rover->My_Direction, 0);  // 120度回転 こっちの方がいいと思うbyとうま
+    // turn_flag = turn_target_direction(rover->My_Direction + 120, &rover->My_Direction, try_counter);  // 120度回転
       go_straight(5000);
       rover->My_Direction = get_my_direction();
-      turn_target_direction(rover->My_Direction - 100, &rover->My_Direction, turn_flag);
+      turn_target_direction(rover->My_Direction - 120, &rover->My_Direction, turn_flag);
     } else {
       ;  // 何もしない
     }
@@ -957,7 +980,7 @@ int escape_from_wadachi(ROVER *rover) {
       return 0;
     }
 
-  } while (15 < get_distance(&gps_efw, &point_efw));
+  } while (8 < get_distance(&gps_efw, &point_efw));
   xbee_uart(dev, "success escape_from_wadachi\r");
   return 1;
 }
