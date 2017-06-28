@@ -16,12 +16,12 @@
 #define XBEE_SWITCH 1  // 0にするとxbeeを全て無視します(今は動作不安定っぽい)
 
 
-#define GROUND1_FLAG 1  //ゴーアンドストップなら0,PIDなら1にしてね
-#define LAND_JUDGE_FLAG 1 // 着陸判定を行うならば1、飛ばすなら0
-#define CALIBRATION_FLAG 1 // キャリブレーションを行うなら1、しないなら0
-#define STACK_ESCAPE_FLAG 1 // スタック関連の処理を行うならば1、行わないならば0
-#define DANGER_AREA_FRAG 1 //危険エリア脱出処理を行うならば1、行わないならば0
-#define SD_LOG_FLAG 1  // SDに書き込みを行うなら1、行わないなら0
-
+#define GROUND1_FLAG 1  //ゴーアンドストップなら0.PIDなら1.
+#define LAND_JUDGE_FLAG 1 // 着陸判定を行うならば1.飛ばすなら0.
+#define CALIBRATION_FLAG 1 // キャリブレーションを行うなら1.しないなら0.
+#define STACK_ESCAPE_FLAG 1 // スタック関連の処理を行うならば1.行わないならば0.
+#define DANGER_AREA_FRAG 1 //危険エリア脱出処理を行うならば1.行わないならば0.
+#define SD_LOG_FLAG 1  // SDに書き込みを行うなら1.行わないなら0.
+#define SPHERE_FLAG 0  // 1で球面三角法を用いる.0では平面として処理.
 
 #endif

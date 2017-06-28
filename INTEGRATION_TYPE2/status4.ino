@@ -29,7 +29,7 @@ int status4(ROVER *rover) {  // Status4 着陸の関数
     //本当は真っ直ぐ進みたい
     go_straight(10000);   //オフセットの式設定できたら、方向決めて直進できるようなやつに変えてください
     gps_get(&gps);
-    lc_difference = get_distance(&gps, &landing_point);
+    lc_difference = distance_get(&gps, &landing_point);
     delay( 500 );
     escape_counter += 1;
   } while ((0 < lc_difference && lc_difference < 10) || escape_counter == 5);

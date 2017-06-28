@@ -6,7 +6,7 @@
 #define GOAL_LONGITUDE 139.770160
 
 // 海抜制限
-#define ALT_REGULATION 15.0
+#define ALT_REGULATION 30
 
 
 //SD関連

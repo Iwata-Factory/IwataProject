@@ -813,7 +813,7 @@ int check_danger_area() {
 
     if (!(danger_area_points[i].latitude == -1.0 && danger_area_points[i].longitude == -1.0)) {
       // 禁止エリアまでの距離算出
-      double danger_distance = get_distance(&check_gps, &danger_area_points[i]);
+      double danger_distance = distance_get(&check_gps, &danger_area_points[i]);
 
       if (danger_distance < 7) {  // 7m以内に居たらやばい
 
@@ -863,7 +863,7 @@ int escape_danger_area(GPS *gps, POINT *point) {
 
     int turn_result = turn_target_direction(escape_direction, &escape_my_direction, 0);  //危険エリアの真逆を向く
     go_straight(4000);  // 4秒直進
-    danger_distance = get_distance(gps, point);  //再度距離を取る
+    danger_distance = distance_get(gps, point);  //再度距離を取る
 
     escape_count += 1;
 
@@ -904,7 +904,7 @@ int stack_check_state(ROVER *rover) {
   go_straight(10000);  // とりあえず10秒進んで見る
   gps_get(&gps_scs);  // GPS位置を取得
 
-  if (get_distance(&gps_scs, &point_scs) < 3) {
+  if (distance_get(&gps_scs, &point_scs) < 3) {
     go_straight_flag = 0;
   } else {
     go_straight_flag = 1;
@@ -961,7 +961,7 @@ int escape_from_wadachi(ROVER *rover) {
     go_straight(10000);  // 10秒進む
     gps_get(&gps_efw);  // GPSを取得
 
-    if (get_distance(&gps_efw, &point_efw) < 5) {
+    if (distance_get(&gps_efw, &point_efw) < 5) {
       go_back(2000);  // 少し下がる
       rover->My_Direction = get_my_direction();
       turn_flag = turn_target_direction(rover->My_Direction + 120, &rover->My_Direction, 0);  // 120度回転 こっちの方がいいと思うbyとうま
@@ -980,7 +980,7 @@ int escape_from_wadachi(ROVER *rover) {
       return 0;
     }
 
-  } while (8 < get_distance(&gps_efw, &point_efw));
+  } while (8 < distance_get(&gps_efw, &point_efw));
   xbee_uart(dev, "success escape_from_wadachi\r");
   return 1;
 }

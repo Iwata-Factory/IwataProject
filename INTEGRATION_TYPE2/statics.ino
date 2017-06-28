@@ -226,6 +226,15 @@ double vector2d_inner(Vector2D v1, Vector2D v2) {
   return inner_product;
 }
 
+// get_distanceとget_distance_by_sphereの呼び出し元
+double distance_get(GPS* gps, POINT* point){
+  if (SPHERE_FLAG == 0) {
+    return get_distance(gps, point);
+  } else {
+    return get_distance_by_sphere(gps, point);
+  }
+}
+
 
 /*
    緯度経度から指定した地点までの距離を測定する
@@ -259,6 +268,15 @@ double get_distance_by_sphere(GPS* gps, POINT* point) {
   return distance;
 }
 
+
+// get_directionとget_direction_by_sphereの呼び出し元
+double direct_get(GPS* gps, POINT* point) {
+  if (SPHERE_FLAG == 0) {
+    return get_direction(gps, point);
+  } else {
+    return get_direction_by_sphere(gps, point);
+  }
+}
 
 /*
    緯度経度から指定した地点までの方角を測定する
