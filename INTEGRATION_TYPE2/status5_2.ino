@@ -12,7 +12,7 @@ int status5_2(ROVER *rover) {
   GPS gps;
   DRIVE pid;  // DRIVEの初期化
 
-  tm_calibration();  // キャリブレーションの実施
+  tm_calibration();  // キャリブレーションの実施(とりあえず最初だけ)
 
   double this_my_direction = 0.0;  // 今回の自分の方位
   double this_devision = 0.0;  // 偏差
@@ -26,6 +26,8 @@ int status5_2(ROVER *rover) {
 
   // 実験用に区切り文字を書き込む
   write_devision_sd(0.0, 1);
+
+  double last_distance = -1; //スタック判定用
 
   do {
 
@@ -41,6 +43,17 @@ int status5_2(ROVER *rover) {
       rover->distance = gps.distance;  // ターゲットまでの距離
       write_gps_sd(gps);  // 自身の位置をsdに記録
 
+      if (i == 0) {
+        last_distance = rover->distance;  // 前回距離を生成
+      } else {
+        xbee_uart( dev, "check stack\r");
+        if (fabs(rover->distance - last_distance) < 7 && (0 < last_distance)) {
+             stack_check_state(rover);
+            continue;
+        } else {
+            last_distance = rover->distance; // スタックで無かった時はlast_distanceを更新
+        }
+      }
     }
 
     write_timelog_sd(rover);
@@ -59,13 +72,56 @@ int status5_2(ROVER *rover) {
 
     total_devision += this_devision;  // 偏差を足していく
 
-    delay(50);
+    delay(30);
 
-  } while ((rover->distance < 0) || (10 < rover->distance)); // 10m以内に入ったらループを抜ける
+    speaker(E_TONE);
+    speaker(F_TONE);
+    speaker(G_TONE);
+
+
+  } while ((rover->distance < 0) || (12 < rover->distance)); // 12m以内に入ったらループを抜ける(status5-2後半へ)
 
   xbee_uart( dev, "(PID) END\r");
 
   brake();  // 止まる
+
+  speaker(E_TONE);  // 音鳴らしておく
+  speaker(F_TONE);
+  speaker(G_TONE);
+  speaker(E_TONE);
+  speaker(F_TONE);
+
+  xbee_uart( dev, "5_2 NORMAL START\r");
+
+  // ここからはstatus5と同じシーケンスで
+  int j = 0; 
+  do {
+
+        // GPS情報を取得
+
+    gps_get(&gps);
+    // GPSが取得した値を自身のステータスに反映する。
+    rover->latitude = gps.latitude;  // 緯度
+    rover->longitude = gps.longitude;  //経度
+    rover->Target_Direction = gps.Direction;  //ターゲットの方向
+    rover->distance = gps.distance;  // ターゲットまでの距離
+
+    if ((0 < rover->distance) && (rover->distance) < 3) {  // status6へ
+      break;
+    }
+
+    write_gps_sd(gps);
+    write_timelog_sd(rover);
+    turn_target_direction(rover->Target_Direction, &rover->My_Direction, 0);
+    go_straight(1500); // 1.5秒直進
+
+    speaker(E_TONE);
+    speaker(F_TONE);
+    speaker(G_TONE);
+
+    j += 1;
+
+  } while(1);
 
   return 1;
 
@@ -141,3 +197,7 @@ int write_devision_sd(double devision, int flag) {
   }
   return 0; // 失敗を返す
 }
+
+
+
+
