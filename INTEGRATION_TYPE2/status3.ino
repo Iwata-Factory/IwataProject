@@ -64,12 +64,12 @@ int status3(ROVER *rover) {  // Status3 降下の関数(着陸判定を行う)
 
 // 着陸判定をどのセンサで行うのかを定める関数
 int get_switch(ROVER *rover) {
-  if (rover->gps1_arive == 1) {  // GPS1機目
-    return 1;
-  } else if (rover->gps2_arive == 1) {  // GPS2機目
-    return 2;
-  } else if (rover->ac_arive == 1) { // 加速度
+  if (rover->ac_arive == 1) {  // 加速度
     return 3;
+  } else if (rover->gps1_arive == 1) {  // GPS1
+    return 1;
+  } else if (rover->gps2_arive == 1) { // GPS2
+    return 2;
   } else {
     return 4;  // 詰み(センサ回復を待ちつつ時間で抜ける)
   }
@@ -111,10 +111,10 @@ int judge_landing_by_gps_detail() {
 
   for (int i = 0; i < 10; i++) {
     gps_get_al(&alt_array[i]);
-    xbee_send_1double(alt_array[i]);  // ここでバグるかもしれない（動作確認まだ）なので注意
+//    xbee_send_1double(alt_array[i]);  // ここでバグるかもしれない（動作確認まだ）なので注意
     delay(1000);
 
-    if ((0 < i) && ( 3 < (alt_array[i] - alt_array[i - 1]))) {
+    if ((0 < i) && ( 3 < (alt_array[i - 1] - alt_array[i]))) {  // 前回-今回
       return 0;  // まだ降下中である。
     }
   }

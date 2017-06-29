@@ -13,9 +13,9 @@ int status5(ROVER *rover) {
   do {
 
     if (correct_posture() == 1) {  // 判定修正
-      ;
+      delay(10);
     } else {
-      ;
+      delay(10);
     }
 
     if (i % 30 == 0) { // たまにキャリブレーションする
@@ -29,21 +29,13 @@ int status5(ROVER *rover) {
     // GPS情報を取得
     GPS gps;
     gps_get(&gps);
+
     // GPSが取得した値を自身のステータスに反映する。
     rover->latitude = gps.latitude;  // 緯度
     rover->longitude = gps.longitude;  //経度
     rover->Target_Direction = gps.Direction;  //ターゲットの方向
     rover->distance = gps.distance;  // ターゲットまでの距離
 
-    // xbee_printf が問題なければ後で消します
-    // xbee_uart( dev, "Latitude");
-    // xbee_send_1double(rover->latitude);
-    // xbee_uart( dev, "Longitude");
-    // xbee_send_1double(rover->longitude);
-    // xbee_uart( dev, "Distance");
-    // xbee_send_1double(rover->distance);
-    // xbee_uart( dev, "Direction");
-    // xbee_send_1double(rover->Target_Direction);
 
 
     // スタック判定
@@ -51,8 +43,10 @@ int status5(ROVER *rover) {
       last_distance  = rover->distance;
     } else {
       if ((fabs(rover->distance - last_distance) < 2.0) && (0 < last_distance)) {  //Trueでスタック
-        stack_check_state(rover);
-        continue;
+        double scs_result = stack_check_state(rover);
+        if (scs_result != 1) {
+          continue;
+        }
       } else {
         last_distance = rover->distance; // スタックで無かった時はlast_distanceを更新
       }
@@ -68,8 +62,11 @@ int status5(ROVER *rover) {
 
     // 目的の方向を目指して回転を行う。rover->My_Directionは書き換えていく。
     turn_target_direction(rover->Target_Direction, &rover->My_Direction, 0);
+
     if (10 < rover->distance) {
-      go_straight(6000); // 6秒直進
+      //      go_straight(6000); // 6秒直進
+      go_straight(3000); // 3秒直進(for実験
+
     } else {
       go_straight(1500); // 1.5秒直進
     }

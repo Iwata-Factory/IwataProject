@@ -2,11 +2,14 @@
 #define __DEFINE_H__
 
 // 定数の定義
-#define GOAL_LATITUDE 35.756432
-#define GOAL_LONGITUDE 139.770160
+//ゴール(工房横
+#define GOAL_LATITUDE 35.71519224822083
+#define GOAL_LONGITUDE 139.7592558245716
+
+
 
 // 海抜制限
-#define ALT_REGULATION 30
+#define ALT_REGULATION 100
 
 
 //SD関連

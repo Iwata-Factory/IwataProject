@@ -117,13 +117,13 @@ int write_gps_sd(GPS gps) {
     if (dataFile) { // ファイルが開けたときの処理
       dataFile.seek(dataFile.size());
       dataFile.println("*"); // 記録の境目
-      dataFile.println(gps.utc, 4);  // 下4桁
-      dataFile.println(gps.latitude, 4);
-      dataFile.println(gps.longitude, 4);
+      dataFile.println(gps.utc, 4);  // 下6桁
+      dataFile.println(gps.latitude, 6);
+      dataFile.println(gps.longitude, 6);
       dataFile.println(gps.Speed, 4);
       dataFile.println(gps.course, 4);
-      dataFile.println(gps.Direction, 4);
-      dataFile.println(gps.distance, 4);
+      dataFile.println(gps.Direction, 6);
+      dataFile.println(gps.distance, 6);
 
       dataFile.close();
       xbee_uart(dev, "succes write_gps_sd\r" );
@@ -173,11 +173,11 @@ int write_critical_sd(int flag) {
       dataFile.println("utc");
       dataFile.println(gps.utc, 4);  // 下4桁
       dataFile.println("lat");
-      dataFile.println(gps.latitude, 4);
+      dataFile.println(gps.latitude, 6);
       dataFile.println("lng");
-      dataFile.println(gps.longitude, 4);
+      dataFile.println(gps.longitude, 6);
       dataFile.println("distance");
-      dataFile.println(gps.distance, 4);
+      dataFile.println(gps.distance, 6);
 
       case 2:
       dataFile.println("**end**"); // 記録開始
@@ -186,11 +186,11 @@ int write_critical_sd(int flag) {
       dataFile.println("utc");
       dataFile.println(gps.utc, 4);  // 下4桁
       dataFile.println("lat");
-      dataFile.println(gps.latitude, 4);
+      dataFile.println(gps.latitude, 6);
       dataFile.println("lng");
-      dataFile.println(gps.longitude, 4);
+      dataFile.println(gps.longitude, 6);
       dataFile.println("distance");
-      dataFile.println(gps.distance, 4);
+      dataFile.println(gps.distance, 6);
 
     }
 

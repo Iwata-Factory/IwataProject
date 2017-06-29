@@ -155,13 +155,39 @@ int gps_data_get(GPS* gps) {
   float LatB = gps->latitude;       //現在地の緯度経度
   float LongB = gps->longitude;
   float direct = 0, distance = 0;   //目的地までの距離方角
-  //目的地への距離方角算出
-  distance = sqrt(pow(LongA - LongB, 2) + pow(LatA - LatB, 2)) * 99096.44, 0;
-  direct = (int)(atan2((LongA - LongB) * 1.23, (LatA - LatB)) * 57.3 + 360) % 360;
+
+
+  //目的地への距離方角算出(二度手間だけどフラグ管理します。
+
+  POINT point_gps;
+  point_gps.latitude = LatA;
+  point_gps.longitude = LongA;
+  GPS gps_gps;
+  gps_gps.latitude = gps->latitude;
+  gps_gps.longitude = gps->longitude;
+  distance = distance_get(&gps_gps, &point_gps);
+  direct = direction_get(&gps_gps, &point_gps);
+
+  char sz_dis[16];
+  char sz_dire[16];
+  dtostrf(distance, 10, 6, sz_dis);
+  dtostrf(direct, 10, 6, sz_dire);
+
 
   //以下loop関数に値渡しする
   gps->Direction = direct;
   gps->distance = distance;
+
+  xbee_uart(dev, "latitude:");
+  xbee_uart(dev, sz_lat);
+  xbee_uart(dev, "   longitude:");
+  xbee_uart(dev, sz_long);
+  xbee_uart(dev, "\r");
+  xbee_uart(dev, "distance:");
+  xbee_uart(dev, sz_dis);
+  xbee_uart(dev, "   direct:");
+  xbee_uart(dev, sz_dire);
+  xbee_uart(dev, "\r");
 
   return 1;
 }
@@ -176,8 +202,8 @@ int gps_get(GPS* gps) {
     t++;
     //gpsの値が取れない間どこで引っかかっているのか識別できるようになりました
     if (gps_flag == 1) { //値が取れたら抜ける
-      xbprintf("LAT: %f, LONG: %f", gps->latitude, gps->longitude);
-      xbprintf("DISTANCE: %f,DIRECTION: %f", gps->distance, gps->Direction);
+      //      xbprintf("LAT: %f, LONG: %f", gps->latitude, gps->longitude);
+      //      xbprintf("DISTANCE: %f,DIRECTION: %f", gps->distance, gps->Direction);
       break;
     }
     if (gps_flag == 2) {
@@ -289,8 +315,9 @@ int gps_data_get_al(double* altitude) {
   dtostrf(*altitude, 13, 6, sz_al);
 
   //xbee送信
-  xbee_uart(dev, "get altitude\r:");
+  xbee_uart(dev, "get altitude:");
   xbee_uart(dev, sz_al);
+  xbee_uart(dev, "\r");
 
   return 1;
 }
@@ -509,12 +536,14 @@ int turn_target_direction(double target_direction, double *my_Direction, int bra
 
     if ((-20 < rotate_angle) && (rotate_angle < 20)) {
       rotate_angle = 0;
+      xbee_uart( dev, " success turn_target_direction() \r");
+      return 1;
     }
 
     xbee_uart(dev, "needed rotation is ");
     xbee_send_1double(rotate_angle);
     if (branch == 0) {
-      rotate_angle = rotate_angle * (10 - i) / 10;  // 回転角度を収束させる
+      rotate_angle = rotate_angle * (12 - i) / 10;  // 回転角度を収束させる
       go_rotate(rotate_angle);  // 回転を行う
     } else { //発散ver
       rotate_angle = rotate_angle * (i + 1);
@@ -566,7 +595,7 @@ int tm_calibration() {
 
     ac_calib = get_ac();
 
-    if ((fabs(ac_calib.x) < 50 && fabs(ac_calib.y) < 50 && 200 < ac_calib.z) || count_calib == 5) {  // 水平な感じの場所にいるならキャリブレーション。試行回数過多でもキャリブレーション
+    if ((fabs(ac_calib.x) < 100 && fabs(ac_calib.y) < 100 && 150 < ac_calib.z) || count_calib == 5) {  // 水平な感じの場所にいるならキャリブレーション。試行回数過多でもキャリブレーション
       speaker(C_TONE);
       speaker(D_TONE);
 
@@ -641,10 +670,10 @@ int tm_calibration() {
 
       xbee_uart( dev, "x_def, y_def \r");
 
-      dtostrf(x_def, 10,6,xbee_send);
+      dtostrf(x_def, 10, 6, xbee_send);
       xbee_uart(dev, xbee_send);
 
-      dtostrf(y_def, 10,6, xbee_send);
+      dtostrf(y_def, 10, 6, xbee_send);
       xbee_uart(dev, xbee_send);
       xbee_uart( dev, "tm_x_offset, tm_y_offset \r");
       xbee_send_2doubles(tm_x_offset, tm_y_offset);
@@ -703,6 +732,7 @@ int correct_posture() {
       xbee_uart( dev, "success correct_posture\r");
       return 1;  // 問題なし
     } else {
+      xbee_uart( dev, "revive ---> go_suddenly_brake \r");
       go_suddenly_brake(3000);  // 急発進急停止
     }
   }
@@ -732,7 +762,6 @@ int judge_invered() {
   double ac_z_ave =  value_ave(10, z);
 
   if (ac_z_ave < -1.0) {  // この式が真なら反転している。
-    xbee_uart( dev, "revive ---> go_suddenly_brake \r");
     return 0;
   } else {
     xbee_uart( dev, "success judge_invered_revive\r");
@@ -757,15 +786,15 @@ int set_danger_area() {
   gps_get(&danger_gps);
 
   for (int i = 9; i  > 1; i--) {  // リングバッファ
-      danger_area_points[i].latitude = danger_area_points[i-1].latitude;
-      danger_area_points[i].longitude = danger_area_points[i-1].longitude;
-    }
+    danger_area_points[i].latitude = danger_area_points[i - 1].latitude;
+    danger_area_points[i].longitude = danger_area_points[i - 1].longitude;
+  }
 
   danger_area_points[0].latitude = danger_gps.latitude;
   danger_area_points[0].longitude = danger_gps.longitude;
-  
-  xbee_uart( dev, "false set_danger_area\r");
-  return 0;  // 登録が10箇所埋まっている
+
+  xbee_uart( dev, "success set_danger_area\r");
+  return 1;
 }
 
 // int set_danger_area() {
@@ -966,7 +995,7 @@ int escape_from_wadachi(ROVER *rover) {
       go_back(2000);  // 少し下がる
       rover->My_Direction = get_my_direction();
       turn_flag = turn_target_direction(rover->My_Direction + 120, &rover->My_Direction, 0);  // 120度回転 こっちの方がいいと思うbyとうま
-    // turn_flag = turn_target_direction(rover->My_Direction + 120, &rover->My_Direction, try_counter);  // 120度回転
+      // turn_flag = turn_target_direction(rover->My_Direction + 120, &rover->My_Direction, try_counter);  // 120度回転
       go_straight(5000);
       rover->My_Direction = get_my_direction();
       turn_target_direction(rover->My_Direction - 120, &rover->My_Direction, turn_flag);

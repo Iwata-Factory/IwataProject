@@ -228,11 +228,19 @@ double vector2d_inner(Vector2D v1, Vector2D v2) {
 
 // get_distanceとget_distance_by_sphereの呼び出し元
 double distance_get(GPS* gps, POINT* point){
+  xbee_uart(dev, "call distance_get\r");
+  double d = 0;
   if (SPHERE_FLAG == 0) {
-    return get_distance(gps, point);
+    d = get_distance(gps, point);
   } else {
-    return get_distance_by_sphere(gps, point);
+    d = get_distance_by_sphere(gps, point);
   }
+  char sz_d[16];
+  dtostrf(d, 10, 6, sz_d);
+  xbee_uart(dev, "between_distance:");
+  xbee_uart(dev, sz_d);
+  xbee_uart(dev, "\r");
+  return d;
 }
 
 
@@ -242,7 +250,6 @@ double distance_get(GPS* gps, POINT* point){
 double get_distance(GPS* gps, POINT* point) {
   double distance = 0;
   distance = sqrt(pow(point->longitude - gps->longitude, 2) + pow(point->latitude - gps->latitude, 2)) * 99096.44, 0;
-
   return distance;
 }
 
@@ -256,8 +263,8 @@ double get_distance_by_sphere(GPS* gps, POINT* point) {
   double B = 6356752.314245;  // 短半径
   double E2 = 0.00669437999019758;  // 第一離心率のべき乗
 
-  double d_lat = point->latitude - gps->latitude ;  // 二地点の緯度の差
-  double d_lng = point->longitude - gps->longitude;  // 経度の差
+  double d_lat = deg2rad(point->latitude - gps->latitude) ;  // 二地点の緯度の差
+  double d_lng = deg2rad(point->longitude - gps->longitude);  // 経度の差
   double ave_lat = deg2rad((point->latitude + gps->latitude)/2);  // 緯度の平均 (ラジアンで)
    // 公式を適用
   double w = sqrt(1 - E2 * pow((sin(ave_lat)), 2));
@@ -271,11 +278,19 @@ double get_distance_by_sphere(GPS* gps, POINT* point) {
 
 // get_directionとget_direction_by_sphereの呼び出し元
 double direction_get(GPS* gps, POINT* point) {
+  xbee_uart(dev, "call direction_get\r");
+  double dire = 0;
   if (SPHERE_FLAG == 0) {
-    return get_direction(gps, point);
+    dire = get_direction(gps, point);
   } else {
-    return get_direction_by_sphere(gps, point);
+    dire = get_direction_by_sphere(gps, point);
   }
+  char sz_dire[16];
+  dtostrf(dire, 10, 6, sz_dire);
+  xbee_uart(dev, "between_direction:");
+  xbee_uart(dev, sz_dire);
+  xbee_uart(dev, "\r");
+  return dire;
 }
 
 /*
