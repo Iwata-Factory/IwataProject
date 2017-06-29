@@ -35,26 +35,26 @@ void setup() {
   EEPROM.write( EEP_CENSOR_STATUS, 0xff);  //eepのflag類の初期化
 
   //SD関連
-  if (SD_LOG_FLAG == 1){
-  pinMode(SS, OUTPUT);
-  int sd_ok_counter = 0;
-  while (1) {
-    if (!SD.begin(chipSelect)) {
-      sd_ok_counter += 1;
-      xbee_uart( dev, "Card failed, or not present\r");
-      // 失敗、何もしない
-      delay(1000);
-      if (sd_ok_counter == 60) {
-        xbee_uart( dev, "SD CARD DEATH\r");
-        renew_status(STATUS_SD, 0);
+  if (SD_LOG_FLAG == 1) {
+    pinMode(SS, OUTPUT);
+    int sd_ok_counter = 0;
+    while (1) {
+      if (!SD.begin(chipSelect)) {
+        sd_ok_counter += 1;
+        xbee_uart( dev, "Card failed, or not present\r");
+        // 失敗、何もしない
+        delay(1000);
+        if (sd_ok_counter == 60) {
+          xbee_uart( dev, "SD CARD DEATH\r");
+          renew_status(STATUS_SD, 0);
+          break;
+        }
+      } else {
+        xbee_uart( dev, "SD OK\r");
         break;
       }
-    } else {
-      xbee_uart( dev, "SD OK\r");
-      break;
     }
   }
-}
 
   write_critical_sd(0);
 
@@ -64,7 +64,7 @@ void setup() {
   pinMode(DISTANCE, INPUT);
   //サーボモーター用のピン
   servo1.attach(26);
-  xbee_uart( dev, "setup done\rchange to main phase\r");
+
 
   // モーター用ピンの設定
   pinMode(M1_1, OUTPUT);
@@ -85,6 +85,9 @@ void setup() {
   digitalWrite(NICROM_1, LOW);  //明示的なオフ
   digitalWrite(NICROM_2, LOW);
 
+  xbee_standby();
+  
+  xbee_uart( dev, "setup done\rchange to main phase\r");
 }
 
 
