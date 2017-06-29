@@ -42,8 +42,8 @@ int status5(ROVER *rover) {
     if (i == 0) {  // last_distanceの初期値を生成
       last_distance  = rover->distance;
     } else {
-      if ((fabs(rover->distance - last_distance) < 2.0) && (0 < last_distance)) {  //Trueでスタック
-        double scs_result = stack_check_state(rover);
+      if ((fabs(rover->distance - last_distance) < 2.5) && (0 < last_distance)) {  //Trueでスタック
+        int scs_result = stack_check_state(rover);
         if (scs_result != 1) {
           continue;
         }
@@ -64,11 +64,9 @@ int status5(ROVER *rover) {
     turn_target_direction(rover->Target_Direction, &rover->My_Direction, 0);
 
     if (10 < rover->distance) {
-      //      go_straight(6000); // 6秒直進
-      go_straight(3000); // 3秒直進(for実験
-
+      go_straight(6000); // 6秒直進
     } else {
-      go_straight(1500); // 1.5秒直進
+      go_straight(3000); // 3秒直進
     }
 
     speaker(E_TONE);

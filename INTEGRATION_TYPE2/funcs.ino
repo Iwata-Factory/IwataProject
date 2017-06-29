@@ -992,7 +992,7 @@ int escape_from_wadachi(ROVER *rover) {
     gps_get(&gps_efw);  // GPSを取得
 
     if (distance_get(&gps_efw, &point_efw) < 5) {
-      go_back(2000);  // 少し下がる
+      go_back(1700);  // 少し下がる
       rover->My_Direction = get_my_direction();
       turn_flag = turn_target_direction(rover->My_Direction + 120, &rover->My_Direction, 0);  // 120度回転 こっちの方がいいと思うbyとうま
       // turn_flag = turn_target_direction(rover->My_Direction + 120, &rover->My_Direction, try_counter);  // 120度回転

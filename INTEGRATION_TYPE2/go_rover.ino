@@ -124,21 +124,20 @@ void go_back(int go_time) {
   go.right2 = 1;
   go.leght1 = 1;
   go.leght2 = 1;
-  for (int i = 1; i < 256; i++) {
+  for (int i = 1; i < 180; i++) {  // ゆっくりと下がる
     go.right1 = i;
     go.right2 = 0;
     go.leght1 = i;
     go.leght2 = 0;
     rover_analog(go);
-    delay(1);
+    delay(3);
   }
-  go.right1 = 1;
+  go.right1 = 180;
   go.right2 = 0;
-  go.leght1 = 1;
+  go.leght1 = 180;
   go.leght2 = 0;
-  rover_degital(go);
+  rover_analog(go);
   delay(wait_time);
-
   go.right1 = 1;  // バック時は急停止
   go.right2 = 1;
   go.leght1 = 1;
@@ -183,7 +182,7 @@ void brake() {
     go.leght1 = 0;
     go.leght2 = i;
     rover_analog(go);
-    delay(7);
+    delay(4);
   }
 }
 
