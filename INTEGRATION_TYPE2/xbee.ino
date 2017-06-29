@@ -72,9 +72,35 @@ void xbprintf(char *fmt, ...) {
   char xb_buf[XBEE_BUFFERSIZE];
   va_list args;
   va_start (args, fmt);
-//  va_arg(args, double) ; 
   vsnprintf(xb_buf, XBEE_BUFFERSIZE, fmt, args);
   va_end (args);
   xbee_uart(dev, xb_buf);
   xbee_uart(dev, "\r");
 }
+
+void xbee_standby() {
+  xbee_uart( dev, "waiting for your command...\r");
+
+  int xb_rxcnt = 0;
+
+  while (1) {  // コマンド受信待機
+
+    XBEE_RESULT xbee_result;  // 受信関数用構造体。構成はxbee.hライブラリを参照のことその都度初期化すべき。。。？
+
+    xbee_rx_call(&xbee_result);
+
+    if (xbee_result.MODE == MODE_UART) { // なんらかの文字を受信した
+      if (xbee_result.DATA[0] == 0x0D) { // enterを受信
+        xbprintf("command accept!");
+        break;
+      }
+    }
+    xb_rxcnt++;
+    xbee_uart(dev, " ");  // これを回さないとxbeeが動かない。。。
+    if (xb_rxcnt > 1000 ) {  //timeout時間約８０秒
+      xbprintf("can't receive command...");
+      break;
+    }
+  }
+}
+

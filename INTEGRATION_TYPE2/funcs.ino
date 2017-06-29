@@ -205,6 +205,7 @@ int gps_get(GPS* gps) {
     }
     if (t >= 10000) {
       //およそ100秒間取れなければ一旦抜ける
+      xbprintf("forced to break gps_get");
       break;
     }
   }
