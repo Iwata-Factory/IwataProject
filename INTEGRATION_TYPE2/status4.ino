@@ -32,10 +32,9 @@ int status4(ROVER *rover) {  // Status4 着陸の関数
     lc_difference = distance_get(&gps, &landing_point);
     delay( 500 );
     escape_counter += 1;
-  } while ((lc_difference < 10) && (escape_counter < 5));
+  } while ((lc_difference < 10) && (escape_counter < 7));
 
   xbee_uart( dev, "escape complete\r");
-
 
   return 1;
 }
@@ -60,8 +59,8 @@ int set_posture_coefficient() {
 */
 
 int cut_nicrom() {
-  xbee_uart(dev, "call cut_nicrom\n");
 
+  xbee_uart(dev, "call cut_nicrom\n");
   //ニクロム線溶断する
   speaker(C_TONE);
   speaker(E_TONE);
@@ -73,4 +72,5 @@ int cut_nicrom() {
   xbee_uart(dev, "end cut_nicrom\n");
   speaker(G_TONE);
   return 1;
+  
 }

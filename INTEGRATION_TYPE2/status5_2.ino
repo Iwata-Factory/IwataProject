@@ -12,6 +12,11 @@ int status5_2(ROVER *rover) {
   GPS gps;
   DRIVE pid;  // DRIVEの初期化
 
+    if (STACK_EXP == 1) {
+    stack_check_state(rover);  // スタックのフラグを立てる
+  }
+
+
   tm_calibration();  // キャリブレーションの実施(とりあえず最初だけ)
 
   // double this_my_direction = 0.0;  // 今回の自分の方位

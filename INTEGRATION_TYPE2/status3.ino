@@ -10,8 +10,6 @@ int status3(ROVER *rover) {  // Status3 降下の関数(着陸判定を行う)
   int switch_num = 1;  // 判定する素子のスイッチ
   int landing_flag = 0;
 
-  /* GPSはいつから取れるようになるんでしょうね by とうま */
-
   do {
     get_censor_status(rover);  // 最新のセンサーの状態を取得
 

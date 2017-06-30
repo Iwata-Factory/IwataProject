@@ -10,6 +10,10 @@ int status5(ROVER *rover) {
   int i = 0; // do-whileの繰り返し数をカウント
   double last_distance = -1;  // スタック判定用
 
+  if (STACK_EXP == 1) {
+    stack_check_state(rover);  // スタックのフラグを立てる
+  }
+
   do {
 
     if (correct_posture() == 1) {  // 判定修正

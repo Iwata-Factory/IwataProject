@@ -98,10 +98,15 @@ void loop() {
   delay(2000);
 
   ROVER rover;  // 自身の情報を初期化
-  rover.status_number = 1;  // 現在ステータスを1に更新
 
+  if (STACK_EXP == 0) {
+  rover.status_number = 1;  // 現在ステータスを1に更新
   write_timelog_sd(&rover);
   get_censor_status(&rover);
+} else if (STACK_EXP == 1){  // 強制的にスタックのフラグを立てる
+    rover.status_number = 5;  // 現在ステータスを5に更新
+  write_timelog_sd(&rover);
+}
 
   do {
 

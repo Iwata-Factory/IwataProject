@@ -582,7 +582,7 @@ double get_angle_devision(double my_Direction, double target_direction) {
 
 int tm_calibration() {
 
-  if (CALIBRATION_FLAG == 0) {
+  if (CALIBRATION_FLAG == 0 || STACK_EXP == 1) {
     return 1;
   }
 
