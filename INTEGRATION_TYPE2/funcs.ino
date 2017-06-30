@@ -994,11 +994,18 @@ int escape_from_wadachi(ROVER *rover) {
     if (distance_get(&gps_efw, &point_efw) < 5) {
       go_back(1700);  // 少し下がる
       rover->My_Direction = get_my_direction();
-      turn_flag = turn_target_direction(rover->My_Direction + 120, &rover->My_Direction, 0);  // 120度回転 こっちの方がいいと思うbyとうま
+
+      // 適当に下がる
+      double r_number = random(0, 11); // 0から10の乱数を生成
+      double rotate_random = 150 + 200 * (r_number / 10);
+      go_rotate(rotate_random);
+
+      // turn_flag = turn_target_direction(rover->My_Direction + 120, &rover->My_Direction, 0);  // 120度回転 こっちの方がいいと思うbyとうま
       // turn_flag = turn_target_direction(rover->My_Direction + 120, &rover->My_Direction, try_counter);  // 120度回転
       go_straight(5000);
       rover->My_Direction = get_my_direction();
       turn_target_direction(rover->My_Direction - 120, &rover->My_Direction, turn_flag);
+
     } else {
       ;  // 何もしない
     }
