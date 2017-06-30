@@ -78,29 +78,43 @@ void xbprintf(char *fmt, ...) {
   xbee_uart(dev, "\r");
 }
 
-void xbee_standby() {
+int xbee_standby() {
   xbee_uart( dev, "waiting for your command...\r");
-
   int xb_rxcnt = 0;
 
   while (1) {  // コマンド受信待機
 
-    XBEE_RESULT xbee_result;  // 受信関数用構造体。構成はxbee.hライブラリを参照のことその都度初期化すべき。。。？
-
-    xbee_rx_call(&xbee_result);
-
-    if (xbee_result.MODE == MODE_UART) { // なんらかの文字を受信した
-      if (xbee_result.DATA[0] == 0x0D) { // enterを受信
-        xbprintf("command accept!");
-        break;
+    if(xbee_rcv(ENTER)){
+      xbprintf("are you ready?");
+      while(1){
+        if(xbee_rcv( O_CAP )){
+          xbprintf("your command finally accepted!");
+          return 1;
+        }
+        xbee_uart(dev, " ");  // これを回さないとxbeeが動かない。。。
       }
     }
-    xb_rxcnt++;
+   
+//    xb_rxcnt++;
     xbee_uart(dev, " ");  // これを回さないとxbeeが動かない。。。
 //    if (xb_rxcnt > 100000 ) {  //timeout時間約8000秒
 //      xbprintf("can't receive command...");
 //      break;
 //    }
+  }
+  return 0;
+}
+
+int xbee_rcv(byte character){  // ここの引数は実際のxbeeで送られる16進数をdefineで定義してあります。
+  XBEE_RESULT xbee_result;
+  xbee_rx_call(&xbee_result);
+  if(xbee_result.MODE == MODE_UART){
+    if(xbee_result.DATA[0] == character){
+      return 1;
+    }
+  }
+  else{
+    return 0;
   }
 }
 
