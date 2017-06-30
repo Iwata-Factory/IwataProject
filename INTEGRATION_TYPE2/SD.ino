@@ -171,10 +171,11 @@ int write_critical_sd(int flag) {
       dataFile.println("**end_setup**"); 
       dataFile.println("arduino-time");
       dataFile.println(time);
-      dataFile.println("");
 
 
       case 1:
+
+      dataFile.println("");
       dataFile.println("**landing**"); // 記録開始
       dataFile.println("arduino-time");
       dataFile.println(time);
@@ -190,6 +191,7 @@ int write_critical_sd(int flag) {
 
 
       case 2:
+      dataFile.println("");
       dataFile.println("**end-control**"); // 記録開始
       dataFile.println("arduino-time");
       dataFile.println(time);

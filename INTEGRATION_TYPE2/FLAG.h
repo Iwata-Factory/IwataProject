@@ -19,7 +19,7 @@
 #define LAND_JUDGE_FLAG 0 // 着陸判定を行うならば1.飛ばすなら0.
 #define CALIBRATION_FLAG 0 // キャリブレーションを行うなら1.しないなら0.
 #define STACK_ESCAPE_FLAG 0 // スタック関連の処理を行うならば1.行わないならば0.
-#define DANGER_AREA_FRAG 1 //危険エリア脱出処理を行うならば1.行わないならば0.
+#define DANGER_AREA_FRAG 0 //危険エリア脱出処理を行うならば1.行わないならば0.
 #define SD_LOG_FLAG 1  // SDに書き込みを行うなら1.行わないなら0.
 #define SPHERE_FLAG 1  // 1で球面三角法を用いる.0では平面として処理.(球面三角法推奨
 #define GPS_GET_FLAG 1 // 0の時GPSを取らない
