@@ -63,11 +63,11 @@ int cut_nicrom() {
   //ニクロム線溶断する
   speaker(C_TONE);
   speaker(E_TONE);
-  // digitalWrite(NICROM_1, HIGH);
+  digitalWrite(NICROM_1, HIGH);
   digitalWrite(NICROM_2, HIGH);
   delay(10000);
   digitalWrite(NICROM_2, LOW);
-  // digitalWrite(NICROM_1, LOW);
+  digitalWrite(NICROM_1, LOW);
   xbee_uart(dev, "end cut_nicrom\n");
   speaker(G_TONE);
   return 1;
