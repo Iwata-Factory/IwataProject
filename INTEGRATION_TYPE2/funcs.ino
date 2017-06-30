@@ -193,6 +193,12 @@ int gps_data_get(GPS* gps) {
 }
 
 int gps_get(GPS* gps) {
+
+  if (GPS_GET_FLAG == 0) {
+    xbee_uart(dev, "GPS SKIP\r");
+    return 1;
+  }
+
   xbee_uart(dev, "call gps_get\r");
   int t = 0;
   while (1) { //gpsの値が正常になるまで取り続ける
@@ -327,6 +333,12 @@ int gps_data_get_al(double* altitude) {
    引数doubleのポインタで渡すとそれに高度を代入します
 */
 int gps_get_al(double* altitude) {
+
+  if (GPS_GET_FLAG == 0) {
+    xbee_uart(dev, "GPS SKIP\r");
+    return 1;
+  }
+  
   int t = 0;
   while (1) { //gpsの値が正常になるまで取り続ける
     int gps_flag = 0;   //gps_getの返り値保存
@@ -733,7 +745,7 @@ int correct_posture() {
       return 1;  // 問題なし
     } else {
       xbee_uart( dev, "revive ---> go_suddenly_brake \r");
-      go_suddenly_brake(3000);  // 急発進急停止
+      go_suddenly_brake(3000);  // 急発進緩停止
     }
   }
   xbee_uart( dev, "failed correct_posture\r");

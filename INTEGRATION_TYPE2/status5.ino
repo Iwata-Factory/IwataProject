@@ -68,7 +68,7 @@ int status5(ROVER *rover) {
     turn_target_direction(rover->Target_Direction, &rover->My_Direction, 0);
 
     if (10 < rover->distance) {
-      go_straight(6000); // 6秒直進
+      go_straight(4000); // 6秒直進
     } else {
       go_straight(3000); // 3秒直進
     }

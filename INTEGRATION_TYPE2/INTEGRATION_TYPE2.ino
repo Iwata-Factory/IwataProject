@@ -204,9 +204,7 @@ void loop() {
 
       case 6:
         xbee_uart( dev, "start status6\r");
-
         write_timelog_sd(&rover);
-
         if (status6(&rover) == 1) {
           trans_phase(rover.status_number);
           rover.status_number += 1;
@@ -216,9 +214,18 @@ void loop() {
         } else {
           break;
         }
+
+        case 7:
+        delay(10);
+        xbee_uart( dev, "in case7\r");
+        break;
+
     }
+
   } while (0 < rover.status_number < 7);
+
   xbee_uart( dev, "reach status7\rEND CONTROL\r");
+
   while (1) {
     write_timelog_sd(&rover);
     speaker(HIGH_C);
@@ -229,5 +236,7 @@ void loop() {
     speaker(HIGH_C);
     delay(10000);
   }
+
+
 }
 

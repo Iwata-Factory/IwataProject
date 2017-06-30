@@ -186,7 +186,7 @@ void brake() {
   }
 }
 
-/*-----------ブレーキをかける--------------------
+/*-----------急発進→ブレーキをかける--------------------
   ------------------------------------------*/
 void go_suddenly_brake(int times) {
   DRIVE go; //DRIVE型の宣言
@@ -197,11 +197,14 @@ void go_suddenly_brake(int times) {
   go.leght2 = 1;
   rover_degital(go);
   delay(times);
-  go.right1 = 0;
-  go.right2 = 0;
-  go.leght1 = 0;
-  go.leght2 = 0;
-  rover_degital(go);
+  for (int i = 255; i > 0; i--) {
+    go.right1 = 0;
+    go.right2 = i;
+    go.leght1 = 0;
+    go.leght2 = i;
+    rover_analog(go);
+    delay(4);
+  }
 
 }
 
