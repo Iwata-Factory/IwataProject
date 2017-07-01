@@ -91,6 +91,10 @@ int xbee_standby() {
           xbprintf("your command finally accepted!");
           return 1;
         }
+        if(xbee_rcv( G_CAP )){
+          xbprintf(" trans mode for review board!!!");
+          return 2;
+        }
         xbee_uart(dev, " ");  // これを回さないとxbeeが動かない。。。
       }
     }
@@ -110,6 +114,7 @@ int xbee_rcv(byte character){  // ここの引数は実際のxbeeで送られる
   xbee_rx_call(&xbee_result);
   if(xbee_result.MODE == MODE_UART){
     if(xbee_result.DATA[0] == character){
+      xbee_clear_cache();
       return 1;
     }
   }

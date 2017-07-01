@@ -112,6 +112,7 @@
 #define XBEE_BUFFERSIZE 63
 #define ENTER 0x0D
 #define O_CAP 0x4F
+#define G_CAP 0x47
 
 // その他
 #define SERIAL_BAUDRATE 9600 //シリアル通信のデータ送信レートを9600bpsに定義するための定数(ArduinoとPC)

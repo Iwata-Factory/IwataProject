@@ -178,16 +178,19 @@ int gps_data_get(GPS* gps) {
   gps->Direction = direct;
   gps->distance = distance;
 
-  xbee_uart(dev, "latitude:");
-  xbee_uart(dev, sz_lat);
-  xbee_uart(dev, "   longitude:");
-  xbee_uart(dev, sz_long);
-  xbee_uart(dev, "\r");
-  xbee_uart(dev, "distance:");
-  xbee_uart(dev, sz_dis);
-  xbee_uart(dev, "   direct:");
-  xbee_uart(dev, sz_dire);
-  xbee_uart(dev, "\r");
+//  xbee_uart(dev, "latitude:");
+//  xbee_uart(dev, sz_lat);
+//  xbee_uart(dev, "   longitude:");
+//  xbee_uart(dev, sz_long);
+//  xbee_uart(dev, "\r");
+//  xbee_uart(dev, "distance:");
+//  xbee_uart(dev, sz_dis);
+//  xbee_uart(dev, "   direct:");
+//  xbee_uart(dev, sz_dire);
+//  xbee_uart(dev, "\r");
+
+  xbprintf("latitude: %s  longitude: %s", sz_lat, sz_long);
+  xbprintf("distance: %s  direction: %s", sz_dis, sz_dire);
 
   return 1;
 }
