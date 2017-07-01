@@ -14,7 +14,7 @@ void setup() {
   g_gps.begin(GPSBAUDRATE); //シリアル通信の初期化
 
   // i2c関連
-  writeI2c(0x02, 0x00, HMC5883L); //HMC5883Lの初期設定0x02レジスタに0x00書き込み
+  writeI2c(0x02, CONTINUOUS_MODE, HMC5883L); //HMC5883Lの初期設定0x02レジスタに0x00書き込み
   writeI2c(0x31, 0x00, ADXL345);  //上と同様
   writeI2c(0x2d, 0x08, ADXL345);  //上と同様
 
