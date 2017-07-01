@@ -453,6 +453,8 @@ int reset_tm(){
 
 double get_my_direction() {
 
+  reset_tm();
+
   xbee_uart( dev, "call get_my_direction() \r");
 
   double my_direction = -1.0;  // 返り値
@@ -605,6 +607,8 @@ int tm_calibration() {
   if (CALIBRATION_FLAG == 0 || STACK_EXP == 1) {
     return 1;
   }
+
+  reset_tm();
 
   xbee_uart( dev, " call tm_calibration\r");
 
