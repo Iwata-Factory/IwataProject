@@ -105,6 +105,7 @@
 
 //SD関連
 #define SS 53
+#define SD_INSERT 22
 
 //XBEE関連
 #define XBEE_BUFFERSIZE 63

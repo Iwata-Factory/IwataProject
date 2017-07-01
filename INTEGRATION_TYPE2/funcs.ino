@@ -408,6 +408,14 @@ AC get_ac() {
     ac.x = double((((int)ac_axis_buff[1]) << 8) | ac_axis_buff[0]);     //MSBとLSBの順番も逆になっている
     ac.y = double((((int)ac_axis_buff[3]) << 8) | ac_axis_buff[2]);
     ac.z = double((((int)ac_axis_buff[5]) << 8) | ac_axis_buff[4]);
+
+    dtostrf(ac.x, 10,6, xbee_send);
+    xbprintf(xbee_send);
+    dtostrf(ac.y, 10, 6, xbee_send);
+    xbprintf(xbee_send);
+    dtostrf(ac.z, 10,6, xbee_send);
+    xbprintf(xbee_send);
+    
   } else {
     ; // 何もしない
   }
