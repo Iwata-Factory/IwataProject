@@ -48,8 +48,8 @@
 
 // PID制御関連
 #define PID_SURPULS 0.400
-#define PID_KP 0.003
-#define PID_KI 0.100
+#define PID_KP 0.500
+#define PID_KI 0.050
 #define PID_KD 0.000
 
 //スピーカー関連

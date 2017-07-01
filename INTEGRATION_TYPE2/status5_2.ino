@@ -1,4 +1,9 @@
 // ターゲットに近いところを目指す
+
+
+//とりあえず一周回りました
+
+
 int status5_2(ROVER *rover) {
 
   if (_S5_ == 0) {
@@ -28,12 +33,14 @@ int status5_2(ROVER *rover) {
 
   int i = 0; // do-whileの繰り返し数をカウント
   xbee_uart( dev, "(PID) START\r");
+
   accel();  // ローバースタート
 
   // 実験用に区切り文字を書き込む
   write_devision_sd(0.0, 1);
 
   double last_distance = -1; //スタック判定用
+  double fifty_counter = 0;
   double ninety_counter = 0;  // 角度カウンター
 
   do {
@@ -41,11 +48,17 @@ int status5_2(ROVER *rover) {
     if(arrange_between(i, &gps, rover, &last_distance) == 0){  // 状態のチェック
       continue;
     }
-      rover->My_Direction = get_my_direction();
+
 
       do {
+      rover->My_Direction = get_my_direction();
       this_devision = get_this_devision(last_devison, rover, i);  // 偏差取得（外れ値除去）(roverはadress)
-      } while(this_devision = 500);
+      fifty_counter += 1;
+      if (fifty_counter == 4){
+        fifty_counter = 0;
+        break;
+      }
+      } while(this_devision == 500);
 
 
       // write_devision_sd(this_devision, 0);  // 偏差を記録（実験用）
@@ -55,7 +68,7 @@ int status5_2(ROVER *rover) {
 
           ninety_counter += 1;
 
-          if (ninety_counter == 10 || i == 1200) {  // 10連かiが1200で発動
+          if (ninety_counter == 10 || i == 1200) {  // 10連かiが1200で発動(ここのカウンタ要調整)
 
           brake();  // 止まる
           turn_target_direction(rover->Target_Direction, &rover->My_Direction, 0);  // ターゲット方向を向き直す
@@ -81,6 +94,7 @@ int status5_2(ROVER *rover) {
     control_amount = get_control(this_devision, total_devision);  // 制御量を取得
 
     get_motor_control(&pid, control_amount); // DRIVE pid の値を調整
+    xbprintf("DRIVE %d, %d, %d, %d", pid.right1, pid.right2, pid.leght1, pid.leght2);
     rover_analog(pid);  // 出力に反映
 
     total_devision += this_devision;  // 偏差を足していく
@@ -88,7 +102,9 @@ int status5_2(ROVER *rover) {
 
     i += 1;  // カウントを足す
 
-    delay(30);
+    // delay(50);
+    // delay0でいいかもしれない
+
 
     speaker(E_TONE);
     speaker(F_TONE);
@@ -212,17 +228,23 @@ int get_motor_control(DRIVE *pid_drive, double control_amount) {
 
 double get_this_devision(double last_devison, ROVER *rover, int i){
 
+    xbee_uart( dev, "call get_this_devision\r");
+
+
   double this_devision = get_angle_devision(rover->My_Direction, rover->Target_Direction);  // 自分から見た偏差を取得
 
-  if (i == 0) {
-    return this_devision;
-  } else {
-    if (50 < fabs(this_devision - last_devison)) {
-    return 500;  // 失敗を返す(繰り返しを命令)
-    } else {
-    return this_devision;
-    }
-  }
+  return this_devision;
+
+  // ここコメントアウトしたら出来ました
+  // if (i == 0) {
+  //   return this_devision;
+  // } else {
+  //   if (50 < fabs(this_devision - last_devison)) {
+  //   return 500;  // 失敗を返す(繰り返しを命令)
+  //   } else {
+  //   return this_devision;
+  //   }
+  // }
 }
 
 

@@ -94,10 +94,18 @@ void setup() {
 
 void loop() {
 
+
+
   speaker(C_TONE);
   delay(2000);
 
   ROVER rover;  // 自身の情報を初期化
+
+  DRIVE reset;
+  reset.right1 = 1;
+  reset.right2 = 1;
+  reset.leght1 = 1;
+  reset.leght2 = 1;
 
   if (STACK_EXP == 0) {
     rover.status_number = 1;  // 現在ステータスを1に更新
@@ -124,6 +132,7 @@ void loop() {
         write_timelog_sd(&rover);
 
         if (status1(&rover) == 1) {
+          rover_degital(reset);
           trans_phase(rover.status_number);
           rover.status_number += 1;
           xbee_uart( dev, "success status1\r");
@@ -139,6 +148,7 @@ void loop() {
         write_timelog_sd(&rover);
 
         if (status2(&rover) == 1) {
+          rover_degital(reset);
           xbee_uart( dev, "clear status2\r");
           trans_phase(rover.status_number);
           rover.status_number += 1;
@@ -154,6 +164,7 @@ void loop() {
         write_timelog_sd(&rover);
 
         if (status3(&rover) == 1) {
+          rover_degital(reset);
           trans_phase(rover.status_number);
           rover.status_number += 1;
           write_critical_sd(1);  // 着陸終了
@@ -169,6 +180,7 @@ void loop() {
         write_timelog_sd(&rover);
 
         if (status4(&rover) == 1) {
+          rover_degital(reset);
           trans_phase(rover.status_number);
           rover.status_number += 1;
           xbee_uart( dev, "success status4\r");
@@ -184,6 +196,7 @@ void loop() {
 
         if (GROUND1_FLAG == 0) {
           if (status5(&rover) == 1) {
+            rover_degital(reset);
             trans_phase(rover.status_number);
             rover.status_number += 1;
             xbee_uart( dev, "success status5-1\r");
@@ -193,6 +206,7 @@ void loop() {
           }
         } else if (GROUND1_FLAG == 1) {
           if (status5_2(&rover) == 1) {
+            rover_degital(reset);
             trans_phase(rover.status_number);
             rover.status_number += 1;
             xbee_uart( dev, "success status5-2\r");
@@ -206,6 +220,7 @@ void loop() {
         xbee_uart( dev, "start status6\r");
         write_timelog_sd(&rover);
         if (status6(&rover) == 1) {
+          rover_degital(reset);
           trans_phase(rover.status_number);
           rover.status_number += 1;
           write_critical_sd(2);  // 制御終了

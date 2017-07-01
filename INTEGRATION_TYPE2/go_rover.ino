@@ -130,7 +130,7 @@ void go_back(int go_time) {
     go.leght1 = i;
     go.leght2 = 0;
     rover_analog(go);
-    delay(3);
+    delay(8);
   }
   go.right1 = 180;
   go.right2 = 0;
@@ -162,7 +162,7 @@ void accel() {
     go.leght1 = 0;
     go.leght2 = i;
     rover_analog(go);
-    delay(2);
+    delay(10);
   }
 }
 

@@ -582,6 +582,7 @@ int turn_target_direction(double target_direction, double *my_Direction, int bra
   ------------------------------------------*/
 double get_angle_devision(double my_Direction, double target_direction) {
 
+
   double a_difference = my_Direction - target_direction;
 
   if (180 <= a_difference) {
@@ -947,6 +948,7 @@ int stack_check_state(ROVER *rover) {
 
   xbee_uart(dev, "call stack_check_state\r");
 
+  if (STACK_MODE == 0) {
 
   int go_straight_flag = 0;  // フラグ定義
   int rotate_flag = 0;
@@ -971,10 +973,23 @@ int stack_check_state(ROVER *rover) {
     rotate_flag = 0;
   }
 
-  int result = choose_behavior(rover, go_straight_flag, go_straight_flag);  // 何をするべきか決定する
+  int result = choose_behavior(rover, go_straight_flag, rotate_flag);  // 何をするべきか決定する
 
   xbee_uart(dev, "end stack_check_state\r");
   return result;
+
+  } else if (STACK_MODE == 1) {
+
+  xbee_uart(dev, "skip stack_check_state\r");
+  xbee_uart(dev, "jump to  escape_from_wadachi\r");
+
+  int result = choose_behavior(rover, 0, 1);  // 何をするべきか決定する
+
+  xbee_uart(dev, "end stack_check_state\r");
+  return result;
+
+  }
+
 
 }
 
@@ -985,7 +1000,7 @@ int stack_check_state(ROVER *rover) {
 int choose_behavior(ROVER *rover, int go_straight_flag, int rotate_flag) {
   if (go_straight_flag == 1) {  // 問題なし
     return 1;
-  } else if ((go_straight_flag = 0) && (rotate_flag = 1)) {  // 回転は出来るが進めない(恐らく轍の中にいる)
+  } else if ((go_straight_flag == 0) && (rotate_flag == 1)) {  // 回転は出来るが進めない(恐らく轍の中にいる)
     set_danger_area();  // 危険エリアにしておく
     return escape_from_wadachi(rover);
   } else {   // 死亡(ランダムにする？)
@@ -1001,6 +1016,7 @@ int choose_behavior(ROVER *rover, int go_straight_flag, int rotate_flag) {
 
 */
 int escape_from_wadachi(ROVER *rover) {
+
   xbee_uart(dev, "call escape_from_wadachi\r");
 
   POINT point_efw;
@@ -1012,27 +1028,16 @@ int escape_from_wadachi(ROVER *rover) {
 
   do {
 
-    go_straight(10000);  // 10秒進む
     gps_get(&gps_efw);  // GPSを取得
 
-    if (distance_get(&gps_efw, &point_efw) < 5) {
-      go_back(1700);  // 少し下がる
-      rover->My_Direction = get_my_direction();
 
-      // 適当に下がる
+      go_back(1000);  // 少し下がる
+      rover->My_Direction = get_my_direction();
       double r_number = random(0, 11); // 0から10の乱数を生成
-      double rotate_random = 150 + 200 * (r_number / 10);
+      double rotate_random = 25 + 250 * (r_number / 10);
       go_rotate(rotate_random);
-
-      // turn_flag = turn_target_direction(rover->My_Direction + 120, &rover->My_Direction, 0);  // 120度回転 こっちの方がいいと思うbyとうま
-      // turn_flag = turn_target_direction(rover->My_Direction + 120, &rover->My_Direction, try_counter);  // 120度回転
+  
       go_straight(5000);
-      rover->My_Direction = get_my_direction();
-      turn_target_direction(rover->My_Direction - 120, &rover->My_Direction, turn_flag);
-
-    } else {
-      ;  // 何もしない
-    }
 
     try_counter += 1;
 
@@ -1041,7 +1046,7 @@ int escape_from_wadachi(ROVER *rover) {
       return 0;
     }
 
-  } while (8 < distance_get(&gps_efw, &point_efw));
+  } while (distance_get(&gps_efw, &point_efw) < 5);
   xbee_uart(dev, "success escape_from_wadachi\r");
   return 1;
 }
