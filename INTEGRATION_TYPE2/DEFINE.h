@@ -33,6 +33,8 @@
 
 //地磁気センサ関連
 #define HMC5883L 0x1E   //HMC5883L(地磁気センサ)のスレーブアドレス
+#define SINGLE_MODE 0x01   //single mode
+#define CONTINUOUS_MODE 0x00  //continuous mode
 #define TM_DIFFERENCE -7.2
 
 //加速度センサ関連
