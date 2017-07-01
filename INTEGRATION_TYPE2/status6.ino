@@ -1,7 +1,7 @@
 int status6(ROVER *rover) {
 
   if (_S6_ == 0) {
-    xbee_uart( dev, "skip status6\r");
+    xbprintf( "skip status6");
     delay(1000);
     return 1;
   }

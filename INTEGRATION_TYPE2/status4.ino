@@ -7,7 +7,7 @@
 int status4(ROVER *rover) {  // Status4 着陸の関数
 
   if (_S4_ == 0) {
-    xbee_uart( dev, "skip status4\r");
+    xbprintf( "skip status4");
     delay(1000);
     return 1;
   }
@@ -23,7 +23,7 @@ int status4(ROVER *rover) {  // Status4 着陸の関数
   int posture_coefficient = set_posture_coefficient();  //  姿勢係数(正しい姿勢なら1、反転なら-1)を取得(反転を直すわけではないことに注意)
 
   int escape_counter = 0;
-  xbee_uart( dev, "escape from landing-point\r");
+  xbprintf( "escape from landing-point");
   do {
     //本当は真っ直ぐ進みたい
     go_straight(10000);   //オフセットの式設定できたら、方向決めて直進できるようなやつに変えてください
@@ -33,7 +33,7 @@ int status4(ROVER *rover) {  // Status4 着陸の関数
     escape_counter += 1;
   } while ((lc_difference < 10) && (escape_counter < 7));
 
-  xbee_uart( dev, "escape complete\r");
+  xbprintf( "escape complete");
 
   return 1;
 }
@@ -43,7 +43,7 @@ int status4(ROVER *rover) {  // Status4 着陸の関数
   姿勢係数を1か-1で返す
   ------------------------------------------*/
 int set_posture_coefficient() {
-  xbee_uart( dev, "call set_posture_coefficient\r");
+  xbprintf( "call set_posture_coefficient");
   if (judge_invered() == 1) {
     return 1;
   } else {
@@ -59,7 +59,7 @@ int set_posture_coefficient() {
 
 int cut_nicrom() {
 
-  xbee_uart(dev, "call cut_nicrom\n");
+  xbprintf("call cut_nicrom");
   //ニクロム線溶断する
   speaker(C_TONE);
   speaker(E_TONE);
@@ -68,7 +68,7 @@ int cut_nicrom() {
   delay(10000);
   digitalWrite(NICROM_2, LOW);
   digitalWrite(NICROM_1, LOW);
-  xbee_uart(dev, "end cut_nicrom\n");
+  xbprintf("end cut_nicrom");
   speaker(G_TONE);
   return 1;
   

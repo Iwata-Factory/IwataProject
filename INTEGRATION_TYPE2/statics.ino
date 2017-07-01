@@ -228,18 +228,23 @@ double vector2d_inner(Vector2D v1, Vector2D v2) {
 
 // get_distanceとget_distance_by_sphereの呼び出し元
 double distance_get(GPS* gps, POINT* point){
-  xbee_uart(dev, "call distance_get\r");
+  xbee_uart(dev, "call distance_get");
   double d = 0;
   if (SPHERE_FLAG == 0) {
     d = get_distance(gps, point);
   } else {
     d = get_distance_by_sphere(gps, point);
   }
+
+  xbprintf("xbp-dbl,between_distance: %f", d);
+  
   char sz_d[16];
   dtostrf(d, 10, 6, sz_d);
   xbee_uart(dev, "between_distance:");
   xbee_uart(dev, sz_d);
   xbee_uart(dev, "\r");
+
+  xbprintf("xbp-char,between_distance: %s", sz_d);
   return d;
 }
 
@@ -278,18 +283,23 @@ double get_distance_by_sphere(GPS* gps, POINT* point) {
 
 // get_directionとget_direction_by_sphereの呼び出し元
 double direction_get(GPS* gps, POINT* point) {
-  xbee_uart(dev, "call direction_get\r");
+  xbee_uart(dev, "call direction_get");
   double dire = 0;
   if (SPHERE_FLAG == 0) {
     dire = get_direction(gps, point);
   } else {
     dire = get_direction_by_sphere(gps, point);
   }
+
+  xbprintf("xbp-dbl,between_direction: %f", dire);
+  
   char sz_dire[16];
   dtostrf(dire, 10, 6, sz_dire);
   xbee_uart(dev, "between_direction:");
   xbee_uart(dev, sz_dire);
   xbee_uart(dev, "\r");
+
+  xbprintf("xbp-char,between_dire: %s", sz_dire);
   return dire;
 }
 

@@ -2,7 +2,7 @@
 int status5(ROVER *rover) {
 
   if (_S5_ == 0) {
-    xbee_uart( dev, "skip status5\r");
+    xbprintf( "skip status5");
     delay(1000);
     return 1;
   }
@@ -57,7 +57,7 @@ int status5(ROVER *rover) {
     }
 
     if (0 <= rover->distance && rover->distance <= 5) {  // status6へ
-      xbee_uart( dev, "near goal\r");
+      xbprintf( "near goal");
       break;
     }
 
