@@ -85,7 +85,7 @@ void setup() {
   digitalWrite(NICROM_1, LOW);  //明示的なオフ
   digitalWrite(NICROM_2, LOW);
 
-  while(!xbee_standby());  // 現状enter押下したのちに大文字のOを入力することによって脱出します。
+  xbee_standby();  // 現状enter押下したのちに大文字のOを入力することによって脱出します。
 
   xbee_uart( dev, "setup done\rchange to main phase\r");
 }
