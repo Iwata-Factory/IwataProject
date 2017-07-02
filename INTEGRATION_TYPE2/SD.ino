@@ -262,7 +262,7 @@ int read_ac_sd(AC ac[100], int num) {
               ac[j].z = 0.0;
             }
 
-            //   xbee_uart( dev,z);
+            //   xbprintf(z);
             now_pos -= back_num; //  調べる位置を戻す
 
             if (now_pos == 0) { // ファイルの先頭に達してしまった場合
@@ -324,9 +324,9 @@ int read_tm_sd(TM tm[100], int num) {
 
           if (line == "*") { // もし*と書いてある行に達したらその下の三行を読む
             String x = dataFile.readStringUntil('\r');
-            // xbee_uart( dev,x);
+            // xbprintf(x);
             String y = dataFile.readStringUntil('\r');
-            //   xbee_uart( dev,y);
+            //   xbprintf(y);
             String z = dataFile.readStringUntil('\r');
             if ((x != "*") & (y != "*") & (z != "*")) { // 値が揃っていたなら代入、そうでないなら0のまま
               tm[j].x = x.toDouble();
@@ -338,7 +338,7 @@ int read_tm_sd(TM tm[100], int num) {
               tm[j].z = 0.0;
             }
 
-            //   xbee_uart( dev,z);
+            //   xbprintf(z);
             now_pos -= back_num; //  調べる位置を戻す
 
             if (now_pos == 0) { // ファイルの先頭に達してしまった場合
@@ -430,7 +430,7 @@ int read_gps_sd(GPS gps[100], int num) {
               gps[j].distance = 0.0;
             }
 
-            //   xbee_uart( dev,z);
+            //   xbprintf(z);
             now_pos -= back_num; //  調べる位置を戻す
 
             if (now_pos == 0) { // ファイルの先頭に達してしまった場合

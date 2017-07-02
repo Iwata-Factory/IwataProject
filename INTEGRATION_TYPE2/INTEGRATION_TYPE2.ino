@@ -41,16 +41,16 @@ void setup() {
     while (1) {
       if (!SD.begin(chipSelect)) {
         sd_ok_counter += 1;
-        xbee_uart( dev, "Card failed, or not present\r");
+        xbprintf("Card failed, or not present");
         // 失敗、何もしない
         delay(1000);
         if (sd_ok_counter == 60) {
-          xbee_uart( dev, "SD CARD DEATH\r");
+          xbprintf("SD CARD DEATH");
           renew_status(STATUS_SD, 0);
           break;
         }
       } else {
-        xbee_uart( dev, "SD OK\r");
+        xbprintf("SD OK");
         break;
       }
     }
@@ -87,7 +87,7 @@ void setup() {
 
   xbee_standby();  // 現状enter押下したのちに大文字のOを入力することによって脱出します。
 
-  xbee_uart( dev, "setup done\rchange to main phase\r");
+  xbprintf( "setup done\rchange to main phase");
 }
 
 
@@ -118,7 +118,7 @@ void loop() {
 
       case 1:
 
-        xbee_uart( dev, "start status1\r");
+        xbprintf( "start status1");
         delay(1000);
 
         write_timelog_sd(&rover);
@@ -126,7 +126,7 @@ void loop() {
         if (status1(&rover) == 1) {
           trans_phase(rover.status_number);
           rover.status_number += 1;
-          xbee_uart( dev, "success status1\r");
+          xbprintf( "success status1");
           break;
         } else {
           break;
@@ -134,22 +134,22 @@ void loop() {
         break;
 
       case 2:
-        xbee_uart( dev, "start status2\r");
+        xbprintf( "start status2");
 
         write_timelog_sd(&rover);
 
         if (status2(&rover) == 1) {
-          xbee_uart( dev, "clear status2\r");
+          xbprintf( "clear status2");
           trans_phase(rover.status_number);
           rover.status_number += 1;
-          xbee_uart( dev, "success status2\r");
+          xbprintf( "success status2");
           break;
         } else {
           break;
         }
 
       case 3:
-        xbee_uart( dev, "start status3\r");
+        xbprintf( "start status3");
 
         write_timelog_sd(&rover);
 
@@ -157,28 +157,28 @@ void loop() {
           trans_phase(rover.status_number);
           rover.status_number += 1;
           write_critical_sd(1);  // 着陸終了
-          xbee_uart( dev, "success status3\r");
+          xbprintf( "success status3");
           break;
         } else {
           break;
         }
 
       case 4:
-        xbee_uart( dev, "start status4\r");
+        xbprintf( "start status4");
 
         write_timelog_sd(&rover);
 
         if (status4(&rover) == 1) {
           trans_phase(rover.status_number);
           rover.status_number += 1;
-          xbee_uart( dev, "success status4\r");
+          xbprintf( "success status4");
           break;
         } else {
           break;
         }
 
       case 5:
-        xbee_uart( dev, "start status5\r");
+        xbprintf( "start status5");
 
         write_timelog_sd(&rover);
 
@@ -186,7 +186,7 @@ void loop() {
           if (status5(&rover) == 1) {
             trans_phase(rover.status_number);
             rover.status_number += 1;
-            xbee_uart( dev, "success status5-1\r");
+            xbprintf( "success status5-1");
             break;
           } else {
             break;
@@ -195,7 +195,7 @@ void loop() {
           if (status5_2(&rover) == 1) {
             trans_phase(rover.status_number);
             rover.status_number += 1;
-            xbee_uart( dev, "success status5-2\r");
+            xbprintf( "success status5-2");
             break;
           } else {
             break;
@@ -203,13 +203,13 @@ void loop() {
         }
 
       case 6:
-        xbee_uart( dev, "start status6\r");
+        xbprintf( "start status6");
         write_timelog_sd(&rover);
         if (status6(&rover) == 1) {
           trans_phase(rover.status_number);
           rover.status_number += 1;
           write_critical_sd(2);  // 制御終了
-          xbee_uart( dev, "success status6\r");
+          xbprintf( "success status6");
           break;
         } else {
           break;
@@ -218,7 +218,7 @@ void loop() {
 
   } while (0 < rover.status_number && rover.status_number < 7);
 
-  xbee_uart( dev, "reach status7\rEND CONTROL\r");
+  xbprintf( "reach status7\rEND CONTROL");
 
   while (1) {
     write_timelog_sd(&rover);

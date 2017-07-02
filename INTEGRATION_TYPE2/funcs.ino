@@ -5,7 +5,7 @@
   get_data_gps   GPSのデータを処理構造体に入れる
   get_gps   GPS構造体を返す
 
-  xbee_uart( dev,'\n');
+  xbprintf('\n');
   xbee_uart( dev,'以下gps構造体の中身表示');
   xbee_uart( dev,gps.latitude);
   xbee_uart( dev,gps.longitude);
