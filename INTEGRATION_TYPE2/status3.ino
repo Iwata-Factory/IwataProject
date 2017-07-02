@@ -2,7 +2,7 @@
 int status3(ROVER *rover) {  // Status3 降下の関数(着陸判定を行う)
 
   if (_S3_ == 0) {
-    xbee_uart( dev, "skip status3\r");
+    xbprintf( "skip status3");
     delay(1000);
     return 1;
   }
@@ -22,14 +22,14 @@ int status3(ROVER *rover) {  // Status3 降下の関数(着陸判定を行う)
 
       case 1:
         landing_flag = judge_landing_by_gps();  // GPS1による着陸判定
-        xbee_uart( dev, "end judge_landing_by_gps\r");
+        xbprintf( "end judge_landing_by_gps");
         // delay(30000);  // 本番では多めにdelay取った方がいいかも？
         delay(3000);
         break;
 
       case 2:  /* GPS1と2の振る舞いの違いを実装する必要がありますね by とうま*/
         landing_flag = judge_landing_by_gps();  // GPS2による着陸判定
-        xbee_uart( dev, "end judge_landing_by_gps\r");
+        xbprintf( "end judge_landing_by_gps");
         // delay(30000);
         delay(3000);
 
@@ -37,14 +37,14 @@ int status3(ROVER *rover) {  // Status3 降下の関数(着陸判定を行う)
 
       case 3:
         landing_flag = judge_landing_by_ac();
-        xbee_uart( dev, "end judge_landing_by_ac\r");  // 加速度センサによる着陸判定
+        xbprintf( "end judge_landing_by_ac");  // 加速度センサによる着陸判定
         // delay(30000);
         delay(3000);
 
         break;
 
       case 4:  // 着陸判定にかかるセンサ系の死亡
-        xbee_uart( dev, "sensor death ---> wait\r");
+        xbprintf( "sensor death ---> wait");
         delay(60000);  // 1分待つ
         // ここで治ったか判定する関数を回します。//
         check_realive();
@@ -81,10 +81,10 @@ int get_switch(ROVER *rover) {
   ------------------------------------------*/
 int judge_landing_by_gps() {
 
-  xbee_uart( dev, "call judge_landing_by_gps\r");
+  xbprintf( "call judge_landing_by_gps");
 
   if (LAND_JUDGE_FLAG == 0){
-    xbee_uart( dev, "skip judge_landing_by_gps\r");
+    xbprintf( "skip judge_landing_by_gps");
     return 1;
   }
 
@@ -102,7 +102,7 @@ int judge_landing_by_gps() {
 // GPSによる着陸判定の詳細な処理
 int judge_landing_by_gps_detail() {
 
-  xbee_uart( dev, "call judge_landing_by_gps_detail\r");
+  xbprintf( "call judge_landing_by_gps_detail");
 
   double alt_array[10] = {0.0};
   double alt_dif = 0.0;
@@ -128,10 +128,10 @@ int judge_landing_by_gps_detail() {
 
 int judge_landing_by_ac() {
 
-  xbee_uart( dev, "call judge_landing_by_ac\r");
+  xbprintf( "call judge_landing_by_ac");
 
   if (LAND_JUDGE_FLAG == 0){
-    xbee_uart( dev, "skip judge_landing_by_ac\r");
+    xbprintf( "skip judge_landing_by_ac");
     return 1;
   }
 
@@ -145,7 +145,7 @@ int judge_landing_by_ac() {
   // 加速度のサンプルを10個取る
   int i = 0;
 
-  //xbee_uart( dev,"加速度のサンプルを取得します");
+  //xbprintf("sampling ac");
 
   while (i < 10) {
     ac = get_ac(); // 加速度を取得
@@ -165,19 +165,19 @@ int judge_landing_by_ac() {
   ac_ave = value_ave(10, ac_array);  // 平均値を取る
 
   if (200 <= ac_ave && ac_ave <= 300) {  // パラメタは要調整
-    xbee_uart( dev, "success determine_landing\r");
+    xbprintf( "success determine_landing");
     return 1; //着陸判定にパス
   } else {
-    xbee_uart( dev, "false determine_landing\r");
+    xbprintf( "false determine_landing");
     return 0;
   }
 }
 
 // センサーの生死というか、復活を判定(現在実体なし)
 int check_realive(){
-  xbee_uart( dev, "call check_realive\r");
+  xbprintf( "call check_realive");
   if (LAND_JUDGE_FLAG == 0){
-    xbee_uart( dev, "skip check_realive\r");
+    xbprintf( "skip check_realive");
   return 1;
   }
   return 0;

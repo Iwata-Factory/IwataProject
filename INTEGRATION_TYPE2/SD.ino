@@ -20,7 +20,7 @@ int write_timelog_sd(ROVER *rover) {
     return 0;
   }
 
-  xbee_uart(dev, "call write_timelog_sd\r" );
+  xbprintf( "call write_timelog_sd" );
   rover->time_from_start = millis();  // 機体時間を取得
   int i = 0; // 試行回数記録用
   while (i < 30) { // 30回SDカードを開けなかったら諦める
@@ -33,13 +33,13 @@ int write_timelog_sd(ROVER *rover) {
       dataFile.print(",status:");
       dataFile.println(rover->status_number);
       dataFile.close();
-      xbee_uart(dev, "success write_timelog_sd\r" );
+      xbprintf( "success write_timelog_sd" );
       return 1; // 成功を返す
     } else {
       i += 1;
     }
   }
-  xbee_uart(dev, "false write_timelog_sd\r" );
+  xbprintf( "false write_timelog_sd" );
   return 0; // 失敗を返す
 }
 
@@ -51,7 +51,7 @@ int write_ac_sd(AC ac) {
     return 0;
   }
 
-  xbee_uart(dev, "call write_ac_s\r" );
+  xbprintf( "call write_ac_sd" );
   int i = 0; // 試行回数記録用
   while (i < 30) { // 30回SDカードを開けなかったら諦める
     File dataFile = SD.open(LOG_AC, FILE_WRITE);
@@ -62,13 +62,13 @@ int write_ac_sd(AC ac) {
       dataFile.println(ac.y);
       dataFile.println(ac.z);
       dataFile.close();
-      xbee_uart(dev, "success write_ac_sd\r" );
+      xbprintf( "success write_ac_sd" );
       return 1; // 成功を返す
     } else {
       i += 1;
     }
   }
-  xbee_uart(dev, "false write_ac_sd\r" );
+  xbprintf( "false write_ac_sd" );
   return 0; // 失敗を返す
 }
 
@@ -80,7 +80,7 @@ int write_tm_sd(TM tm) {
     return 0;
   }
 
-  xbee_uart(dev, "call write_tm_sd\r" );
+  xbprintf( "call write_tm_sd" );
   int i = 0; // 試行回数記録用
   while (i < 30) { // 30回SDカードを開けなかったら諦める
     File dataFile = SD.open(LOG_TM, FILE_WRITE);
@@ -91,13 +91,13 @@ int write_tm_sd(TM tm) {
       dataFile.println(tm.y);
       dataFile.println(tm.z);
       dataFile.close();
-      xbee_uart(dev, "success write_tm_sd\r" );
+      xbprintf( "success write_tm_sd" );
       return 1; // 成功を返す
     } else {
       i += 1;
     }
   }
-  xbee_uart(dev, "false write_tm_sd\r" );
+  xbprintf( "false write_tm_sd" );
   return 0; // 失敗を返す
 }
 
@@ -108,7 +108,7 @@ int write_gps_sd(GPS gps) {
     return 0;
   }
 
-  xbee_uart(dev, "call write_gps_sd\r" );
+  xbprintf( "call write_gps_sd" );
   int i = 0; // 試行回数記録用
   while (i < 30) { // 30回SDカードを開けなかったら諦める
 
@@ -132,13 +132,13 @@ int write_gps_sd(GPS gps) {
     }
 
       dataFile.close();
-      xbee_uart(dev, "succes write_gps_sd\r" );
+      xbprintf( "succes write_gps_sd" );
       return 1; // 成功を返す
     } else {
       i += 1;
     }
   }
-  xbee_uart(dev, "false write_gps_sd\r" );
+  xbprintf( "false write_gps_sd" );
   return 0; // 失敗を返す
 }
 
@@ -152,7 +152,7 @@ int write_critical_sd(int flag) {
   unsigned long time = millis();  // 機体時間を取得
   GPS gps;
 
-  xbee_uart(dev, "call write_critical_sd\r" );
+  xbprintf( "call write_critical_sd" );
 
   if (flag != 0) {  // セットアップ時以外はGPSを取る
     gps_get(&gps);
@@ -230,13 +230,13 @@ int write_critical_sd(int flag) {
     }
 
     dataFile.close();
-    xbee_uart(dev, "succes write_critical_sd\r" );
+    xbprintf( "succes write_critical_sd" );
       return 1; // 成功を返す
     } else {
       i += 1;
     }
   }
-  xbee_uart(dev, "false write_critical_sd\r" );
+  xbprintf( "false write_critical_sd" );
   return 0; // 失敗を返す
 }
 
@@ -285,7 +285,7 @@ int read_ac_sd(AC ac[100], int num) {
               ac[j].z = 0.0;
             }
 
-            //   xbee_uart( dev,z);
+            //   xbprintf(z);
             now_pos -= back_num; //  調べる位置を戻す
 
             if (now_pos == 0) { // ファイルの先頭に達してしまった場合
@@ -347,9 +347,9 @@ int read_tm_sd(TM tm[100], int num) {
 
           if (line == "*") { // もし*と書いてある行に達したらその下の三行を読む
             String x = dataFile.readStringUntil('\r');
-            // xbee_uart( dev,x);
+            // xbprintf(x);  // ここの動作については未確認です
             String y = dataFile.readStringUntil('\r');
-            //   xbee_uart( dev,y);
+            //   xbprintf(y);  // ここの動作は未確認です
             String z = dataFile.readStringUntil('\r');
             if ((x != "*") & (y != "*") & (z != "*")) { // 値が揃っていたなら代入、そうでないなら0のまま
               tm[j].x = x.toDouble();
@@ -361,7 +361,7 @@ int read_tm_sd(TM tm[100], int num) {
               tm[j].z = 0.0;
             }
 
-            //   xbee_uart( dev,z);
+            //   xbprintf(z);  // ここの動作は未確認
             now_pos -= back_num; //  調べる位置を戻す
 
             if (now_pos == 0) { // ファイルの先頭に達してしまった場合
@@ -453,7 +453,7 @@ int read_gps_sd(GPS gps[100], int num) {
               gps[j].distance = 0.0;
             }
 
-            //   xbee_uart( dev,z);
+            //   xbprintf(z);  // ここの動作については未確認
             now_pos -= back_num; //  調べる位置を戻す
 
             if (now_pos == 0) { // ファイルの先頭に達してしまった場合

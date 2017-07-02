@@ -227,8 +227,8 @@ double vector2d_inner(Vector2D v1, Vector2D v2) {
 }
 
 // get_distanceとget_distance_by_sphereの呼び出し元
-double distance_get(GPS* gps, POINT* point){
-  xbee_uart(dev, "call distance_get\r");
+double distance_get(GPS* gps, POINT* point) {
+  xbprintf( "call distance_get");
   double d = 0;
   if (SPHERE_FLAG == 0) {
     d = get_distance(gps, point);
@@ -237,9 +237,8 @@ double distance_get(GPS* gps, POINT* point){
   }
   char sz_d[16];
   dtostrf(d, 10, 6, sz_d);
-  xbee_uart(dev, "between_distance:");
-  xbee_uart(dev, sz_d);
-  xbee_uart(dev, "\r");
+  xbprintf("between_distance: %s", sz_d);
+
   return d;
 }
 
@@ -265,12 +264,12 @@ double get_distance_by_sphere(GPS* gps, POINT* point) {
 
   double d_lat = deg2rad(point->latitude - gps->latitude) ;  // 二地点の緯度の差
   double d_lng = deg2rad(point->longitude - gps->longitude);  // 経度の差
-  double ave_lat = deg2rad((point->latitude + gps->latitude)/2);  // 緯度の平均 (ラジアンで)
-   // 公式を適用
+  double ave_lat = deg2rad((point->latitude + gps->latitude) / 2); // 緯度の平均 (ラジアンで)
+  // 公式を適用
   double w = sqrt(1 - E2 * pow((sin(ave_lat)), 2));
-  double m = (A * (1 - E2))/pow(w, 3);
-  double n = A/w;
-  double distance = sqrt(pow((d_lat * m), 2) + pow(d_lng * n * cos(ave_lat), 2)); 
+  double m = (A * (1 - E2)) / pow(w, 3);
+  double n = A / w;
+  double distance = sqrt(pow((d_lat * m), 2) + pow(d_lng * n * cos(ave_lat), 2));
 
   return distance;
 }
@@ -278,7 +277,7 @@ double get_distance_by_sphere(GPS* gps, POINT* point) {
 
 // get_directionとget_direction_by_sphereの呼び出し元
 double direction_get(GPS* gps, POINT* point) {
-  xbee_uart(dev, "call direction_get\r");
+  xbprintf( "call direction_get");
   double dire = 0;
   if (SPHERE_FLAG == 0) {
     dire = get_direction(gps, point);
@@ -287,9 +286,8 @@ double direction_get(GPS* gps, POINT* point) {
   }
   char sz_dire[16];
   dtostrf(dire, 10, 6, sz_dire);
-  xbee_uart(dev, "between_direction:");
-  xbee_uart(dev, sz_dire);
-  xbee_uart(dev, "\r");
+  xbprintf("between_direction: %s", sz_dire);
+
   return dire;
 }
 

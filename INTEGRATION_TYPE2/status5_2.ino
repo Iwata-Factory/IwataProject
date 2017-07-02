@@ -7,12 +7,12 @@
 int status5_2(ROVER *rover) {
 
   if (_S5_ == 0) {
-    xbee_uart( dev, "skip status5_2\r");
+    xbprintf( "skip status5_2");
     delay(1000);
     return 1;
   }
 
-  xbee_uart( dev, "status5_2\r");
+  xbprintf( "status5_2");
 
   GPS gps;
   DRIVE pid;  // DRIVEの初期化
@@ -32,7 +32,7 @@ int status5_2(ROVER *rover) {
   double motor_control = 0.0;  // モーター制御量
 
   int i = 0; // do-whileの繰り返し数をカウント
-  xbee_uart( dev, "(PID) START\r");
+  xbprintf( "(PID) START");
 
   accel();  // ローバースタート
 
@@ -104,7 +104,7 @@ int status5_2(ROVER *rover) {
 
   } while ((rover->distance < 0) || (12 < rover->distance)); // 12m以内に入ったらループを抜ける(status5-2後半へ)
 
-  xbee_uart( dev, "(PID) END\r");
+  xbprintf( "(PID) END");
 
   brake();  // 止まる
 
@@ -114,7 +114,7 @@ int status5_2(ROVER *rover) {
   speaker(E_TONE);
   speaker(F_TONE);
 
-  xbee_uart( dev, "5_2 NORMAL START\r");
+  xbprintf( "5_2 NORMAL START");
 
   // ここからはstatus5と同じシーケンスで
   int j = 0; 
@@ -156,9 +156,9 @@ int arrange_between(int i, GPS *gps, ROVER *rover, double *last_distance){
 
       if (i % 600 == 0) {  // delayないし400回くらいごとにGPS更新
 
-      xbee_uart( dev, "call arrange_between_fifty\r");
+      xbprintf( "call arrange_between_fifty");
 
-      xbee_uart( dev, "(PID) GET GPS NEW\r");
+      xbprintf( "(PID) GET GPS NEW");
 
       gps_get(gps);  // GPSを取る
       // GPSが取得した値をROVERのステータスに反映する。
@@ -173,11 +173,11 @@ int arrange_between(int i, GPS *gps, ROVER *rover, double *last_distance){
         *last_distance = rover->distance;  // 前回距離を生成
         return 1;
       } else {
-        xbee_uart( dev, "check stack\r");
+        xbprintf( "check stack");
         if (fabs(rover->distance - *last_distance) < 3 && (0 < *last_distance)) {
           return stack_check_state(rover);
         } else {
-            xbee_uart( dev, "no problem\r");
+            xbprintf( "no problem");
             *last_distance = rover->distance; // スタックで無かった時はlast_distanceを更新
             return 1;
           }
@@ -219,7 +219,7 @@ int get_motor_control(DRIVE *pid_drive, double control_amount) {
 
 double get_this_devision(double last_devison, ROVER *rover, int i){
 
-    xbee_uart( dev, "call get_this_devision\r");
+    xbprintf( "call get_this_devision");
 
 
   double this_devision = get_angle_devision(rover->My_Direction, rover->Target_Direction);  // 自分から見た偏差を取得
@@ -242,7 +242,7 @@ double get_this_devision(double last_devison, ROVER *rover, int i){
 // 偏差が小さい時もしくは入力切り替え30回ごとに偏差の累積値を0にする関数
 int total2zero(double *total_devision, int i) {
   if ((fabs(*total_devision) < 15) || i % 30 == 0) { // 方位が合ってきたら累積値を0にする
-    xbee_uart( dev, "(PID) TOTAL ---> 0.0\r");
+    xbprintf( "(PID) TOTAL ---> 0.0");
     *total_devision = 0.0;
     return 1;
   } else {

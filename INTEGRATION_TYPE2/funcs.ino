@@ -53,7 +53,7 @@ int AnalyzeLineString( char szLineString[], GPS* gps) {
      これが出る場合は屋外とか通信状況よくなるようにしてください
   */
   if ( strncmp(*gps_status, "V", 1 ) == 0) {
-    xbee_uart( dev, "BAD communicatin condition of gps...\r");
+    xbprintf( "BAD communicatin condition of gps...");
   }
   gps->utc = atof(psz_utc);
   gps->Speed = atof(psz_Speed);
@@ -178,16 +178,8 @@ int gps_data_get(GPS* gps) {
   gps->Direction = direct;
   gps->distance = distance;
 
-  xbee_uart(dev, "latitude:");
-  xbee_uart(dev, sz_lat);
-  xbee_uart(dev, "   longitude:");
-  xbee_uart(dev, sz_long);
-  xbee_uart(dev, "\r");
-  xbee_uart(dev, "distance:");
-  xbee_uart(dev, sz_dis);
-  xbee_uart(dev, "   direct:");
-  xbee_uart(dev, sz_dire);
-  xbee_uart(dev, "\r");
+  xbprintf("latitude: %s  longitude: %s", sz_lat, sz_long);
+  xbprintf("distance: %s, direction: %s", sz_dis, sz_dire);
 
   return 1;
 }
@@ -195,11 +187,11 @@ int gps_data_get(GPS* gps) {
 int gps_get(GPS* gps) {
 
   if (GPS_GET_FLAG == 0) {
-    xbee_uart(dev, "GPS SKIP\r");
+    xbprintf( "GPS SKIP");
     return 1;
   }
 
-  xbee_uart(dev, "call gps_get\r");
+  xbprintf( "call gps_get");
   int t = 0;
   while (1) { //gpsの値が正常になるまで取り続ける
     int gps_flag = 0;   //gps_getの返り値保存
@@ -215,14 +207,14 @@ int gps_get(GPS* gps) {
     if (gps_flag == 2) {
       ;
 
-      //      xbee_uart( dev, "cant communicate with gps\r");
+      //      xbprintf( "cant communicate with gps");
 
     }
     if (gps_flag == 3) {
       ;
       //gpsとの通信はできているが値が変or GPRMCでない
 
-      //      xbee_uart( dev, "gps wrong or not GPRMC\r");
+      //      xbprintf( "gps wrong or not GPRMC");
 
     }
     if (gps_flag == 4) {
@@ -232,7 +224,7 @@ int gps_get(GPS* gps) {
       speaker(E_TONE);
 
       //通信ができて値も解析されたが緯度経度の値がバグってる
-      //      xbee_uart( dev, "wrong Lat or Long\r");
+      //      xbprintf( "wrong Lat or Long");
 
     }
     if (t >= 10000) {
@@ -288,7 +280,7 @@ int AnalyzeLineString_al( char szLineString[], double* altitude) {
      これが出る場合は屋外とか通信状況よくなるようにしてください
   */
   if ( strncmp(*psz_q, "0", 1 ) == 0) {
-    xbee_uart( dev, "BAD communicatin condition of gps...\r");
+    xbprintf( "BAD communicatin condition of gps...");
     return 0;
   }
   *altitude = atof(psz_altitude);
@@ -325,6 +317,9 @@ int gps_data_get_al(double* altitude) {
   xbee_uart(dev, sz_al);
   xbee_uart(dev, "\r");
 
+  xbprintf("xbp test");
+  xbprintf("altitude: %s", sz_al);
+
   return 1;
 }
 
@@ -335,7 +330,7 @@ int gps_data_get_al(double* altitude) {
 int gps_get_al(double* altitude) {
 
   if (GPS_GET_FLAG == 0) {
-    xbee_uart(dev, "GPS SKIP\r");
+    xbprintf( "GPS SKIP");
     return 1;
   }
   
@@ -352,14 +347,14 @@ int gps_get_al(double* altitude) {
     if (gps_flag == 2) {
       ;
 
-      //xbee_uart( dev,"cant communicate with gps\r");
+      //xbprintf("cant communicate with gps");
 
     }
     if (gps_flag == 3) {
       ;
       //gpsとの通信はできているが値が変or GPRMCでない
 
-      //xbee_uart( dev, "gps wrong or not GPRMC\r");
+      //xbprintf( "gps wrong or not GPRMC");
     }
     if (gps_flag == 4) {
       ;
@@ -368,7 +363,7 @@ int gps_get_al(double* altitude) {
       speaker(E_TONE);
 
       //通信ができて値も解析されたが緯度経度の値がバグってる
-      //xbee_uart( dev, "wrong Lat or Long\r");
+      //xbprintf( "wrong Lat or Long");
     }
     if (t >= 10000) {
       //およそ100秒間ダメなら向ける
@@ -455,7 +450,7 @@ double get_my_direction() {
 
   reset_tm();
 
-  xbee_uart( dev, "call get_my_direction() \r");
+  xbprintf( "call get_my_direction() ");
 
   double my_direction = -1.0;  // 返り値
   double direction_array[10] = { -1.0}; // 自身の方向を10サンプル取得する
@@ -514,7 +509,7 @@ double get_my_direction() {
 
   my_direction = degree_out(10, direction_array);  // 10サンプルから平均を計算
 
-  xbee_uart( dev, " direction of rover is ");
+  xbprintf( " direction of rover is ");
   xbee_send_1double(my_direction);
 
   return my_direction;  // 単位はdeg
@@ -534,7 +529,7 @@ double get_my_direction() {
 
 int turn_target_direction(double target_direction, double *my_Direction, int branch) {
 
-  xbee_uart( dev, "call turn_target_direction() \r");
+  xbprintf( "call turn_target_direction() ");
 
   int i = 0;  // 回転の試行回数をカウントしていく
 
@@ -559,12 +554,13 @@ int turn_target_direction(double target_direction, double *my_Direction, int bra
 
     if ((-20 < rotate_angle) && (rotate_angle < 20)) {
       rotate_angle = 0;
-      xbee_uart( dev, " success turn_target_direction() \r");
+      xbprintf( " success turn_target_direction() ");
       return 1;
     }
 
-    xbee_uart(dev, "needed rotation is ");
+    xbprintf( "needed rotation is ");
     xbee_send_1double(rotate_angle);
+    
     if (branch == 0) {
       rotate_angle = rotate_angle * (12 - i) / 10;  // 回転角度を収束させる
       go_rotate(rotate_angle);  // 回転を行う
@@ -573,7 +569,7 @@ int turn_target_direction(double target_direction, double *my_Direction, int bra
       go_rotate(rotate_angle);
     }
   } while (i < 5); // 5回回転してもダメだったら失敗
-  xbee_uart( dev, " false turn_target_direction() \r");
+  xbprintf( " false turn_target_direction() ");
   return 0;
 }
 
@@ -612,7 +608,7 @@ int tm_calibration() {
 
   reset_tm();
 
-  xbee_uart( dev, " call tm_calibration\r");
+  xbprintf( " call tm_calibration");
 
   AC ac_calib;  // キャリブレーション時の水平判定用
   int count_calib = 0;  // 非水平カウント用
@@ -694,17 +690,19 @@ int tm_calibration() {
       tm_x_offset = (max_x + min_x) / 2;
       tm_y_offset = (max_y + min_y) / 2;
 
-      xbee_uart( dev, "x_def, y_def \r");
+      xbprintf( "x_def, y_def ");
 
       dtostrf(x_def, 10, 6, xbee_send);
       xbee_uart(dev, xbee_send);
-
+      xbee_uart(dev, ",  ");
       dtostrf(y_def, 10, 6, xbee_send);
-      xbee_uart(dev, xbee_send);
-      xbee_uart( dev, "tm_x_offset, tm_y_offset \r");
+      xbprintf(xbee_send);
+      
+      xbprintf( "tm_x_offset, tm_y_offset ");
       xbee_send_2doubles(tm_x_offset, tm_y_offset);
+
       delay(500);
-      xbee_uart( dev, "success tm_calibration\r");
+      xbprintf( "success tm_calibration");
       return 1;
 
     } else {
@@ -751,18 +749,18 @@ double pid_get_control(double target_direction, double *my_Direction) {
 }
 
 int correct_posture() {
-  xbee_uart( dev, "call correct_posture\r");
+  xbprintf( "call correct_posture");
 
   for (int ji = 0; ji < 5; ji++) {  // 状態復旧
     if (judge_invered() == 1) {
-      xbee_uart( dev, "success correct_posture\r");
+      xbprintf( "success correct_posture");
       return 1;  // 問題なし
     } else {
-      xbee_uart( dev, "revive ---> go_suddenly_brake \r");
+      xbprintf( "revive ---> go_suddenly_brake ");
       go_suddenly_brake(3000);  // 急発進緩停止
     }
   }
-  xbee_uart( dev, "failed correct_posture\r");
+  xbprintf( "failed correct_posture");
   return 0;  // 反転したまま
 }
 
@@ -775,7 +773,7 @@ int correct_posture() {
 
 int judge_invered() {
 
-  xbee_uart( dev, "call judge_invered\r");
+  xbprintf( "call judge_invered");
 
   AC ac[10];  // サンプル数は10個とする
   double z[10] = {1.0};
@@ -790,7 +788,7 @@ int judge_invered() {
   if (ac_z_ave < -1.0) {  // この式が真なら反転している。
     return 0;
   } else {
-    xbee_uart( dev, "success judge_invered_revive\r");
+    xbprintf( "success judge_invered_revive");
     return 1; // 問題なし
   }
 }
@@ -805,7 +803,7 @@ int judge_invered() {
 
 int set_danger_area() {
 
-  xbee_uart( dev, "call set_danger_area\r");
+  xbprintf( "call set_danger_area");
 
   /* GPSとれなかったら死ぬからそのままでも良いけどgps_getの無限ループは避けたいbyとうま */
   GPS danger_gps;
@@ -819,13 +817,13 @@ int set_danger_area() {
   danger_area_points[0].latitude = danger_gps.latitude;
   danger_area_points[0].longitude = danger_gps.longitude;
 
-  xbee_uart( dev, "success set_danger_area\r");
+  xbprintf( "success set_danger_area");
   return 1;
 }
 
 // int set_danger_area() {
 
-//   xbee_uart( dev, "call set_danger_area\r");
+//   xbprintf( "call set_danger_area");
 
 //   /* GPSとれなかったら死ぬからそのままでも良いけどgps_getの無限ループは避けたいbyとうま */
 //   GPS danger_gps;
@@ -835,11 +833,11 @@ int set_danger_area() {
 //     if ((danger_area_points[i].latitude == -1.0 && danger_area_points[i].longitude == -1.0)) {
 //       danger_area_points[i].latitude = danger_gps.latitude;
 //       danger_area_points[i].longitude = danger_gps.longitude;
-//       xbee_uart( dev, "success set_danger_area\r");
+//       xbprintf( "success set_danger_area");
 //       return 1;  // 登録完了
 //     }
 //   }
-//   xbee_uart( dev, "false set_danger_area\r");
+//   xbprintf( "false set_danger_area");
 //   return 0;  // 登録が10箇所埋まっている
 // }
 
@@ -858,7 +856,7 @@ int check_danger_area() {
     return 1;
   }
 
-  xbee_uart( dev, "call check_danger_are\r");
+  xbprintf( "call check_danger_are");
 
   GPS check_gps;
   gps_get(&check_gps);
@@ -873,7 +871,7 @@ int check_danger_area() {
 
       if (danger_distance < 7) {  // 7m以内に居たらやばい
 
-        xbee_uart( dev, "DANGER ---> try escape\r");
+        xbprintf( "DANGER ---> try escape");
 
         escape_count += 1;
 
@@ -882,7 +880,7 @@ int check_danger_area() {
         if (escape_result == 1) {
           continue;  // 脱出出来たから次の危険エリアに引っかかって居ないかチェック
         } else {
-          xbee_uart( dev, "false check_danger_are\r");
+          xbprintf( "false check_danger_are");
           return 0;  // 危険エリアから脱出できなかった
         }
       }
@@ -890,10 +888,10 @@ int check_danger_area() {
   }
 
   if (escape_count == 0) {
-    xbee_uart( dev, "success1 check_danger_are\r");
+    xbprintf( "success1 check_danger_are");
     return 1; // 何も問題が起きなかった
   } else {
-    xbee_uart( dev, "success2 check_danger_are\r");
+    xbprintf( "success2 check_danger_are");
     return 2;
   }
 }
@@ -908,7 +906,7 @@ int check_danger_area() {
 
 int escape_danger_area(GPS *gps, POINT *point) {
 
-  xbee_uart( dev, "call escape_danger_area\r");
+  xbprintf( "call escape_danger_area");
 
   double escape_direction = direction_get(gps, point) + 180.0;  // 危険エリアの中心とは真逆の角度を指定
   double escape_my_direction = get_my_direction();  // 自身の角度を取得
@@ -924,12 +922,12 @@ int escape_danger_area(GPS *gps, POINT *point) {
     escape_count += 1;
 
     if (escape_count == 5) {
-      xbee_uart( dev, "false escape_danger_area\r");
+      xbprintf( "false escape_danger_area");
       return 0;  //  上手く離れることができなかった
     }
 
   }  while (10 < danger_distance); // GPS上で十分に離れるか試行回数十分
-  xbee_uart( dev, "success escape_danger_area\r");
+  xbprintf( "success escape_danger_area");
   return 1;  // 成功を返す
 }
 
@@ -947,7 +945,7 @@ int stack_check_state(ROVER *rover) {
     return 1;
   }
 
-  xbee_uart(dev, "call stack_check_state\r");
+  xbprintf( "call stack_check_state");
 
   if (STACK_MODE == 0) {
 
@@ -976,17 +974,17 @@ int stack_check_state(ROVER *rover) {
 
   int result = choose_behavior(rover, go_straight_flag, rotate_flag);  // 何をするべきか決定する
 
-  xbee_uart(dev, "end stack_check_state\r");
+  xbprintf( "end stack_check_state");
   return result;
 
 } else if (STACK_MODE == 1) {
 
-  xbee_uart(dev, "skip stack_check_state\r");
-  xbee_uart(dev, "jump to  escape_from_wadachi\r");
+  xbprintf( "skip stack_check_state");
+  xbprintf( "jump to  escape_from_wadachi");
 
   int result = choose_behavior(rover, 0, 1);  // 何をするべきか決定する
 
-  xbee_uart(dev, "end stack_check_state\r");
+  xbprintf( "end stack_check_state");
   return result;
 
 }
@@ -1018,7 +1016,7 @@ int choose_behavior(ROVER *rover, int go_straight_flag, int rotate_flag) {
 */
 int escape_from_wadachi(ROVER *rover) {
 
-  xbee_uart(dev, "call escape_from_wadachi\r");
+  xbprintf( "call escape_from_wadachi");
 
   POINT point_efw;
   POINT point_last;
@@ -1056,12 +1054,12 @@ int escape_from_wadachi(ROVER *rover) {
       try_counter += 1;
 
       if (10 <= try_counter) {
-        xbee_uart(dev, "false escape_from_wadachi\r");
+        xbprintf( "false escape_from_wadachi");
         return 0;
       }
 
     } while (distance_get(&gps_efw, &point_efw) < 7);
-    xbee_uart(dev, "success escape_from_wadachi\r");
+    xbprintf( "success escape_from_wadachi");
     return 1;
   }
 

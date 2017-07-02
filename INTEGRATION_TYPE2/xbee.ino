@@ -79,7 +79,7 @@ void xbprintf(char *fmt, ...) {
 }
 
 int xbee_standby() {
-  xbee_uart( dev, "waiting for your command...\r");
+  xbprintf( "waiting for your command...");
   int xb_rxcnt = 0;
 
   while (1) {  // コマンド受信待機

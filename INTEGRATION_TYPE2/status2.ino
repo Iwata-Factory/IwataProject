@@ -2,7 +2,7 @@
 int status2(ROVER *rover) {  // Status2 打ち上げの関数
 
   if (_S2_ == 0) {
-    xbee_uart( dev, "skip status2\r");
+    xbprintf( "skip status2");
     delay(1000);
     return 1;
   }
@@ -23,9 +23,7 @@ int judge_release() {
 
     for (i = 0; i < 5; i++) {
       light += digitalRead(LIGHT_PIN);
-      xbee_uart( dev, "count\r");
-      sprintf(xbee_send, "%d\r", i);
-      xbee_uart( dev, xbee_send);
+      xbprintf("count: %d", i);
       delay(1000);
       t++;
     }
