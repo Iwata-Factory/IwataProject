@@ -36,9 +36,6 @@ int status5_2(ROVER *rover) {
 
   accel();  // ローバースタート
 
-  // 実験用に区切り文字を書き込む
-  write_devision_sd(0.0, 1);
-
   double last_distance = -1; //スタック判定用
   double fifty_counter = 0;
   double ninety_counter = 0;  // 角度カウンター
@@ -252,7 +249,6 @@ int total2zero(double *total_devision, int i) {
     return 0;
   }
 }
-
 
 
 // PIDでの偏差を記録していく

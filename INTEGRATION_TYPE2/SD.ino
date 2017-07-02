@@ -115,6 +115,8 @@ int write_gps_sd(GPS gps) {
     File dataFile = SD.open(LOG_GPS, FILE_WRITE);
 
     if (dataFile) { // ファイルが開けたときの処理
+
+            if (GPS_GET_FLAG == 1){
       dataFile.seek(dataFile.size());
       dataFile.println("*"); // 記録の境目
       dataFile.println(gps.utc, 4);  // 下6桁
@@ -124,6 +126,10 @@ int write_gps_sd(GPS gps) {
       dataFile.println(gps.course, 4);
       dataFile.println(gps.Direction, 6);
       dataFile.println(gps.distance, 6);
+
+    } else {
+      dataFile.println("No GPS");
+    }
 
       dataFile.close();
       xbee_uart(dev, "succes write_gps_sd\r" );
@@ -147,7 +153,6 @@ int write_critical_sd(int flag) {
   GPS gps;
 
   xbee_uart(dev, "call write_critical_sd\r" );
-
 
   if (flag != 0) {  // セットアップ時以外はGPSを取る
     gps_get(&gps);
@@ -175,6 +180,8 @@ int write_critical_sd(int flag) {
 
       case 1:
 
+      if (GPS_GET_FLAG == 1){
+
       dataFile.println("");
       dataFile.println("**landing**"); // 記録開始
       dataFile.println("arduino-time");
@@ -188,9 +195,18 @@ int write_critical_sd(int flag) {
       dataFile.println("distance");
       dataFile.println(gps.distance, 6);
       dataFile.println("");
+    } else {
+      dataFile.println("");
+      dataFile.println("**landing**"); // 記録開始
+      dataFile.println("No GPS");
+      dataFile.println("");
+    }
 
 
       case 2:
+      if (GPS_GET_FLAG == 1){
+
+
       dataFile.println("");
       dataFile.println("**end-control**"); // 記録開始
       dataFile.println("arduino-time");
@@ -203,6 +219,13 @@ int write_critical_sd(int flag) {
       dataFile.println(gps.longitude, 6);
       dataFile.println("distance");
       dataFile.println(gps.distance, 6);
+
+    } else {
+      dataFile.println("");
+      dataFile.println("**end-control**"); // 記録開始
+      dataFile.println("No GPS");
+      dataFile.println("");
+    }
 
     }
 
