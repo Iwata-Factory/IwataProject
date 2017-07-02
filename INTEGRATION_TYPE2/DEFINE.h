@@ -13,7 +13,6 @@
 // 海抜制限
 #define ALT_REGULATION 100
 
-
 //SD関連
 #define LOG_TIME ("timelog.txt")
 #define LOG_AC ("aclog.txt")
@@ -22,8 +21,9 @@
 #define LOG_CRITICAL ("critical.txt")  // 現在使っていない
 
 //GPS関連
-#define PIN_GPS_Rx  10 // GPSのシリアル通信でデータを受信するピン
-#define PIN_GPS_Tx  12 // GPSのシリアル通信でデータを送信するピン
+#define PIN_GPS1_Rx  10 // GPSのシリアル通信でデータを受信するピン
+#define PIN_GPS2_Rx  12 // GPSのシリアル通信でデータを受信するピン
+#define PIN_GPS_TX_DUMMY 13 // GPSのTXピンのダミー
 #define LATITUDE_MINIMUM 35  //緯度の最小値
 #define LATITUDE_MAXIMUM 45  //緯度の最大値
 #define LONGITUDE_MINIMUM 133  //経度の最小値
@@ -139,7 +139,7 @@ byte flag_phase[8] = {
 };
 const int chipSelect = 4;
 // 地磁気のキャリブレーションに関するやつ
-// 6/26工房前にて
+// 6/26工房前にて(EMのオフセット/FMを選択した場合はフラグを立てればsetup内で書き換えます)
 double tm_x_offset = -92.0;
 double tm_y_offset = -102.0;
 double x_def = 688.0;
@@ -150,8 +150,10 @@ POINT danger_area_points[10];
 
 char xbee_send[XBEE_BUFFERSIZE];  //とりあえずのxbee送信用配列
 
-SoftwareSerial g_gps( PIN_GPS_Rx, PIN_GPS_Tx); // ArduinoとGPS間のシリアル通信用に
-Servo servo1;
+SoftwareSerial g_gps1( PIN_GPS1_Rx, PIN_GPS_TX_DUMMY); // ArduinoとGPS間のシリアル通信用に
+SoftwareSerial g_gps2( PIN_GPS2_Rx, PIN_GPS_TX_DUMMY); // ArduinoとGPS間のシリアル通信用に
+int use_which_gps = 1;  // 1か2どちらのGPSを使用するか
+int gps_timeout_counter_global = 0;
 
 #endif
 

@@ -11,7 +11,8 @@ void setup() {
   // 各種初期化処理
   Wire.begin();           //I2C通信の初期化
   Serial.begin(SERIAL_BAUDRATE); //シリアル通信の初期化
-  g_gps.begin(GPSBAUDRATE); //シリアル通信の初期化
+  g_gps1.begin(GPSBAUDRATE); //シリアル通信の初期化
+  g_gps2.begin(GPSBAUDRATE); //シリアル通信の初期化
 
   // i2c関連
   writeI2c(0x02, CONTINUOUS_MODE, HMC5883L); //HMC5883Lの初期設定0x02レジスタに0x00書き込み
@@ -62,9 +63,6 @@ void setup() {
   pinMode(LIGHT_PIN, INPUT);
   //距離センサ用のピン
   pinMode(DISTANCE, INPUT);
-  //サーボモーター用のピン
-  servo1.attach(26);
-
 
   // モーター用ピンの設定
   pinMode(M1_1, OUTPUT);
@@ -79,7 +77,7 @@ void setup() {
   set.leght2 = 1;
   rover_degital(set);
 
-  if (YOUR_MODEL == 1) {  // FMの場合値切り替え（暫定的処理
+  if (YOUR_MODEL == 1) {  // FMの場合の値に切り替え（暫定的処理
     tm_x_offset = 8.0;
     tm_y_offset = 182.5;
     x_def = 864.0;
