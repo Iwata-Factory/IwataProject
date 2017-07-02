@@ -26,7 +26,7 @@
 #define STACK_MODE 1  //0でスタック状況を確かめる。1で面倒なことをしない.
 
 
-#define STACK_EXP 0  // 1の場合スタックのフラグが立った地点までスキップ
+#define STACK_EXP 1  // 1の場合スタックのフラグが立った地点までスキップ
 
 
 #endif

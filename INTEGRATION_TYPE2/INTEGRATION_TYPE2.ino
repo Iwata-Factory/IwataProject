@@ -1,5 +1,4 @@
 /*
-  メインコード
 */
 
 #include "INCLUDE.h"
@@ -86,6 +85,23 @@ void setup() {
   digitalWrite(NICROM_2, LOW);
 
   xbee_standby();  // 現状enter押下したのちに大文字のOを入力することによって脱出します。
+
+  GPS xb_review;
+
+  for (int rv_cnt = 0; rv_cnt < 50; rv_cnt++) {
+    gps_get(&xb_review);
+    xbprintf("cnt%d\r*", rv_cnt);
+    dtostrf(xb_review.latitude, 10, 6, xbee_send);
+    xbprintf(xbee_send);
+    dtostrf(xb_review.longitude, 10, 6, xbee_send);
+    xbprintf(xbee_send);
+    dtostrf(xb_review.Direction, 10, 6, xbee_send);
+    xbprintf(xbee_send);
+    dtostrf(xb_review.distance, 10, 6, xbee_send);
+    xbprintf(xbee_send);
+    xbprintf("*");
+    delay(5000);
+  }
 
   xbee_uart( dev, "setup done\rchange to main phase\r");
 }
