@@ -4,6 +4,9 @@
 
 // これから色々な状態を試すことも多くなると思うのでここにフラグを記載します
 
+// 使用するモデル
+#define YOUR_MODEL 1  // 0でEM、1でFM
+
 // 各ステータスを飛ばすかどうか
 // 1なら実行、0なら飛ばします
 #define _S1_ 0
@@ -13,8 +16,8 @@
 #define _S5_ 1
 #define _S6_ 0
 
+// 設定用フラグ(1のほうが標準)
 #define XBEE_SWITCH 1  // 0にするとxbeeを全て無視します(今は動作不安定っぽい)
-
 #define GROUND1_FLAG 0 //ゴーアンドストップなら0.PIDなら1.
 #define LAND_JUDGE_FLAG 0 // 着陸判定を行うならば1.飛ばすなら0.
 #define CALIBRATION_FLAG 0 // キャリブレーションを行うなら1.しないなら0.
@@ -25,8 +28,8 @@
 #define GPS_GET_FLAG 1 // 0の時GPSを取らない
 #define STACK_MODE 1  //0でスタック状況を確かめる。1で面倒なことをしない.
 
-
-#define STACK_EXP 0  // 1の場合スタックのフラグが立った地点までスキップ
-
+// テスト用フラグ
+#define STACK_EXP 1  // 1の場合スタックのフラグが立った地点までスキップ
+#define NEAR_GOAL_STACK_EXP 1 // 本来のシーケンスではゴール付近でスタック判定は行いませんが、1にした場合はゴール付近でもスタック判定を行います.
 
 #endif

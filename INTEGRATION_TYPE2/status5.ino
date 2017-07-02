@@ -42,27 +42,26 @@ int status5(ROVER *rover) {
     rover->Target_Direction = gps.Direction;  //ターゲットの方向
     rover->distance = gps.distance;  // ターゲットまでの距離
 
-    if (0 < rover->distance && rover->distance < 10){
-    do_stack_check = 0;
-  }
-
+    if (0 < rover->distance && rover->distance < 10 && NEAR_GOAL_STACK_EXP != 1) {
+      do_stack_check = 0;
+    }
 
 
     // スタック判定
-    if (do_stack_check == 1){
-    if (i == 0) {  // last_distanceの初期値を生成
-      last_distance  = rover->distance;
-    } else {
-      if ((fabs(rover->distance - last_distance) < 2.5) && (0 < last_distance)) {  //Trueでスタック
-        int scs_result = stack_check_state(rover);
-        if (scs_result != 1) {
-          continue;
-        }
+    if (do_stack_check == 1) {
+      if (i == 0) {  // last_distanceの初期値を生成
+        last_distance  = rover->distance;
       } else {
-        last_distance = rover->distance; // スタックで無かった時はlast_distanceを更新
+        if ((fabs(rover->distance - last_distance) < 3) && (0 < last_distance)) {  //Trueでスタック
+          int scs_result = stack_check_state(rover);
+          if (scs_result != 1) {
+            continue;
+          }
+        } else {
+          last_distance = rover->distance; // スタックで無かった時はlast_distanceを更新
+        }
       }
     }
-  }
 
     if (0 <= rover->distance && rover->distance <= 2.8) {  // status6へ
       xbee_uart( dev, "near goal\r");
@@ -76,13 +75,13 @@ int status5(ROVER *rover) {
     turn_target_direction(rover->Target_Direction, &rover->My_Direction, 0);
 
     if (10 < rover->distance) {
-      go_straight(10000); // 10秒直進
+      // go_straight(10000); // 10秒直進
+      go_straight(5000); // 長距離直進
+
     } else {
-      go_straight(3000); // 3秒直進
+      go_straight(2500); //  短距離直進
     }
 
-    speaker(E_TONE);
-    speaker(F_TONE);
     speaker(G_TONE);
 
     i += 1;

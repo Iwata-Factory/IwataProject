@@ -79,6 +79,13 @@ void setup() {
   set.leght2 = 1;
   rover_degital(set);
 
+  if (YOUR_MODEL == 1) {  // FMの場合値切り替え（暫定的処理
+    tm_x_offset = 8.0;
+    tm_y_offset = 182.5;
+    x_def = 864.0;
+    y_def = 747.0;
+  }
+
   //ニクロム線のピンモード
   pinMode(NICROM_1, OUTPUT);
   pinMode(NICROM_2, OUTPUT);

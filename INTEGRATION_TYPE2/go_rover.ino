@@ -60,7 +60,12 @@ void go_rotate(double rotate) {
   // 回転を行う
   rover_degital(turn);
 
-  delay(rotate_time);
+ if (YOUR_MODEL == 1) {  // モデルよる差
+   rotate_time = rotate_time * 0.8;
+    delay(rotate_time);
+ } else {
+   delay(rotate_time);
+ }
 
   turn.right1 = 1;
   turn.right2 = 1;
@@ -69,7 +74,7 @@ void go_rotate(double rotate) {
 
   // 停止
   rover_degital(turn);
-  delay(1500);
+  delay(300);
 }
 
 
@@ -81,10 +86,17 @@ void go_straight(int go_time) {
   DRIVE go; //DRIVE型の宣言
   // 初期化
   int wait_time = go_time - 1300;
+  if (wait_time < 500) {  // 下限を設定
+    wait_time = 500;
+  }
+
+
   go.right1 = 1;
   go.right2 = 1;
   go.leght1 = 1;
   go.leght2 = 1;
+
+  if (YOUR_MODEL == 0){  // EM
   for (int i = 1; i < 256; i++) {
     go.right1 = 0;
     go.right2 = i;
@@ -107,12 +119,40 @@ void go_straight(int go_time) {
     rover_analog(go);
     delay(7);
   }
+} else if (YOUR_MODEL == 1) {  // FM(直進出来るように調整する)
+
+   for (int i = 1; i < 256; i++) {
+    go.right1 = 0;
+    go.right2 = i;
+    go.leght1 = 0;
+    go.leght2 = i;
+    rover_analog(go);
+    delay(2);
+  }
+  go.right1 = 0;
+  go.right2 = 1;
+  go.leght1 = 0;
+  go.leght2 = 1;
+  rover_degital(go);
+  delay(wait_time);
+  for (int i = 255; i > 0; i--) {
+    go.right1 = 0;
+    go.right2 = i;
+    go.leght1 = 0;
+    go.leght2 = i;
+    rover_analog(go);
+    delay(7);
+  }
+}
+
+
 
   go.right1 = 1;
   go.right2 = 1;
   go.leght1 = 1;
   go.leght2 = 1;
   rover_degital(go);
+
 }
 
 
@@ -120,6 +160,11 @@ void go_back(int go_time) {
   DRIVE go; //DRIVE型の宣言
   // 初期化
   int wait_time = go_time - 1024;
+
+  if (wait_time < 300) {  // waitタイムに下限を設定
+    wait_time = 300;
+  }
+
   go.right1 = 1;
   go.right2 = 1;
   go.leght1 = 1;

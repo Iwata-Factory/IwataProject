@@ -1032,9 +1032,8 @@ int escape_from_wadachi(ROVER *rover) {
 
     gps_get(&gps_efw);  // GPSを取得
 
-
-
-      go_back(1000);  // 少し下がる
+      go_back(1500);  // 少し下がる
+      
       rover->My_Direction = get_my_direction();
   
       double d_distance = distance_get(&gps_efw, &point_last);
@@ -1068,8 +1067,6 @@ int escape_from_wadachi(ROVER *rover) {
 int no_x_bee(byte a, char b) { // xbeeを潰す関数
   return 1;
 }
-
-
 
 
 /*
