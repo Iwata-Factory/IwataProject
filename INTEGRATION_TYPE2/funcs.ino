@@ -1039,7 +1039,7 @@ int escape_from_wadachi(ROVER *rover) {
   
       double d_distance = distance_get(&gps_efw, &point_last);
 
-      if (3 < d_distance) {  // 前回直進出来ている
+      if (2.5 < d_distance) {  // 前回直進出来ている
         double inverse_direction = direction_get(&gps_efw, &point_efw) + 180.0;
         turn_target_direction(inverse_direction, &rover->My_Direction, 0);
       } else {
