@@ -42,10 +42,15 @@
 #define ADXL345 0x53  //ADXL345(加速度センサ)のスレーブアドレス
 
 //モーター関連
-#define M1_1 4 // モーター制御用ピン
-#define M1_2 5 // モーター制御用ピン
-#define M2_1 7 // モーター制御用ピン
-#define M2_2 6 // モーター制御用ピン
+//#define M1_1 4 // モーター制御用ピン
+//#define M1_2 5 // モーター制御用ピン
+//#define M2_1 7 // モーター制御用ピン
+//#define M2_2 6 // モーター制御用ピン
+
+#define M1_1 7  // こっちが正しいっぽい
+#define M1_2 6
+#define M2_1 4
+#define M2_2 5
 
 // PID制御関連
 #define PID_SURPULS 0.400
