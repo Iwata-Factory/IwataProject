@@ -81,12 +81,6 @@ int ReadLineString( SoftwareSerial& serial,
   while ( 1 )
   {
 
-    // 受信するシリアルの切り替え
-    if (use_which_gps == 1) {
-      g_gps1.listen();
-    } else if (use_which_gps == 2) {
-      g_gps2.listen();
-    }
 
     char c = serial.read();
 
@@ -216,6 +210,14 @@ int gps_get(GPS* gps) {
     return 1;
   }
 
+      // 受信するシリアルの切り替え
+    if (use_which_gps == 1) {
+      g_gps1.listen();
+    } else if (use_which_gps == 2) {
+      g_gps2.listen();
+    }
+
+
   xbee_uart(dev, "call gps_get\r");
   int t = 0;
   while (1) { //gpsの値が正常になるまで取り続ける
@@ -262,8 +264,10 @@ int gps_get(GPS* gps) {
       if (gps_timeout_counter_global == 4) {  // 使用するGPSの切り替え
         gps_timeout_counter_global = 0;
         if (use_which_gps == 1) {
+          xbee_uart( dev, "change gps to 2\r");
           use_which_gps = 2;
         } else if (use_which_gps == 2) {
+          xbee_uart( dev, "change gps to 1\r");
           use_which_gps = 1;
         }
       }
@@ -380,6 +384,13 @@ int gps_get_al(double* altitude) {
     return 1;
   }
 
+      // 受信するシリアルの切り替え
+    if (use_which_gps == 1) {
+      g_gps1.listen();
+    } else if (use_which_gps == 2) {
+      g_gps2.listen();
+    }
+
   int t = 0;
   while (1) { //gpsの値が正常になるまで取り続ける
     int gps_flag = 0;   //gps_getの返り値保存
@@ -420,8 +431,10 @@ int gps_get_al(double* altitude) {
       if (gps_timeout_counter_global == 4) {  // 使用するGPSの切り替え
         gps_timeout_counter_global = 0;
         if (use_which_gps == 1) {
+          xbee_uart( dev, "change gps to 2\r");
           use_which_gps = 2;
         } else if (use_which_gps == 2) {
+          xbee_uart( dev, "change gps to 1\r");
           use_which_gps = 1;
         }
       }
@@ -907,7 +920,7 @@ int set_danger_area() {
 
 int check_danger_area() {
 
-  if (DANGER_AREA_FRAG == 1) {
+  if (DANGER_AREA_FRAG == 0) {
     return 1;
   }
 
