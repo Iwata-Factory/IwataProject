@@ -123,9 +123,14 @@ int write_gps_sd(GPS gps) {
         dataFile.println(gps.latitude, 6);
         dataFile.println(gps.longitude, 6);
         dataFile.println(gps.Speed, 4);
-        dataFile.println(gps.course, 4);
+        //        dataFile.println(gps.course, 4);
         dataFile.println(gps.Direction, 6);
         dataFile.println(gps.distance, 6);
+        if (use_which_gps == 1) {
+          dataFile.println("used gps1");
+        } else if (use_which_gps == 2) {
+          dataFile.println("used gps2");
+        }
 
       } else {
         dataFile.println("No GPS");
