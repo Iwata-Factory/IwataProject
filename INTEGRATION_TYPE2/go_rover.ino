@@ -39,6 +39,11 @@ void go_rotate(double rotate) {
   int rotate_time = 0; // 旋回する時間 /* これを求めるアルゴリズムの用意は必要 */
 
   // どちら向きに回転するかを判断
+
+  if (YOUR_MODEL == 1){  // FMではこのようになるみたいです。実験で発覚
+    rotate = -1 * rotate;
+  }
+
   if (0 < rotate) {  // 右
     turn.right1 = 0;
     turn.right2 = 1;
@@ -121,31 +126,23 @@ void go_straight(int go_time) {
   }
 } else if (YOUR_MODEL == 1) {  // FM(直進出来るように調整する)
 
-   for (int i = 1; i < 256; i++) {
-    go.right1 = 0;
-    go.right2 = i;
-    go.leght1 = 0;
-    go.leght2 = i;
-    rover_analog(go);
-    delay(2);
-  }
+  // 直進するように調整したパラメタ
   go.right1 = 0;
-  go.right2 = 1;
+  go.right2 = 225;
   go.leght1 = 0;
-  go.leght2 = 1;
-  rover_degital(go);
+  go.leght2 = 255;
+  rover_analog(go);
+
   delay(wait_time);
-  for (int i = 255; i > 0; i--) {
+  for (int i = 255; i - 30> 0; i--) {
     go.right1 = 0;
-    go.right2 = i;
+    go.right2 = i - 30;
     go.leght1 = 0;
     go.leght2 = i;
     rover_analog(go);
     delay(7);
   }
 }
-
-
 
   go.right1 = 1;
   go.right2 = 1;

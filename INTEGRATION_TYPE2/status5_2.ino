@@ -3,6 +3,8 @@
 
 //とりあえず一周回りました
 
+//・90度超えて止まるやつを切った
+
 
 int status5_2(ROVER *rover) {
 
@@ -61,11 +63,12 @@ int status5_2(ROVER *rover) {
       // write_devision_sd(this_devision, 0);  // 偏差を記録（実験用）
 
 
-      if (90 < fabs(this_devision) || i == 1800) {  // 偏角が90度より大きくなった時かiが1200になったとき
+      if (90 < fabs(this_devision) || i == 50) {  // 偏角が90度より大きくなった時かiが1200になったとき
 
-          ninety_counter += 1;
+          // ninety_counter += 1;
+        ;
 
-          if (ninety_counter == 10 || i == 1800) {  // 10連かiが600で発動(ここのカウンタ要調整)
+          if (ninety_counter == 10 || i == 50) {  // 10連かiが600で発動(ここのカウンタ要調整)
 
           brake();  // 止まる
           turn_target_direction(rover->Target_Direction, &rover->My_Direction, 0);  // ターゲット方向を向き直す
@@ -154,7 +157,7 @@ int status5_2(ROVER *rover) {
 // iが400で割れる時に色々やる
 int arrange_between(int i, GPS *gps, ROVER *rover, double *last_distance){
 
-      if (i % 600 == 0) {  // delayないし400回くらいごとにGPS更新
+      if (i % 200 == 0) {  // delayないし200回くらいごとにGPS更新
 
       xbee_uart( dev, "call arrange_between_fifty\r");
 

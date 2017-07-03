@@ -46,7 +46,6 @@ int status5(ROVER *rover) {
       do_stack_check = 0;
     }
 
-
     // スタック判定
     if (do_stack_check == 1) {
       if (i == 0) {  // last_distanceの初期値を生成
