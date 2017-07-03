@@ -71,5 +71,5 @@ int cut_nicrom() {
   xbee_uart(dev, "end cut_nicrom\n");
   speaker(G_TONE);
   return 1;
-  
+
 }

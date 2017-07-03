@@ -210,12 +210,12 @@ int gps_get(GPS* gps) {
     return 1;
   }
 
-      // 受信するシリアルの切り替え
-    if (use_which_gps == 1) {
-      g_gps1.listen();
-    } else if (use_which_gps == 2) {
-      g_gps2.listen();
-    }
+  // 受信するシリアルの切り替え
+  if (use_which_gps == 1) {
+    g_gps1.listen();
+  } else if (use_which_gps == 2) {
+    g_gps2.listen();
+  }
 
 
   xbee_uart(dev, "call gps_get\r");
@@ -384,12 +384,12 @@ int gps_get_al(double* altitude) {
     return 1;
   }
 
-      // 受信するシリアルの切り替え
-    if (use_which_gps == 1) {
-      g_gps1.listen();
-    } else if (use_which_gps == 2) {
-      g_gps2.listen();
-    }
+  // 受信するシリアルの切り替え
+  if (use_which_gps == 1) {
+    g_gps1.listen();
+  } else if (use_which_gps == 2) {
+    g_gps2.listen();
+  }
 
   int t = 0;
   while (1) { //gpsの値が正常になるまで取り続ける

@@ -40,7 +40,7 @@ void go_rotate(double rotate) {
 
   // どちら向きに回転するかを判断
 
-  if (YOUR_MODEL == 1){  // FMではこのようになるみたいです。実験で発覚
+  if (YOUR_MODEL == 1) { // FMではこのようになるみたいです。実験で発覚
     rotate = -1 * rotate;
   }
 
@@ -65,12 +65,12 @@ void go_rotate(double rotate) {
   // 回転を行う
   rover_degital(turn);
 
- if (YOUR_MODEL == 1) {  // モデルよる差
-   rotate_time = rotate_time * 0.8;
+  if (YOUR_MODEL == 1) {  // モデルよる差
+    rotate_time = rotate_time * 0.8;
     delay(rotate_time);
- } else {
-   delay(rotate_time);
- }
+  } else {
+    delay(rotate_time);
+  }
 
   turn.right1 = 1;
   turn.right2 = 1;
@@ -101,48 +101,48 @@ void go_straight(int go_time) {
   go.leght1 = 1;
   go.leght2 = 1;
 
-  if (YOUR_MODEL == 0){  // EM
-  for (int i = 1; i < 256; i++) {
+  if (YOUR_MODEL == 0) { // EM
+    for (int i = 1; i < 256; i++) {
+      go.right1 = 0;
+      go.right2 = i;
+      go.leght1 = 0;
+      go.leght2 = i;
+      rover_analog(go);
+      delay(2);
+    }
     go.right1 = 0;
-    go.right2 = i;
+    go.right2 = 1;
     go.leght1 = 0;
-    go.leght2 = i;
-    rover_analog(go);
-    delay(2);
-  }
-  go.right1 = 0;
-  go.right2 = 1;
-  go.leght1 = 0;
-  go.leght2 = 1;
-  rover_degital(go);
-  delay(wait_time);
-  for (int i = 255; i > 0; i--) {
-    go.right1 = 0;
-    go.right2 = i;
-    go.leght1 = 0;
-    go.leght2 = i;
-    rover_analog(go);
-    delay(7);
-  }
-} else if (YOUR_MODEL == 1) {  // FM(直進出来るように調整する)
+    go.leght2 = 1;
+    rover_degital(go);
+    delay(wait_time);
+    for (int i = 255; i > 0; i--) {
+      go.right1 = 0;
+      go.right2 = i;
+      go.leght1 = 0;
+      go.leght2 = i;
+      rover_analog(go);
+      delay(7);
+    }
+  } else if (YOUR_MODEL == 1) {  // FM(直進出来るように調整する)
 
-  // 直進するように調整したパラメタ
-  go.right1 = 0;
-  go.right2 = 225;
-  go.leght1 = 0;
-  go.leght2 = 255;
-  rover_analog(go);
-
-  delay(wait_time);
-  for (int i = 255; i - 30> 0; i--) {
+    // 直進するように調整したパラメタ
     go.right1 = 0;
-    go.right2 = i - 30;
+    go.right2 = 225;
     go.leght1 = 0;
-    go.leght2 = i;
+    go.leght2 = 255;
     rover_analog(go);
-    delay(7);
+
+    delay(wait_time);
+    for (int i = 255; i - 30 > 0; i--) {
+      go.right1 = 0;
+      go.right2 = i - 30;
+      go.leght1 = 0;
+      go.leght2 = i;
+      rover_analog(go);
+      delay(7);
+    }
   }
-}
 
   go.right1 = 1;
   go.right2 = 1;

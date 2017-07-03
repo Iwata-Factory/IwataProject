@@ -19,7 +19,7 @@ int status5_2(ROVER *rover) {
   GPS gps;
   DRIVE pid;  // DRIVEの初期化
 
-    if (STACK_EXP == 1) {
+  if (STACK_EXP == 1) {
     stack_check_state(rover);  // スタックのフラグを立てる
   }
 
@@ -44,49 +44,49 @@ int status5_2(ROVER *rover) {
 
   do {
 
-    if(arrange_between(i, &gps, rover, &last_distance) == 0){  // 状態のチェック
+    if (arrange_between(i, &gps, rover, &last_distance) == 0) { // 状態のチェック
       continue;
     }
 
 
-      do {
+    do {
       rover->My_Direction = get_my_direction();
       this_devision = get_this_devision(last_devison, rover, i);  // 偏差取得（外れ値除去）(roverはadress)
       fifty_counter += 1;
-      if (fifty_counter == 4){
+      if (fifty_counter == 4) {
         fifty_counter = 0;
         break;
       }
-      } while(this_devision == 500);
+    } while (this_devision == 500);
 
 
-      // write_devision_sd(this_devision, 0);  // 偏差を記録（実験用）
+    // write_devision_sd(this_devision, 0);  // 偏差を記録（実験用）
 
 
-      if (90 < fabs(this_devision) || i == 50) {  // 偏角が90度より大きくなった時かiが1200になったとき
+    if (90 < fabs(this_devision) || i == 50) {  // 偏角が90度より大きくなった時かiが1200になったとき
 
-          // ninety_counter += 1;
-        ;
+      // ninety_counter += 1;
+      ;
 
-          if (ninety_counter == 10 || i == 50) {  // 10連かiが600で発動(ここのカウンタ要調整)
+      if (ninety_counter == 10 || i == 50) {  // 10連かiが600で発動(ここのカウンタ要調整)
 
-          brake();  // 止まる
-          turn_target_direction(rover->Target_Direction, &rover->My_Direction, 0);  // ターゲット方向を向き直す
-          accel();
-          i = 0;  // iを初期化(0に戻す)
-          last_distance = -1;  // last_distanceを初期化
-          total_devision = 0;  // 偏差の累積値を初期化
-          this_devision = 0;
-          last_devison = 0;
-          ninety_counter = 0;  // カウンターリセット
-          control_amount = 0;
-          motor_control = 0;
-          continue;
-        }
-
-      } else {  // カウンターリセット
-        ninety_counter = 0;
+        brake();  // 止まる
+        turn_target_direction(rover->Target_Direction, &rover->My_Direction, 0);  // ターゲット方向を向き直す
+        accel();
+        i = 0;  // iを初期化(0に戻す)
+        last_distance = -1;  // last_distanceを初期化
+        total_devision = 0;  // 偏差の累積値を初期化
+        this_devision = 0;
+        last_devison = 0;
+        ninety_counter = 0;  // カウンターリセット
+        control_amount = 0;
+        motor_control = 0;
+        continue;
       }
+
+    } else {  // カウンターリセット
+      ninety_counter = 0;
+    }
 
 
     total2zero(&total_devision, i);
@@ -120,10 +120,10 @@ int status5_2(ROVER *rover) {
   xbee_uart( dev, "5_2 NORMAL START\r");
 
   // ここからはstatus5と同じシーケンスで
-  int j = 0; 
+  int j = 0;
   do {
 
-        // GPS情報を取得
+    // GPS情報を取得
 
     gps_get(&gps);
     // GPSが取得した値を自身のステータスに反映する。
@@ -147,7 +147,7 @@ int status5_2(ROVER *rover) {
 
     j += 1;
 
-  } while(1);
+  } while (1);
 
   return 1;
 
@@ -155,39 +155,39 @@ int status5_2(ROVER *rover) {
 
 
 // iが400で割れる時に色々やる
-int arrange_between(int i, GPS *gps, ROVER *rover, double *last_distance){
+int arrange_between(int i, GPS *gps, ROVER *rover, double *last_distance) {
 
-      if (i % 200 == 0) {  // delayないし200回くらいごとにGPS更新
+  if (i % 200 == 0) {  // delayないし200回くらいごとにGPS更新
 
-      xbee_uart( dev, "call arrange_between_fifty\r");
+    xbee_uart( dev, "call arrange_between_fifty\r");
 
-      xbee_uart( dev, "(PID) GET GPS NEW\r");
+    xbee_uart( dev, "(PID) GET GPS NEW\r");
 
-      gps_get(gps);  // GPSを取る
-      // GPSが取得した値をROVERのステータスに反映する。
-      rover->latitude = gps->latitude;  // 緯度
-      rover->longitude = gps->longitude;  //経度
-      rover->Target_Direction = gps->Direction;  //ターゲットの方向
-      rover->distance = gps->distance;  // ターゲットまでの距離
-      write_gps_sd(*gps);  // 自身の位置をsdに記録
-      write_timelog_sd(rover);
+    gps_get(gps);  // GPSを取る
+    // GPSが取得した値をROVERのステータスに反映する。
+    rover->latitude = gps->latitude;  // 緯度
+    rover->longitude = gps->longitude;  //経度
+    rover->Target_Direction = gps->Direction;  //ターゲットの方向
+    rover->distance = gps->distance;  // ターゲットまでの距離
+    write_gps_sd(*gps);  // 自身の位置をsdに記録
+    write_timelog_sd(rover);
 
-      if (i == 0) {
-        *last_distance = rover->distance;  // 前回距離を生成
-        return 1;
-      } else {
-        xbee_uart( dev, "check stack\r");
-        if (fabs(rover->distance - *last_distance) < 3 && (0 < *last_distance)) {
-          return stack_check_state(rover);
-        } else {
-            xbee_uart( dev, "no problem\r");
-            *last_distance = rover->distance; // スタックで無かった時はlast_distanceを更新
-            return 1;
-          }
-        }
-      }
-
+    if (i == 0) {
+      *last_distance = rover->distance;  // 前回距離を生成
       return 1;
+    } else {
+      xbee_uart( dev, "check stack\r");
+      if (fabs(rover->distance - *last_distance) < 3 && (0 < *last_distance)) {
+        return stack_check_state(rover);
+      } else {
+        xbee_uart( dev, "no problem\r");
+        *last_distance = rover->distance; // スタックで無かった時はlast_distanceを更新
+        return 1;
+      }
+    }
+  }
+
+  return 1;
 }
 
 
@@ -220,9 +220,9 @@ int get_motor_control(DRIVE *pid_drive, double control_amount) {
   return 1;
 }
 
-double get_this_devision(double last_devison, ROVER *rover, int i){
+double get_this_devision(double last_devison, ROVER *rover, int i) {
 
-    xbee_uart( dev, "call get_this_devision\r");
+  xbee_uart( dev, "call get_this_devision\r");
 
 
   double this_devision = get_angle_devision(rover->My_Direction, rover->Target_Direction);  // 自分から見た偏差を取得
@@ -258,7 +258,7 @@ int total2zero(double *total_devision, int i) {
 /*実験用の関数であとで消しますbyとうま*/
 int write_devision_sd(double devision, int flag) {
 
-  if (SD_LOG_FLAG == 0){  // スキップ
+  if (SD_LOG_FLAG == 0) { // スキップ
     return 0;
   }
 

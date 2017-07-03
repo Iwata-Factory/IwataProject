@@ -83,7 +83,7 @@ int judge_landing_by_gps() {
 
   xbee_uart( dev, "call judge_landing_by_gps\r");
 
-  if (LAND_JUDGE_FLAG == 0){
+  if (LAND_JUDGE_FLAG == 0) {
     xbee_uart( dev, "skip judge_landing_by_gps\r");
     return 1;
   }
@@ -109,7 +109,7 @@ int judge_landing_by_gps_detail() {
 
   for (int i = 0; i < 10; i++) {
     gps_get_al(&alt_array[i]);
-//    xbee_send_1double(alt_array[i]);  // ここでバグるかもしれない（動作確認まだ）なので注意
+    //    xbee_send_1double(alt_array[i]);  // ここでバグるかもしれない（動作確認まだ）なので注意
     delay(1000);
 
     if ((0 < i) && ( 3 < (alt_array[i - 1] - alt_array[i]))) {  // 前回-今回
@@ -130,7 +130,7 @@ int judge_landing_by_ac() {
 
   xbee_uart( dev, "call judge_landing_by_ac\r");
 
-  if (LAND_JUDGE_FLAG == 0){
+  if (LAND_JUDGE_FLAG == 0) {
     xbee_uart( dev, "skip judge_landing_by_ac\r");
     return 1;
   }
@@ -174,11 +174,11 @@ int judge_landing_by_ac() {
 }
 
 // センサーの生死というか、復活を判定(現在実体なし)
-int check_realive(){
+int check_realive() {
   xbee_uart( dev, "call check_realive\r");
-  if (LAND_JUDGE_FLAG == 0){
+  if (LAND_JUDGE_FLAG == 0) {
     xbee_uart( dev, "skip check_realive\r");
-  return 1;
+    return 1;
   }
   return 0;
 }

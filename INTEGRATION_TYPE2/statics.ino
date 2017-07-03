@@ -227,7 +227,7 @@ double vector2d_inner(Vector2D v1, Vector2D v2) {
 }
 
 // get_distanceとget_distance_by_sphereの呼び出し元
-double distance_get(GPS* gps, POINT* point){
+double distance_get(GPS* gps, POINT* point) {
   xbee_uart(dev, "call distance_get\r");
   double d = 0;
   if (SPHERE_FLAG == 0) {
@@ -265,12 +265,12 @@ double get_distance_by_sphere(GPS* gps, POINT* point) {
 
   double d_lat = deg2rad(point->latitude - gps->latitude) ;  // 二地点の緯度の差
   double d_lng = deg2rad(point->longitude - gps->longitude);  // 経度の差
-  double ave_lat = deg2rad((point->latitude + gps->latitude)/2);  // 緯度の平均 (ラジアンで)
-   // 公式を適用
+  double ave_lat = deg2rad((point->latitude + gps->latitude) / 2); // 緯度の平均 (ラジアンで)
+  // 公式を適用
   double w = sqrt(1 - E2 * pow((sin(ave_lat)), 2));
-  double m = (A * (1 - E2))/pow(w, 3);
-  double n = A/w;
-  double distance = sqrt(pow((d_lat * m), 2) + pow(d_lng * n * cos(ave_lat), 2)); 
+  double m = (A * (1 - E2)) / pow(w, 3);
+  double n = A / w;
+  double distance = sqrt(pow((d_lat * m), 2) + pow(d_lng * n * cos(ave_lat), 2));
 
   return distance;
 }
