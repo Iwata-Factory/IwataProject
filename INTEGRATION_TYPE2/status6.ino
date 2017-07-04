@@ -5,7 +5,5 @@ int status6(ROVER *rover) {
     delay(1000);
     return 1;
   }
-
   return 1;
 }
-

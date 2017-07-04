@@ -37,6 +37,7 @@ int judge_release() {
     light = 0;
 
     if ( t >= 1000) { //仮に1000秒たったら強制で投下されたと判断する
+//      ac_dora();
       return 1;
     }
 

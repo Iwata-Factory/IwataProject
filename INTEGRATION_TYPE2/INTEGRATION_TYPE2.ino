@@ -1,5 +1,5 @@
 /*
-  メインコード
+  メインコード dead or alive5
 */
 
 #include "INCLUDE.h"

@@ -25,7 +25,12 @@ int status5(ROVER *rover) {
     }
 
     if (i % 30 == 0) { // たまにキャリブレーションする
-      tm_calibration();  // 条件が揃ったらキャリブレーション
+      if (rover->ac_arive == 1) {
+        tm_calibration();  // 条件が揃ったらキャリブレーション
+      }
+      else{
+        xbprintf("AC DEAD SKIP CALIB");
+        }
     }
 
     if (5 <= i) {  // 5回目からは危険エリアチェック
@@ -42,27 +47,27 @@ int status5(ROVER *rover) {
     rover->Target_Direction = gps.Direction;  //ターゲットの方向
     rover->distance = gps.distance;  // ターゲットまでの距離
 
-    if (0 < rover->distance && rover->distance < 10){
-    do_stack_check = 0;
-  }
+    if (0 < rover->distance && rover->distance < 10) {
+      do_stack_check = 0;
+    }
 
 
 
     // スタック判定
-    if (do_stack_check == 1){
-    if (i == 0) {  // last_distanceの初期値を生成
-      last_distance  = rover->distance;
-    } else {
-      if ((fabs(rover->distance - last_distance) < 2.5) && (0 < last_distance)) {  //Trueでスタック
-        int scs_result = stack_check_state(rover);
-        if (scs_result != 1) {
-          continue;
-        }
+    if (do_stack_check == 1) {
+      if (i == 0) {  // last_distanceの初期値を生成
+        last_distance  = rover->distance;
       } else {
-        last_distance = rover->distance; // スタックで無かった時はlast_distanceを更新
+        if ((fabs(rover->distance - last_distance) < 2.5) && (0 < last_distance)) {  //Trueでスタック
+          int scs_result = stack_check_state(rover);
+          if (scs_result != 1) {
+            continue;
+          }
+        } else {
+          last_distance = rover->distance; // スタックで無かった時はlast_distanceを更新
+        }
       }
     }
-  }
 
     if (0 <= rover->distance && rover->distance <= 2.8) {  // status6へ
       xbee_uart( dev, "near goal\r");

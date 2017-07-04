@@ -76,8 +76,8 @@ int AnalyzeLineString( char szLineString[], GPS* gps) {
 // １行文字列の読み込み
 // 0 : 読み取り途中。1 : 読み取り完了。
 int ReadLineString( SoftwareSerial& serial,
-  char szReadBuffer[], const int ciReadBufferSize, int& riIndexChar,
-  char szLineString[], const int ciLineStringSize ) {
+                    char szReadBuffer[], const int ciReadBufferSize, int& riIndexChar,
+                    char szLineString[], const int ciLineStringSize ) {
   while ( 1 )
   {
 
@@ -118,8 +118,8 @@ int gps_data_get(GPS* gps) {
   char szLineString[READBUFFERSIZE];
 
   if ( !ReadLineString( g_gps,
-    g_szReadBuffer, READBUFFERSIZE, g_iIndexChar,
-    szLineString, READBUFFERSIZE ) )
+                        g_szReadBuffer, READBUFFERSIZE, g_iIndexChar,
+                        szLineString, READBUFFERSIZE ) )
   { // 読み取り途中
     return 2;
   }
@@ -303,8 +303,8 @@ int gps_data_get_al(double* altitude) {
   char szLineString[READBUFFERSIZE];
 
   if ( !ReadLineString( g_gps,
-    g_szReadBuffer, READBUFFERSIZE, g_iIndexChar,
-    szLineString, READBUFFERSIZE ) )
+                        g_szReadBuffer, READBUFFERSIZE, g_iIndexChar,
+                        szLineString, READBUFFERSIZE ) )
   { // 読み取り途中
     return 2;
   }
@@ -338,7 +338,7 @@ int gps_get_al(double* altitude) {
     xbee_uart(dev, "GPS SKIP\r");
     return 1;
   }
-  
+
   int t = 0;
   while (1) { //gpsの値が正常になるまで取り続ける
     int gps_flag = 0;   //gps_getの返り値保存
@@ -438,9 +438,9 @@ TM get_tm() {
 }
 
 /*-----------reset_tm()-----------------
- * 地磁気のロックレジスタをリセットする関数
----------------------------------------- */
-int reset_tm(){
+   地磁気のロックレジスタをリセットする関数
+  ---------------------------------------- */
+int reset_tm() {
   writeI2c(0x02, SINGLE_MODE, HMC5883L); //HMC5883Lの初期設定0x02レジスタに0x01書き込み
   writeI2c(0x02, CONTINUOUS_MODE, HMC5883L); //HMC5883Lの初期設定0x02レジスタに0x00書き込み
 }
@@ -452,6 +452,10 @@ int reset_tm(){
   ------------------------------------------*/
 
 double get_my_direction() {
+
+  if(STATUS_TM == 0){  // tm死亡判定
+    return -1;
+  }
 
   reset_tm();
 
@@ -506,6 +510,7 @@ double get_my_direction() {
       error_c += 1;
 
       if (error_c == 100) {  // 100回連続で取得失敗したら失敗を返す
+        tm_dora();
         return -1;
       }
 
@@ -709,7 +714,10 @@ int tm_calibration() {
 
     } else {
       count_calib += 1;
-      go_straight(1500);  //水平な場所を目指す
+      go_straight(1500);  //水平な場所を目指す  ac生死判定？？
+      if(count_calib == 4){
+//        ac_dora();
+      }
     }
   }
 }
@@ -951,45 +959,45 @@ int stack_check_state(ROVER *rover) {
 
   if (STACK_MODE == 0) {
 
-  int go_straight_flag = 0;  // フラグ定義
-  int rotate_flag = 0;
+    int go_straight_flag = 0;  // フラグ定義
+    int rotate_flag = 0;
 
-  GPS gps_scs;
-  POINT point_scs;
-  get_rover_point(&point_scs);  // GPSで位置を記録
+    GPS gps_scs;
+    POINT point_scs;
+    get_rover_point(&point_scs);  // GPSで位置を記録
 
-  go_straight(10000);  // とりあえず10秒進んで見る
-  gps_get(&gps_scs);  // GPS位置を取得
+    go_straight(10000);  // とりあえず10秒進んで見る
+    gps_get(&gps_scs);  // GPS位置を取得
 
-  if (distance_get(&gps_scs, &point_scs) < 3) {
-    go_straight_flag = 0;
-  } else {
-    go_straight_flag = 1;
+    if (distance_get(&gps_scs, &point_scs) < 3) {
+      go_straight_flag = 0;
+    } else {
+      go_straight_flag = 1;
+    }
+
+    rover->My_Direction = get_my_direction();
+    if (turn_target_direction(rover->My_Direction + 90, &rover->My_Direction, 0) == 1) {
+      rotate_flag = 1;
+    } else {
+      rotate_flag = 0;
+    }
+
+    int result = choose_behavior(rover, go_straight_flag, rotate_flag);  // 何をするべきか決定する
+
+    xbee_uart(dev, "end stack_check_state\r");
+    return result;
+
+  } else if (STACK_MODE == 1) {
+
+    xbee_uart(dev, "skip stack_check_state\r");
+    xbee_uart(dev, "jump to  escape_from_wadachi\r");
+
+    int result = choose_behavior(rover, 0, 1);  // 何をするべきか決定する
+
+    xbee_uart(dev, "end stack_check_state\r");
+    return result;
+
   }
-
-  rover->My_Direction = get_my_direction();
-  if (turn_target_direction(rover->My_Direction + 90, &rover->My_Direction, 0) == 1) {
-    rotate_flag = 1;
-  } else {
-    rotate_flag = 0;
-  }
-
-  int result = choose_behavior(rover, go_straight_flag, rotate_flag);  // 何をするべきか決定する
-
-  xbee_uart(dev, "end stack_check_state\r");
-  return result;
-
-} else if (STACK_MODE == 1) {
-
-  xbee_uart(dev, "skip stack_check_state\r");
-  xbee_uart(dev, "jump to  escape_from_wadachi\r");
-
-  int result = choose_behavior(rover, 0, 1);  // 何をするべきか決定する
-
-  xbee_uart(dev, "end stack_check_state\r");
-  return result;
-
-}
 
 
 }
@@ -1034,36 +1042,36 @@ int escape_from_wadachi(ROVER *rover) {
 
 
 
-      go_back(1000);  // 少し下がる
-      rover->My_Direction = get_my_direction();
-  
-      double d_distance = distance_get(&gps_efw, &point_last);
+    go_back(1000);  // 少し下がる
+    rover->My_Direction = get_my_direction();
 
-      if (2.5 < d_distance) {  // 前回直進出来ている
-        double inverse_direction = direction_get(&gps_efw, &point_efw) + 180.0;
-        turn_target_direction(inverse_direction, &rover->My_Direction, 0);
-      } else {
-        double r_number = random(0, 11); // 0から10の乱数を生成
-       double rotate_random = 25 + 225 * (r_number / 10);
-        go_rotate(rotate_random);
-      }
+    double d_distance = distance_get(&gps_efw, &point_last);
 
-      go_straight(5000);
+    if (2.5 < d_distance) {  // 前回直進出来ている
+      double inverse_direction = direction_get(&gps_efw, &point_efw) + 180.0;
+      turn_target_direction(inverse_direction, &rover->My_Direction, 0);
+    } else {
+      double r_number = random(0, 11); // 0から10の乱数を生成
+      double rotate_random = 25 + 225 * (r_number / 10);
+      go_rotate(rotate_random);
+    }
 
-      point_last.latitude = gps_efw.latitude;  // 前回の情報を記述
-      point_last.longitude = gps_efw.longitude;
+    go_straight(5000);
 
-      try_counter += 1;
+    point_last.latitude = gps_efw.latitude;  // 前回の情報を記述
+    point_last.longitude = gps_efw.longitude;
 
-      if (10 <= try_counter) {
-        xbee_uart(dev, "false escape_from_wadachi\r");
-        return 0;
-      }
+    try_counter += 1;
 
-    } while (distance_get(&gps_efw, &point_efw) < 7);
-    xbee_uart(dev, "success escape_from_wadachi\r");
-    return 1;
-  }
+    if (10 <= try_counter) {
+      xbee_uart(dev, "false escape_from_wadachi\r");
+      return 0;
+    }
+
+  } while (distance_get(&gps_efw, &point_efw) < 7);
+  xbee_uart(dev, "success escape_from_wadachi\r");
+  return 1;
+}
 
 int no_x_bee(byte a, char b) { // xbeeを潰す関数
   return 1;
@@ -1080,4 +1088,21 @@ void speaker(int TONE) {
   delay(BEAT_LONG);
 }
 
+double dis_sensor() {
+  double dis_sen, volt;
+  char sz_d_sen;
+  
+  xbprintf("call dis_sensor...");
+  volt = analogRead( DISTANCE ) * 5 / 1023.0;
+  if ( 1.35 < volt & volt < 2.7 ) {            //有効測距範囲内
+    dis_sen = 140.0 / ( volt - 1.10 );
+    dtostrf(dis_sen, 10, 6, sz_d_sen);
+    xbprintf("distance from sensor is %s", sz_d_sen);
+    return dis_sen;
+  }
+  else {
+    distance_dora();
+    return 10000.0;
+  }
+}
 
