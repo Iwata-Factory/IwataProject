@@ -56,6 +56,9 @@
 #define PID_KP 0.500
 #define PID_KI 0.050
 #define PID_KD 0.000
+// ここより↑使ってない
+#define PID_STREIGHT_BETWEEN 200
+#define PID_MAGNIFICATION 1.25
 
 //スピーカー関連
 #define BEAT_LONG 300   // 音の長さを指定

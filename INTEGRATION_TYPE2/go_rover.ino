@@ -153,10 +153,110 @@ void go_straight(int go_time) {
 }
 
 
+void go_straight_control(int go_time, double target_direction) {
+  DRIVE go; //DRIVE型の宣言
+  // 初期化
+  int wait_time = go_time - 1300;
+  if (wait_time < 1100) {  // 下限を設定
+    wait_time = 1100;
+  }
+
+
+  go.right1 = 1;
+  go.right2 = 1;
+  go.leght1 = 1;
+  go.leght2 = 1;
+
+  if (YOUR_MODEL == 0) { // EM
+    for (int i = 1; i < 256; i++) {
+      go.right1 = 0;
+      go.right2 = i;
+      go.leght1 = 0;
+      go.leght2 = i;
+      rover_analog(go);
+      delay(2);
+    }
+    go.right1 = 0;
+    go.right2 = 1;
+    go.leght1 = 0;
+    go.leght2 = 1;
+    rover_degital(go);
+    delay(wait_time);
+    for (int i = 255; i > 0; i--) {
+      go.right1 = 0;
+      go.right2 = i;
+      go.leght1 = 0;
+      go.leght2 = i;
+      rover_analog(go);
+      delay(7);
+    }
+  } else if (YOUR_MODEL == 1) {  // FM(直進出来るように調整する)
+
+    // 直進するように調整したパラメタ
+    go.right1 = 0;
+    go.right2 = 225;
+    go.leght1 = 0;
+    go.leght2 = 255;
+    rover_analog(go);
+    int get_control_counter = int(wait_time / PID_STREIGHT_BETWEEN);
+    double my_direction = target_direction;
+    double d_direction = 0;  // 差
+
+    for (int i = 0; i < get_control_counter + 1 ; i++) {
+
+      go.right1 = 0;
+      go.right2 = 225;
+      go.leght1 = 0;
+      go.leght2 = 255;
+
+      delay(PID_STREIGHT_BETWEEN);
+
+      my_direction = get_my_direction();  // 新しい角度
+      d_direction = get_angle_devision(my_direction, target_direction);  // 偏差
+
+      char sz_myd[16];
+      dtostrf(my_direction, 10, 6, sz_myd);
+      xbee_uart(dev, "my_direction:");
+      xbee_uart(dev, sz_myd);
+      xbee_uart(dev, "\r");
+
+      if (0 <= d_direction) {  // 右方向によりたい（右を落とす）
+        go.right2 -= d_direction * PID_MAGNIFICATION;
+        if (go.right2 < 120) {
+          go.right2 = 120;
+        }
+      } else {
+        go.leght2 -= d_direction * PID_MAGNIFICATION;
+        if (go.leght2 < 150) {
+          go.leght2 = 150;
+        }
+      }
+      rover_analog(go);
+    }
+    
+    for (int i = 255; i - 30 > 0; i--) {
+      go.right1 = 0;
+      go.right2 = i - 30;
+      go.leght1 = 0;
+      go.leght2 = i;
+      rover_analog(go);
+      delay(7);
+    }
+  }
+
+  go.right1 = 1;
+  go.right2 = 1;
+  go.leght1 = 1;
+  go.leght2 = 1;
+  rover_degital(go);
+
+}
+
+
 void go_back(int go_time) {
   DRIVE go; //DRIVE型の宣言
   // 初期化
-  
+
   if (go_time < 100) {  // waitタイムに下限を設定
     go_time = 100;
   }

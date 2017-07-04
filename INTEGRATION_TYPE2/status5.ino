@@ -71,10 +71,12 @@ int status5(ROVER *rover) {
     write_timelog_sd(rover);
 
     // 目的の方向を目指して回転を行う。rover->My_Directionは書き換えていく。
-    turn_target_direction(rover->Target_Direction, &rover->My_Direction, 0);
+    turn_target_direction(90, &rover->My_Direction, 0);
 
-    if (10 < rover->distance) {
-      go_straight(10000); // 10秒直進
+    if (rover->distance < 0 || 10 < rover->distance) {
+      //      go_straight(10000); // 10秒直進
+      go_straight_control(10000, 90);
+
     } else {
       go_straight(2000); //  短距離直進
     }
