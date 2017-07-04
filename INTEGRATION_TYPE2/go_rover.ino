@@ -156,17 +156,16 @@ void go_straight(int go_time) {
 void go_back(int go_time) {
   DRIVE go; //DRIVE型の宣言
   // 初期化
-  int wait_time = go_time - 1024;
-
-  if (wait_time < 300) {  // waitタイムに下限を設定
-    wait_time = 300;
+  
+  if (go_time < 100) {  // waitタイムに下限を設定
+    go_time = 100;
   }
 
   go.right1 = 1;
   go.right2 = 1;
   go.leght1 = 1;
   go.leght2 = 1;
-  for (int i = 1; i < 180; i++) {  // ゆっくりと下がる
+  for (int i = 1; i < 100; i++) {  // ゆっくりと下がる
     go.right1 = i;
     go.right2 = 0;
     go.leght1 = i;
@@ -179,7 +178,7 @@ void go_back(int go_time) {
   go.leght1 = 180;
   go.leght2 = 0;
   rover_analog(go);
-  delay(wait_time);
+  delay(go_time);
   go.right1 = 1;  // バック時は急停止
   go.right2 = 1;
   go.leght1 = 1;
@@ -247,6 +246,11 @@ void go_suddenly_brake(int times) {
     rover_analog(go);
     delay(4);
   }
+  go.right1 = 1;
+  go.right2 = 1;
+  go.leght1 = 1;
+  go.leght2 = 1;
+  rover_degital(go);
 
 }
 

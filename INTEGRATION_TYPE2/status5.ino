@@ -51,7 +51,7 @@ int status5(ROVER *rover) {
       if (i == 0) {  // last_distanceの初期値を生成
         last_distance  = rover->distance;
       } else {
-        if ((fabs(rover->distance - last_distance) < 3) && (0 < last_distance)) {  //Trueでスタック
+        if ((fabs(rover->distance - last_distance) < 2.5) && (0 < last_distance)) {  //Trueでスタック
           int scs_result = stack_check_state(rover);
           if (scs_result != 1) {
             continue;
@@ -62,7 +62,7 @@ int status5(ROVER *rover) {
       }
     }
 
-    if (0 <= rover->distance && rover->distance <= 2.8) {  // status6へ
+    if (0 <= rover->distance && rover->distance <= 1.0) {  // status6へ
       xbee_uart( dev, "near goal\r");
       break;
     }
@@ -74,14 +74,10 @@ int status5(ROVER *rover) {
     turn_target_direction(rover->Target_Direction, &rover->My_Direction, 0);
 
     if (10 < rover->distance) {
-      // go_straight(10000); // 10秒直進
-      go_straight(5000); // 長距離直進
-
+      go_straight(10000); // 10秒直進
     } else {
-      go_straight(2500); //  短距離直進
+      go_straight(2000); //  短距離直進
     }
-
-    speaker(G_TONE);
 
     i += 1;
 

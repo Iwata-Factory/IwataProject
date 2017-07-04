@@ -78,10 +78,10 @@ void setup() {
   rover_degital(set);
 
   if (YOUR_MODEL == 1) {  // FMの場合の値に切り替え（暫定的処理
-    tm_x_offset = 8.0;
-    tm_y_offset = 182.5;
-    x_def = 864.0;
-    y_def = 747.0;
+    tm_x_offset = 30.5;
+    tm_y_offset = 16.5;
+    x_def = 863.0;
+    y_def = 665.0;
   }
 
   //ニクロム線のピンモード
@@ -172,7 +172,6 @@ void loop() {
           rover_degital(reset);
           trans_phase(rover.status_number);
           rover.status_number += 1;
-          write_critical_sd(1);  // 着陸終了
           xbee_uart( dev, "success status3\r");
           break;
         } else {

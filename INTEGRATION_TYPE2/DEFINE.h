@@ -2,13 +2,11 @@
 #define __DEFINE_H__
 
 // 定数の定義
-//ゴール(工房横
-//#define GOAL_LATITUDE  35.760197
-//#define GOAL_LONGITUDE 139.766050
 
-// スタバ前
-#define GOAL_LATITUDE 35.7139141530135
-#define GOAL_LONGITUDE 139.7596159089435
+// ゴール位置
+#define GOAL_LATITUDE 35.760226
+#define GOAL_LONGITUDE 139.766005
+
 
 
 // 海抜制限

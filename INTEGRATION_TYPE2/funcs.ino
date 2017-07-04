@@ -825,7 +825,7 @@ int correct_posture() {
       return 1;  // 問題なし
     } else {
       xbee_uart( dev, "revive ---> go_suddenly_brake \r");
-      go_suddenly_brake(3000);  // 急発進緩停止
+      go_suddenly_brake(2500);  // 急発進緩停止
     }
   }
   xbee_uart( dev, "failed correct_posture\r");
@@ -1098,22 +1098,17 @@ int escape_from_wadachi(ROVER *rover) {
 
     gps_get(&gps_efw);  // GPSを取得
 
-    go_back(1500);  // 少し下がる
+    go_back(150);  // 少し下がる
 
     rover->My_Direction = get_my_direction();
 
     double d_distance = distance_get(&gps_efw, &point_last);
 
-    if (2.5 < d_distance) {  // 前回直進出来ている
-      double inverse_direction = direction_get(&gps_efw, &point_efw) + 180.0;
-      turn_target_direction(inverse_direction, &rover->My_Direction, 0);
-    } else {
       double r_number = random(0, 11); // 0から10の乱数を生成
-      double rotate_random = 25 + 225 * (r_number / 10);
+      double rotate_random = 40 + 150 * (r_number + 1 / 10);
       go_rotate(rotate_random);
-    }
 
-    go_straight(5000);
+    go_straight(3500);
 
     point_last.latitude = gps_efw.latitude;  // 前回の情報を記述
     point_last.longitude = gps_efw.longitude;
@@ -1125,7 +1120,7 @@ int escape_from_wadachi(ROVER *rover) {
       return 0;
     }
 
-  } while (distance_get(&gps_efw, &point_efw) < 7);
+  } while (distance_get(&gps_efw, &point_efw) < 2);
   xbee_uart(dev, "success escape_from_wadachi\r");
   return 1;
 }
