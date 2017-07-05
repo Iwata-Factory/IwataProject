@@ -263,13 +263,8 @@ int gps_get(GPS* gps) {
 
       if (gps_timeout_counter_global == 4) {  // 使用するGPSの切り替え
         gps_timeout_counter_global = 0;
-        if (use_which_gps == 1) {
-          xbee_uart( dev, "change gps to 2\r");
-          use_which_gps = 2;
-        } else if (use_which_gps == 2) {
-          xbee_uart( dev, "change gps to 1\r");
-          use_which_gps = 1;
-        }
+        gps_switch();
+
       }
 
       xbprintf("forced to break gps_get");
@@ -430,18 +425,27 @@ int gps_get_al(double* altitude) {
 
       if (gps_timeout_counter_global == 4) {  // 使用するGPSの切り替え
         gps_timeout_counter_global = 0;
-        if (use_which_gps == 1) {
-          xbee_uart( dev, "change gps to 2\r");
-          use_which_gps = 2;
-        } else if (use_which_gps == 2) {
-          xbee_uart( dev, "change gps to 1\r");
-          use_which_gps = 1;
-        }
+        gps_switch();
       }
+      xbprintf("forced to break gps_get");
       break;
     }
   }
   return 1;
+}
+
+/*-----------gps_switch()--------
+   使用するGPSの切り替え
+  ------------------------------------------*/
+int gps_switch() {
+  if (use_which_gps == 1) {
+    xbee_uart( dev, "change gps to 2\r");
+    use_which_gps = 2;
+  } else if (use_which_gps == 2) {
+    xbee_uart( dev, "change gps to 1\r");
+    use_which_gps = 1;
+  }
+  return use_which_gps;
 }
 
 
@@ -1104,9 +1108,9 @@ int escape_from_wadachi(ROVER *rover) {
 
     double d_distance = distance_get(&gps_efw, &point_last);
 
-      double r_number = random(0, 11); // 0から10の乱数を生成
-      double rotate_random = 40 + 150 * (r_number + 1 / 10);
-      go_rotate(rotate_random);
+    double r_number = random(0, 11); // 0から10の乱数を生成
+    double rotate_random = 40 + 150 * (r_number + 1 / 10);
+    go_rotate(rotate_random);
 
     go_straight(3500);
 
