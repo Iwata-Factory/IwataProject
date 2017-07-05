@@ -16,6 +16,9 @@ int status5(ROVER *rover) {
 
   int do_stack_check = 1;  // スタック判定するかのフラグ
 
+  GPS gps;
+  POINT last_point;
+
   do {
 
     if (correct_posture() == 1) {  // 判定修正
@@ -33,14 +36,18 @@ int status5(ROVER *rover) {
     }
 
     // GPS情報を取得
-    GPS gps;
     gps_get(&gps);
+
 
     // GPSが取得した値を自身のステータスに反映する。
     rover->latitude = gps.latitude;  // 緯度
     rover->longitude = gps.longitude;  //経度
     rover->Target_Direction = gps.Direction;  //ターゲットの方向
     rover->distance = gps.distance;  // ターゲットまでの距離
+
+    if (check_gps_jump(&gps, &last_point) == 0) { // GPSのジャンプのチェック
+      continue;
+    }
 
     if (0 < rover->distance && rover->distance < 10 && NEAR_GOAL_STACK_EXP != 1) {
       do_stack_check = 0;
@@ -99,6 +106,29 @@ int get_go_argument (double last_distance) {
     return 2000;
   } else {
     return 800;
+  }
+}
+
+
+int check_gps_jump(GPS *gps, POINT *point) {
+
+  if (point->latitude == -1.0 && point->longitude == -1.0) {  // 初期化
+    point->latitude = gps->latitude;
+    point->longitude = gps->longitude;
+    return 1;
+  } else {
+    double gps_difference = distance_get(gps, point);  // GPSのジャンプを計算
+    if (gps_difference < 35) {  // 正常
+      point->latitude = gps->latitude;
+      point->longitude = gps->longitude;
+      return 1;
+    } else {
+      gps_switch();  // GPS切り替え
+      point->latitude = -1.0;  // pointの初期化
+      point->longitude = -1.0;
+      xbee_uart( dev, "jump gps ---> switch\r");
+      return 0;
+    }
   }
 }
 
