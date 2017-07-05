@@ -78,7 +78,7 @@ int status5(ROVER *rover) {
     if (PI_FLAG == 1) {
       go_straight_control(arg, rover->Target_Direction);
     } else {
-      go_straight(arg*3);  // 3をかけているのは調整のため
+      go_straight(arg * 3); // 3をかけているのは調整のため
     }
 
     i += 1;
