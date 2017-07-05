@@ -163,6 +163,7 @@ void go_straight_control(int go_time, double target_direction) {
   go.leght1 = 1;
   go.leght2 = 1;
 
+
   if (YOUR_MODEL == 0) { // EM
 
     go_straight(go_time);  // EMの場合はPI出来ません。
@@ -181,6 +182,7 @@ void go_straight_control(int go_time, double target_direction) {
     double d_direction = 0;  // 偏差
     int integral_counter = 0;  // 積分のカウント数
     double integral = 0;  // 積分の足し合わせ
+    int error_count = 0;
 
     for (int i = 0; i < get_control_counter + 1 ; i++) {
       go.right1 = 0;
@@ -191,6 +193,17 @@ void go_straight_control(int go_time, double target_direction) {
 
       my_direction = get_my_direction();  // 新しい角度
       d_direction = get_angle_devision(my_direction, target_direction);  // 偏差を求める
+
+      if (120 < fabs(d_direction)) {  // 角度がバグっている時は止まる
+        error_count += 1;
+        if (error_count == 3) {
+          xbee_uart(dev, "false pi control\r");
+          brake();
+          return;
+        }
+      } else {
+        error_count = 0;
+      }
 
       integral += d_direction;  // 積分の増加、リセット等を行う
       integral_counter += 1;
@@ -208,15 +221,7 @@ void go_straight_control(int go_time, double target_direction) {
 
       rover_analog(go);  // 入力の反映
     }
-
-    for (int i = 255; i - 30 > 0; i--) {  // 減速（回転しないように調整）
-      go.right1 = 0;
-      go.right2 = i - 30;
-      go.leght1 = 0;
-      go.leght2 = i;
-      rover_analog(go);
-      delay(7);
-    }
+    brake();
   }
 
   go.right1 = 1;
@@ -316,6 +321,7 @@ void accel() {
 /*-----------ブレーキをかける--------------------
   ------------------------------------------*/
 void brake() {
+
   DRIVE go; //DRIVE型の宣言
   // 初期化
   go.right1 = 0;
@@ -323,14 +329,30 @@ void brake() {
   go.leght1 = 0;
   go.leght2 = 0;
 
-  for (int i = 255; i > 0; i--) {
+  for (int i = 255; i - 30 > 0; i--) {  // 減速（回転しないように調整）
     go.right1 = 0;
-    go.right2 = i;
+    go.right2 = i - 30;
     go.leght1 = 0;
     go.leght2 = i;
     rover_analog(go);
-    delay(4);
+    delay(7);
   }
+
+  // 明示的な停止
+  go.right1 = 1;
+  go.right2 = 1;
+  go.leght1 = 1;
+  go.leght2 = 1;
+  rover_degital(go);
+
+  //  for (int i = 255; i > 0; i--) {
+  //    go.right1 = 0;
+  //    go.right2 = i;
+  //    go.leght1 = 0;
+  //    go.leght2 = i;
+  //    rover_analog(go);
+  //    delay(4);
+  //  }
 }
 
 /*-----------急発進→ブレーキをかける--------------------
