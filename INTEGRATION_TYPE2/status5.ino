@@ -71,14 +71,14 @@ int status5(ROVER *rover) {
     write_timelog_sd(rover);
 
     // 目的の方向を目指して回転を行う。rover->My_Directionは書き換えていく。
-    turn_target_direction(90, &rover->My_Direction, 0);
+    turn_target_direction(rover->Target_Direction, &rover->My_Direction, 0);
 
-    if (rover->distance < 0 || 10 < rover->distance) {
-      go_straight(10000); // 10秒直進
-      //      go_straight_control(3000, 90);
+    int arg = get_go_argument(rover->distance);
 
+    if (PI_FLAG == 1) {
+      go_straight_control(arg, rover->Target_Direction);
     } else {
-      go_straight(2000); //  短距離直進
+      go_straight(arg*3);  // 3をかけているのは調整のため
     }
 
     i += 1;
@@ -87,5 +87,18 @@ int status5(ROVER *rover) {
 
   return 1;
 
+}
+
+// 直進関数の引数を決める
+int get_go_argument (double last_distance) {
+  if (last_distance < 0 || 50 < last_distance) {
+    return 5000;
+  } else if (25 < last_distance && last_distance <= 50) {
+    return 3000;
+  } else if (15 < last_distance && last_distance <= 25) {
+    return 2000;
+  } else {
+    return 800;
+  }
 }
 

@@ -24,6 +24,7 @@
 #define SD_LOG_FLAG 1  // SDに書き込みを行うなら1.行わないなら0.
 #define SPHERE_FLAG 1  // 1で球面三角法を用いる.0では平面として処理.(球面三角法推奨
 #define GPS_GET_FLAG 0 // 0の時GPSを取らない
+#define PI_FLAG 1  // 1の時PI制御で直進する。
 
 // テスト用フラグ
 #define STACK_EXP 0  // 1の場合スタックのフラグが立った地点までスキップ

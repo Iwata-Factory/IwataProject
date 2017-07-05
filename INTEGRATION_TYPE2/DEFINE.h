@@ -41,6 +41,7 @@
 #define ADXL345 0x53  //ADXL345(加速度センサ)のスレーブアドレス
 
 //モーター関連
+/*FMとEMでオンオフ切り替えて下さい*/
 //#define M1_1 4 // モーター制御用ピン
 //#define M1_2 5 // モーター制御用ピン
 //#define M2_1 7 // モーター制御用ピン
@@ -52,16 +53,20 @@
 #define M2_2 5
 
 // PID制御関連
+// ここより↓使ってない
 #define PID_SURPULS 0.400
 #define PID_KP 0.500
 #define PID_KI 0.050
 #define PID_KD 0.000
 // ここより↑使ってない
+#define PI_RIGHT_DEFAULT 200
+#define PI_LEGHT_DEFAULT 255
+#define PI_INTEGRAL_RISET 10
 #define PID_STREIGHT_BETWEEN 200
-#define PID_MAGNIFICATION 1.0
-//#define PID_INTEG 1.06
-
-#define PID_INTEG 1.125
+#define PI_KP 1.0
+#define PI_KI 1.125
+#define PI_MIN 80
+#define PI_MAX 255
 
 //#define PID_INTEG 1.25
 
