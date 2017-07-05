@@ -128,7 +128,7 @@ void go_straight(int go_time) {
 
     // 直進するように調整したパラメタ
     go.right1 = 0;
-    go.right2 = 225;
+    go.right2 = 200;
     go.leght1 = 0;
     go.leght2 = 255;
     rover_analog(go);
@@ -201,11 +201,13 @@ void go_straight_control(int go_time, double target_direction) {
     int get_control_counter = int(wait_time / PID_STREIGHT_BETWEEN);
     double my_direction = target_direction;
     double d_direction = 0;  // 差
+    int ki_counter = 0;
+    int ki = 0;
 
     for (int i = 0; i < get_control_counter + 1 ; i++) {
 
       go.right1 = 0;
-      go.right2 = 225;
+      go.right2 = 200;
       go.leght1 = 0;
       go.leght2 = 255;
 
@@ -214,26 +216,41 @@ void go_straight_control(int go_time, double target_direction) {
       my_direction = get_my_direction();  // 新しい角度
       d_direction = get_angle_devision(my_direction, target_direction);  // 偏差
 
-      char sz_myd[16];
-      dtostrf(my_direction, 10, 6, sz_myd);
-      xbee_uart(dev, "my_direction:");
-      xbee_uart(dev, sz_myd);
-      xbee_uart(dev, "\r");
+      ki += d_direction;
+      ki_counter += 1;
+      if (ki_counter % 10 == 0) {
+        xbee_uart(dev, "reset\r");
+        ki = 0;
+      }
+
+      xbee_uart(dev, "integ:");
+      xbprintf("%d", ki);
 
       if (0 <= d_direction) {  // 右方向によりたい（右を落とす）
-        go.right2 -= d_direction * PID_MAGNIFICATION;
-        if (go.right2 < 120) {
-          go.right2 = 120;
+        go.right2 -= (d_direction * PID_MAGNIFICATION + fabs(d_direction) * PID_INTEG);
+        if (go.right2 < 80) {
+          go.right2 = 80;
+        } else if (255 < go.right2){
+          go.right2 = 255;
         }
       } else {
-        go.leght2 -= d_direction * PID_MAGNIFICATION;
-        if (go.leght2 < 150) {
-          go.leght2 = 150;
+        d_direction = -1 * d_direction;
+        go.leght2 -= (d_direction * PID_MAGNIFICATION + fabs(d_direction) * PID_INTEG);
+        if (go.leght2 < 80) {
+          go.leght2 = 80;
+        } else if (255 < go.leght2){
+          go.leght2 = 255;
         }
       }
+
+      xbee_uart(dev, "right:");
+      xbprintf("%d", go.right2);
+      xbee_uart(dev, "leght:");
+      xbprintf("%d", go.leght2);
+
       rover_analog(go);
     }
-    
+
     for (int i = 255; i - 30 > 0; i--) {
       go.right1 = 0;
       go.right2 = i - 30;

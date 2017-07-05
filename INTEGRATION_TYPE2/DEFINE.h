@@ -58,7 +58,13 @@
 #define PID_KD 0.000
 // ここより↑使ってない
 #define PID_STREIGHT_BETWEEN 200
-#define PID_MAGNIFICATION 1.25
+#define PID_MAGNIFICATION 1.0
+//#define PID_INTEG 1.06
+
+#define PID_INTEG 1.125
+
+//#define PID_INTEG 1.25
+
 
 //スピーカー関連
 #define BEAT_LONG 300   // 音の長さを指定
