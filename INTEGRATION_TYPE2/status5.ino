@@ -99,13 +99,15 @@ int status5(ROVER *rover) {
 // 直進関数の引数を決める
 int get_go_argument (double last_distance) {
   if (last_distance < 0 || 50 < last_distance) {
-    return 5000;
+    // 1分15秒
+//    return 3000;
+    return 1000;
   } else if (25 < last_distance && last_distance <= 50) {
-    return 3000;
+    return 600;
   } else if (15 < last_distance && last_distance <= 25) {
-    return 2000;
+    return 200;
   } else {
-    return 800;
+    return 50;
   }
 }
 

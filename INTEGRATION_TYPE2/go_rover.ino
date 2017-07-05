@@ -128,15 +128,15 @@ void go_straight(int go_time) {
 
     // 直進するように調整したパラメタ
     go.right1 = 0;
-    go.right2 = 225;
+    go.right2 = 255;
     go.leght1 = 0;
     go.leght2 = 255;
     rover_analog(go);
 
     delay(wait_time);
-    for (int i = 255; i - 30 > 0; i--) {
+    for (int i = 255; i > 0; i--) {
       go.right1 = 0;
-      go.right2 = i - 30;
+      go.right2 = i;
       go.leght1 = 0;
       go.leght2 = i;
       rover_analog(go);
@@ -197,7 +197,8 @@ void go_straight_control(int go_time, double target_direction) {
       integral *= integral_riset(integral_counter);
 
       xbee_uart(dev, "integ:");  // double型だからバグる？
-      xbprintf("%d", integral);
+      dtostrf(integral, 10, 6, xbee_send);
+      xbprintf(xbee_send);
 
       go = get_drive_input(go, d_direction, integral);   // 入力を得る
 
@@ -209,7 +210,7 @@ void go_straight_control(int go_time, double target_direction) {
       rover_analog(go);  // 入力の反映
     }
 
-    for (int i = 255; i - 30 > 0; i--) {  // 減速（回転しないように調整）
+    for (int i = 250; i - 30 > 0; i--) {  // 減速（回転しないように調整）
       go.right1 = 0;
       go.right2 = i - 30;
       go.leght1 = 0;
@@ -240,15 +241,46 @@ int integral_riset(int counter) {
 DRIVE get_drive_input(DRIVE drive, double d, double i) {
 
   if (0 <= d) {  // 右方向によりたい（右を落とす）
-    drive.right2 -= (d * PI_KP + fabs(d) * PI_KP2 + fabs(i) * PI_KI);  /* ここのfabs(d)ってfabs(i)ですねbyとうま */
+    //    drive.right2 -= fabs(d * PI_KP + fabs(d) * PI_KP2 + i * PI_KI);  /* ここのfabs(d)ってfabs(i)ですねbyとうま */
+    drive.right2 -= fabs(d * PI_KP);  /* ここのfabs(d)ってfabs(i)ですねbyとうま */
+
+    if (i > 0) {
+      drive.right2 -= fabs(i * PI_KI);
+    } else {
+      drive.leght2 -= fabs(i * PI_KI);
+    }
+
     if (drive.right2 < PI_MIN) {
       drive.right2 = PI_MIN;
     } else if (PI_MAX < drive.right2) {
       drive.right2 = PI_MAX;
     }
+    if (drive.leght2 < PI_MIN) {
+      drive.leght2 = PI_MIN;
+    } else if (PI_MAX < drive.leght2) {
+      drive.leght2 = PI_MAX;
+    }
+
   } else {
+
     d = -1 * d;
-    drive.leght2 -= (d * PI_KP + fabs(d) * PI_KP2 + fabs(i) * PI_KI);
+    i = -1 * i;
+
+    //    drive.leght2 -= fabs(d * PI_KP + fabs(d) * PI_KP2 + i * PI_KI);
+    drive.leght2 -= fabs(d * PI_KP);
+
+    if (i > 0) {
+      drive.right2 -= fabs(i * PI_KI);
+    } else {
+      drive.leght2 -= fabs(i * PI_KI);
+    }
+
+    if (drive.right2 < PI_MIN) {
+      drive.right2 = PI_MIN;
+    } else if (PI_MAX < drive.right2) {
+      drive.right2 = PI_MAX;
+    }
+
     if (drive.leght2 < PI_MIN) {
       drive.leght2 = PI_MIN;
     } else if (PI_MAX < drive.leght2) {
