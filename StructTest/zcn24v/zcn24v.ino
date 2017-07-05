@@ -75,7 +75,7 @@ void loop() {
   go.right1 = 0;
   go.right2 = 255;
   go.leght1 = 0;
-  go.leght2 = 255;
+  go.leght2 = 250;
   rover_analog(go);
 
   delay(5000);
@@ -104,7 +104,7 @@ void loop() {
   go.right1 = 0;
   go.right2 = 250;
   go.leght1 = 0;
-  go.leght2 = 255;
+  go.leght2 = 250;
   rover_analog(go);
 
   delay(5000);
@@ -131,7 +131,7 @@ void loop() {
   go.right1 = 0;
   go.right2 = 245;
   go.leght1 = 0;
-  go.leght2 = 255;
+  go.leght2 = 250;
   rover_analog(go);
 
   delay(5000);
@@ -158,7 +158,7 @@ void loop() {
   go.right1 = 0;
   go.right2 = 240;
   go.leght1 = 0;
-  go.leght2 = 255;
+  go.leght2 = 250;
   rover_analog(go);
 
   delay(5000);
@@ -185,7 +185,7 @@ void loop() {
   go.right1 = 0;
   go.right2 = 235;
   go.leght1 = 0;
-  go.leght2 = 255;
+  go.leght2 = 250;
   rover_analog(go);
 
   delay(5000);
@@ -213,7 +213,7 @@ void loop() {
   go.right1 = 0;
   go.right2 = 230;
   go.leght1 = 0;
-  go.leght2 = 255;
+  go.leght2 = 250;
   rover_analog(go);
 
   delay(5000);
@@ -241,7 +241,7 @@ void loop() {
   go.right1 = 0;
   go.right2 = 225;
   go.leght1 = 0;
-  go.leght2 = 255;
+  go.leght2 = 250;
   rover_analog(go);
 
   delay(5000);
@@ -268,7 +268,7 @@ void loop() {
   go.right1 = 0;
   go.right2 = 220;
   go.leght1 = 0;
-  go.leght2 = 255;
+  go.leght2 = 250;
   rover_analog(go);
 
   delay(5000);
@@ -296,7 +296,7 @@ void loop() {
   go.right1 = 0;
   go.right2 = 215;
   go.leght1 = 0;
-  go.leght2 = 255;
+  go.leght2 = 250;
   rover_analog(go);
 
   delay(5000);
@@ -323,7 +323,7 @@ void loop() {
   go.right1 = 0;
   go.right2 = 210;
   go.leght1 = 0;
-  go.leght2 = 255;
+  go.leght2 = 250;
   rover_analog(go);
 
   delay(5000);
@@ -352,7 +352,7 @@ void loop() {
   go.right1 = 0;
   go.right2 = 205;
   go.leght1 = 0;
-  go.leght2 = 255;
+  go.leght2 = 250;
   rover_analog(go);
 
   delay(5000);
@@ -379,7 +379,7 @@ void loop() {
   go.right1 = 0;
   go.right2 = 200;
   go.leght1 = 0;
-  go.leght2 = 255;
+  go.leght2 = 250;
   rover_analog(go);
 
   delay(5000);
