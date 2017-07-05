@@ -64,11 +64,12 @@
 #define PI_INTEGRAL_RISET 10
 #define PID_STREIGHT_BETWEEN 200
 #define PI_KP 1.0
-#define PI_KI 1.125
+#define PI_KP2 1.125
+#define PI_KI 0
 #define PI_MIN 80
 #define PI_MAX 255
 
-//#define PID_INTEG 1.25
+
 
 
 //スピーカー関連

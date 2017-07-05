@@ -240,7 +240,7 @@ int integral_riset(int counter) {
 DRIVE get_drive_input(DRIVE drive, double d, double i) {
 
   if (0 <= d) {  // 右方向によりたい（右を落とす）
-    drive.right2 -= (d * PI_KP + fabs(d) * PI_KI);  /* ここのfabs(d)ってfabs(i)ですねbyとうま */
+    drive.right2 -= (d * PI_KP + fabs(d) * PI_KP2 + fabs(i) * PI_KI);  /* ここのfabs(d)ってfabs(i)ですねbyとうま */
     if (drive.right2 < PI_MIN) {
       drive.right2 = PI_MIN;
     } else if (PI_MAX < drive.right2) {
@@ -248,7 +248,7 @@ DRIVE get_drive_input(DRIVE drive, double d, double i) {
     }
   } else {
     d = -1 * d;
-    drive.leght2 -= (d * PI_KP + fabs(d) * PI_KI);
+    drive.leght2 -= (d * PI_KP + fabs(d) * PI_KP2 + fabs(i) * PI_KI);
     if (drive.leght2 < PI_MIN) {
       drive.leght2 = PI_MIN;
     } else if (PI_MAX < drive.leght2) {
