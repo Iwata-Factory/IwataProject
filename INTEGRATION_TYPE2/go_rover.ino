@@ -362,7 +362,7 @@ void brake() {
   go.leght1 = 0;
   go.leght2 = 0;
 
-  for (int i = 245; i > 30; i--) {  // 減速（回転しないように調整）
+  for (int i = 230; i > 0; i--) {  // 減速（回転しないように調整）
     go.right1 = 0;
     go.right2 = i;
     go.leght1 = 0;

@@ -255,13 +255,13 @@ int gps_get(GPS* gps) {
       //      xbee_uart( dev, "wrong Lat or Long\r");
 
     }
-    if (t >= 5000) {
+    if (t >= 2000) {
 
       //およそ50秒間取れなければ一旦抜ける
 
       gps_timeout_counter_global += 1;
 
-      if (gps_timeout_counter_global == 4) {  // 使用するGPSの切り替え
+      if (gps_timeout_counter_global == 2) {  // 使用するGPSの切り替え
         gps_timeout_counter_global = 0;
         gps_switch();
 

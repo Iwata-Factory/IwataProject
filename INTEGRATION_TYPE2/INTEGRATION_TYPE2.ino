@@ -78,10 +78,10 @@ void setup() {
   rover_degital(set);
 
   if (YOUR_MODEL == 1) {  // FMの場合の値に切り替え（暫定的処理
-    tm_x_offset = 87.0;
-    tm_y_offset = 12.5;
-    x_def = 770.0;
-    y_def = 687.0;
+    tm_x_offset = -32.5;
+    tm_y_offset = 88.5;
+    x_def = 831.0;
+    y_def = 759.0;
   }
 
   //ニクロム線のピンモード
@@ -134,7 +134,7 @@ void loop() {
         xbee_uart( dev, "start status1\r");
         delay(1000);
 
-        write_timelog_sd(&rover);
+//        write_timelog_sd(&rover);
 
         if (status1(&rover) == 1) {
           rover_degital(reset);
@@ -150,7 +150,7 @@ void loop() {
       case 2:
         xbee_uart( dev, "start status2\r");
 
-        write_timelog_sd(&rover);
+//        write_timelog_sd(&rover);
 
         if (status2(&rover) == 1) {
           rover_degital(reset);
@@ -166,7 +166,7 @@ void loop() {
       case 3:
         xbee_uart( dev, "start status3\r");
 
-        write_timelog_sd(&rover);
+//        write_timelog_sd(&rover);
 
         if (status3(&rover) == 1) {
           rover_degital(reset);
@@ -181,7 +181,7 @@ void loop() {
       case 4:
         xbee_uart( dev, "start status4\r");
 
-        write_timelog_sd(&rover);
+//        write_timelog_sd(&rover);
 
         if (status4(&rover) == 1) {
           rover_degital(reset);

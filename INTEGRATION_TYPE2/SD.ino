@@ -190,7 +190,7 @@ int write_critical_sd(int flag) {
   }
 
   unsigned long time = millis();  // 機体時間を取得
-  
+
   GPS gps;
   gps_get(&gps);
 
@@ -214,6 +214,7 @@ int write_critical_sd(int flag) {
           dataFile.println("**end_setup**");
           dataFile.println("arduino-time");
           dataFile.println(time);
+          break;
 
 
         case 1:
@@ -239,6 +240,8 @@ int write_critical_sd(int flag) {
             dataFile.println("No GPS");
             dataFile.println("");
           }
+          break;
+
 
 
         case 2:
@@ -263,6 +266,8 @@ int write_critical_sd(int flag) {
             dataFile.println("No GPS");
             dataFile.println("");
           }
+          break;
+
 
       }
 

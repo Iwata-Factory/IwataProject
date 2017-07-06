@@ -14,7 +14,7 @@ int status5(ROVER *rover) {
     stack_check_state(rover);  // スタックのフラグを立てる
   }
 
-  int do_stack_check = 1;  // スタック判定するかのフラグ
+  int do_stack_check = 0;  // スタック判定するかのフラグ
 
   GPS gps;
   POINT last_point;
@@ -69,7 +69,7 @@ int status5(ROVER *rover) {
       }
     }
 
-    if (0 <= rover->distance && rover->distance <= 1.0) {  // status6へ
+    if (0 <= rover->distance && rover->distance <= GOAL_CIRCLE) {  // status6へ
       xbee_uart( dev, "near goal\r");
       break;
     }
@@ -103,6 +103,11 @@ int status5(ROVER *rover) {
     }
 
     i += 1;
+
+    if (i == 3) {
+      do_stack_check = 1;  // スタック判定をon
+    }
+
 
   } while (1);
 
