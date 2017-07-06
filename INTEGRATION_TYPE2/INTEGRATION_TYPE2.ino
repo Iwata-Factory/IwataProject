@@ -1,5 +1,5 @@
 /*
-  メインコード
+  メインコード for shinsakai EM
 */
 
 #include "INCLUDE.h"
