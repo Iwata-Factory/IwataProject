@@ -85,7 +85,12 @@ int status5(ROVER *rover) {
     if (PI_FLAG == 1) {
       go_straight_control(arg, rover->Target_Direction);
     } else {
-      go_straight(arg * 3); // 3をかけているのは調整のため
+      if (500 < arg) {  // 出力調整
+        arg = 10000;
+      } else {
+        arg = 3000;
+      }
+      go_straight(arg);
     }
 
     i += 1;
