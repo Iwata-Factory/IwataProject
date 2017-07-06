@@ -88,7 +88,7 @@ void setup() {
 
   GPS xb_review;
 
-  for (int rv_cnt = 0; rv_cnt < 50; rv_cnt++) {
+  for (int rv_cnt = 0; rv_cnt < 500; rv_cnt++) {
     gps_get(&xb_review);
     xbprintf("cnt%d\r*", rv_cnt);
     dtostrf(xb_review.latitude, 10, 6, xbee_send);
@@ -102,6 +102,9 @@ void setup() {
     xbprintf("*");
     delay(5000);
   }
+
+  xbprintf("finish sending gps...");
+  xbee_standby();
 
   xbee_uart( dev, "setup done\rchange to main phase\r");
 }
