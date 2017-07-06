@@ -49,7 +49,7 @@ int status5(ROVER *rover) {
       continue;
     }
 
-    if (0 < rover->distance && rover->distance < 10 && NEAR_GOAL_STACK_EXP != 1) {
+    if (0 < rover->distance && rover->distance < 15 && NEAR_GOAL_STACK_EXP != 1) {
       do_stack_check = 0;
     }
 
@@ -100,14 +100,16 @@ int status5(ROVER *rover) {
 int get_go_argument (double last_distance) {
   if (last_distance < 0 || 50 < last_distance) {
     // 1分15秒
-//    return 3000;
+    //    return 3000;
     return 1000;
   } else if (25 < last_distance && last_distance <= 50) {
     return 600;
   } else if (15 < last_distance && last_distance <= 25) {
-    return 200;
+    return 300;
+  } else if (3 < last_distance && last_distance <= 15) {
+    return 30;
   } else {
-    return 50;
+    return 15;
   }
 }
 

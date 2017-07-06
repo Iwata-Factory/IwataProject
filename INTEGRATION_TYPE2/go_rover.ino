@@ -194,9 +194,9 @@ void go_straight_control(int go_time, double target_direction) {
       my_direction = get_my_direction();  // 新しい角度
       d_direction = get_angle_devision(my_direction, target_direction);  // 偏差を求める
 
-      if (120 < fabs(d_direction)) {  // 角度がバグっている時は止まる
+      if (90 < fabs(d_direction)) {  // 角度がバグっている時は止まる
         error_count += 1;
-        if (error_count == 3) {
+        if (error_count == 2) {
           xbee_uart(dev, "false pi control\r");
           brake();
           return;
@@ -207,7 +207,7 @@ void go_straight_control(int go_time, double target_direction) {
 
       integral += d_direction;  // 積分の増加、リセット等を行う
       integral_counter += 1;
-      integral *= integral_riset(integral_counter);
+      integral = integral * integral_riset(integral_counter);
 
       xbee_uart(dev, "integ:");  // double型だからバグる？
       dtostrf(integral, 10, 6, xbee_send);
@@ -372,6 +372,7 @@ void brake() {
   }
 
   // 明示的な停止
+
   go.right1 = 1;
   go.right2 = 1;
   go.leght1 = 1;

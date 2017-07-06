@@ -19,7 +19,7 @@ int status4(ROVER *rover) {  // Status4 着陸の関数
     GPS gps;  // GPS
     double lc_difference = 1.0;
     get_rover_point(&landing_point);
-    cut_nicrom();  // ニクロム線を切る
+    cut_nicrom(10000);  // ニクロム線を切る
 
     set_danger_area();  // 危険エリアを定義
     int posture_coefficient = set_posture_coefficient();  //  姿勢係数(正しい姿勢なら1、反転なら-1)を取得(反転を直すわけではないことに注意)
@@ -40,10 +40,13 @@ int status4(ROVER *rover) {  // Status4 着陸の関数
     xbee_standby();  // 現状enter押下したのちに大文字のOを入力することによって脱出します。
     xbee_uart( dev, "start end2end\r");
     // ここで時間をとっておく。
-    delay(5000);
+    delay(3000);
+
     write_critical_sd(1);  // 着陸終了
-    cut_nicrom();  // ニクロム線を切る
+
+    cut_nicrom(10000);  // ニクロム線を切る
     go_straight(2000);   // 審査会では走るだけ
+
   }
 
   return 1;
@@ -68,7 +71,7 @@ int set_posture_coefficient() {
    turn_target_direction禁止
 */
 
-int cut_nicrom() {
+int cut_nicrom(int cut_time) {
 
   xbee_uart(dev, "call cut_nicrom\n");
   //ニクロム線溶断する
@@ -76,7 +79,7 @@ int cut_nicrom() {
   speaker(E_TONE);
   digitalWrite(NICROM_1, HIGH);
   digitalWrite(NICROM_2, HIGH);
-  delay(10000);
+  delay(cut_time);
   digitalWrite(NICROM_2, LOW);
   digitalWrite(NICROM_1, LOW);
   xbee_uart(dev, "end cut_nicrom\n");

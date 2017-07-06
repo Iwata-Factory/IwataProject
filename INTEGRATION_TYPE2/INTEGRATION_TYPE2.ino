@@ -78,10 +78,10 @@ void setup() {
   rover_degital(set);
 
   if (YOUR_MODEL == 1) {  // FMの場合の値に切り替え（暫定的処理
-    tm_x_offset = 30.5;
-    tm_y_offset = 16.5;
-    x_def = 863.0;
-    y_def = 665.0;
+    tm_x_offset = 87.0;
+    tm_y_offset = 12.5;
+    x_def = 770.0;
+    y_def = 687.0;
   }
 
   //ニクロム線のピンモード
@@ -247,7 +247,7 @@ void loop() {
     speaker(HIGH_C);
     speaker(HIGH_C);
     speaker(HIGH_C);
-    delay(10000);
+    delay(100000);
   }
 
 

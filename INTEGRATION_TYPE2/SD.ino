@@ -16,6 +16,13 @@
 */
 int write_timelog_sd(ROVER *rover) {
 
+  DRIVE go; //DRIVE型の宣言
+  go.right1 = 1;
+  go.right2 = 1;
+  go.leght1 = 1;
+  go.leght2 = 1;
+  rover_degital(go);
+
   if (SD_LOG_FLAG == 0) { // スキップ
     return 0;
   }
@@ -47,6 +54,13 @@ int write_timelog_sd(ROVER *rover) {
 // 加速度を記録
 int write_ac_sd(AC ac) {
 
+  DRIVE go; //DRIVE型の宣言
+  go.right1 = 1;
+  go.right2 = 1;
+  go.leght1 = 1;
+  go.leght2 = 1;
+  rover_degital(go);
+
   if (SD_LOG_FLAG == 0) {  // スキップ
     return 0;
   }
@@ -76,6 +90,13 @@ int write_ac_sd(AC ac) {
 // 地磁気を記録
 int write_tm_sd(TM tm) {
 
+  DRIVE go; //DRIVE型の宣言
+  go.right1 = 1;
+  go.right2 = 1;
+  go.leght1 = 1;
+  go.leght2 = 1;
+  rover_degital(go);
+
   if (SD_LOG_FLAG == 0) { // スキップ
     return 0;
   }
@@ -103,6 +124,13 @@ int write_tm_sd(TM tm) {
 
 // GPSを記録
 int write_gps_sd(GPS gps) {
+
+  DRIVE go; //DRIVE型の宣言
+  go.right1 = 1;
+  go.right2 = 1;
+  go.leght1 = 1;
+  go.leght2 = 1;
+  rover_degital(go);
 
   if (SD_LOG_FLAG == 0) { // スキップ
     return 0;
@@ -149,6 +177,13 @@ int write_gps_sd(GPS gps) {
 
 // クリティカルなログを記録
 int write_critical_sd(int flag) {
+
+  DRIVE go; //DRIVE型の宣言
+  go.right1 = 1;
+  go.right2 = 1;
+  go.leght1 = 1;
+  go.leght2 = 1;
+  rover_degital(go);
 
   if (SD_LOG_FLAG == 0) { // スキップ
     return 0;

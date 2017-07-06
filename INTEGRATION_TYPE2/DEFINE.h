@@ -59,13 +59,13 @@
 #define PID_KI 0.035
 #define PID_KD 0.000
 // ここより↑使ってない
-#define PI_RIGHT_DEFAULT 210
+#define PI_RIGHT_DEFAULT 235
 #define PI_LEGHT_DEFAULT 250
 #define PI_INTEGRAL_RISET 10
 #define PID_STREIGHT_BETWEEN 100
 #define PI_KP 1.5
 #define PI_KP2 0
-#define PI_KI 0.1
+#define PI_KI 0.20
 #define PI_MIN 80
 #define PI_MAX 250
 
