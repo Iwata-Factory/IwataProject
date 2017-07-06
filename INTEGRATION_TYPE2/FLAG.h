@@ -2,7 +2,7 @@
 #define __FLAG_H__
 
 // 使用するモデル
-#define YOUR_MODEL 1  // 0でEM、1でFM
+#define YOUR_MODEL 0  // 0でEM、1でFM
 
 // 各ステータスを飛ばすかどうか
 // 1なら実行、0なら飛ばします

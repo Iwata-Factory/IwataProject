@@ -4,12 +4,12 @@
 // 定数の定義
 
 // ゴール位置
-//#define GOAL_LATITUDE 35.760226
-//#define GOAL_LONGITUDE 139.766005
+#define GOAL_LATITUDE 35.760267
+#define GOAL_LONGITUDE 139.765989
 
 //ゴール(工房横
-#define GOAL_LATITUDE 35.71519224822083
-#define GOAL_LONGITUDE 139.7592558245716
+//#define GOAL_LATITUDE 35.71519224822083
+//#define GOAL_LONGITUDE 139.7592558245716
 
 
 #define GOAL_CIRCLE 1.5
@@ -68,8 +68,8 @@
 #define PID_KI 0.035
 #define PID_KD 0.000
 // ここより↑使ってない
-#define PI_RIGHT_DEFAULT 250
-#define PI_LEGHT_DEFAULT 250
+#define PI_RIGHT_DEFAULT 255
+#define PI_LEGHT_DEFAULT 255
 #define PI_INTEGRAL_RISET 10
 #define PID_STREIGHT_BETWEEN 100
 #define PI_KP 1.5
@@ -149,9 +149,9 @@
 // グローバル変数の定義(ごちゃごちゃしているためいずれ整理したい)
 static unsigned long time; //タイマー起動
 
-//byte dev[] = {0x00, 0x13, 0xA2, 0x00, 0x40, 0xB9, 0x3D, 0xCD}; //XBEE親機アドレス（古い機体の海外版）
+byte dev[] = {0x00, 0x13, 0xA2, 0x00, 0x40, 0xB9, 0x3D, 0xCD}; //XBEE親機アドレス（古い機体の海外版）
 //byte dev[] = {0x00, 0x13, 0xA2, 0x00, 0x40, 0xCA, 0x9A, 0x3D};  //XBEE親機アドレス（６月１９日購入版）
-byte dev[] = {0x00, 0x13, 0xA2, 0x00, 0x40, 0xE7, 0xED, 0x61};  // XBEE親機アドレス（６月３０日改造版）
+//byte dev[] = {0x00, 0x13, 0xA2, 0x00, 0x40, 0xE7, 0xED, 0x61};  // XBEE親機アドレス（６月３０日改造版）
 
 static const uint8_t length = 6;   //読み出しデータの個数
 char g_szReadBuffer[READBUFFERSIZE] = "";

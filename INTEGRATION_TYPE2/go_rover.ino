@@ -45,18 +45,18 @@ void go_rotate(double rotate) {
   }
 
   if (0 < rotate) {  // 右
-    turn.right1 = 1;
-    turn.right2 = 0;
-    turn.leght1 = 0;
-    turn.leght2 = 1;
-
-    rotate_time = (rotate / 400) * 1000;
-
-  } else {  // 左
     turn.right1 = 0;
     turn.right2 = 1;
     turn.leght1 = 1;
     turn.leght2 = 0;
+
+    rotate_time = (rotate / 400) * 1000;
+
+  } else {  // 左
+    turn.right1 = 1;
+    turn.right2 = 0;
+    turn.leght1 = 0;
+    turn.leght2 = 1;
 
     rotate_time = -1 * (rotate / 400) * 1000;
 
