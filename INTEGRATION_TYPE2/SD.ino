@@ -190,13 +190,11 @@ int write_critical_sd(int flag) {
   }
 
   unsigned long time = millis();  // 機体時間を取得
+  
   GPS gps;
+  gps_get(&gps);
 
   xbee_uart(dev, "call write_critical_sd\r" );
-
-  if (flag != 0) {  // セットアップ時以外はGPSを取る
-    gps_get(&gps);
-  }
 
   int i = 0; // 試行回数記録用
   while (i < 30) { // 30回SDカードを開けなかったら諦める
@@ -245,7 +243,6 @@ int write_critical_sd(int flag) {
 
         case 2:
           if (GPS_GET_FLAG == 1) {
-
 
             dataFile.println("");
             dataFile.println("**end-control**"); // 記録開始
