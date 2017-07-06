@@ -111,8 +111,8 @@ int get_go_argument (double last_distance) {
     return 600;
   } else if (15 < last_distance && last_distance <= 25) {
     return 300;
-  } else if (3 < last_distance && last_distance <= 15) {
-    return 30;
+  } else if (5 < last_distance && last_distance <= 15) {
+    return 50;
   } else {
     return 15;
   }
