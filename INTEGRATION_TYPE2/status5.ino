@@ -127,9 +127,10 @@ int check_gps_jump(GPS *gps, POINT *point) {
     return 1;
   } else {
     double gps_difference = distance_get(gps, point);  // GPSのジャンプを計算
-    if (gps_difference < 35) {  // 正常
+    if (gps_difference < GPS_JUMP_DISTANCE) {  // 正常
       point->latitude = gps->latitude;
       point->longitude = gps->longitude;
+      xbee_uart( dev, "no jump gps ---> ok\r");
       return 1;
     } else {
       gps_switch();  // GPS切り替え
