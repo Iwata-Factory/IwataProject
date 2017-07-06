@@ -83,7 +83,16 @@ int status5(ROVER *rover) {
     int arg = get_go_argument(rover->distance);
 
     if (PI_FLAG == 1) {
-      go_straight_control(arg, rover->Target_Direction);
+      if (SHINSAKAI == 1) {  // 審査会では最初の3回は少しだけ動きます
+        if (i < 3) {
+          xbee_uart( dev, "initial action\r");
+          go_straight_control(30, rover->Target_Direction);
+        } else {
+          go_straight_control(arg, rover->Target_Direction);
+        }
+      } else {
+        go_straight_control(arg, rover->Target_Direction);
+      }
     } else {
       if (500 < arg) {  // 出力調整
         arg = 10000;
