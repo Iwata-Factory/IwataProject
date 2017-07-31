@@ -37,15 +37,17 @@ int status4(ROVER *rover) {  // Status4 着陸の関数
 
   } else if (SHINSAKAI == 1) {
 
-//    xbee_standby();  // 現状enter押下したのちに大文字のOを入力することによって脱出します。
+    //    xbee_standby();  // 現状enter押下したのちに大文字のOを入力することによって脱出します。
     xbee_uart( dev, "start end2end\r");
     // ここで時間をとっておく。
-//    delay(3000);
+    //    delay(3000);
+
+
+    cut_nicrom(15000);  // ニクロム線を切る
+    go_straight(2000);   // 審査会では走るだけ
 
     write_critical_sd(1);  // 着陸終了
 
-    cut_nicrom(10000);  // ニクロム線を切る
-    go_straight(2000);   // 審査会では走るだけ
 
   }
 

@@ -91,8 +91,8 @@ void go_straight(int go_time) {
   DRIVE go; //DRIVE型の宣言
   // 初期化
   int wait_time = go_time - 1300;
-  if (wait_time < 500) {  // 下限を設定
-    wait_time = 500;
+  if (wait_time < 100) {  // 下限を設定
+    wait_time = 100;
   }
 
 

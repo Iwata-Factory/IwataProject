@@ -84,7 +84,7 @@ int status6(ROVER *rover) {
 
     turn_target_direction(rover->Target_Direction, &rover->My_Direction, 0);
 
-    go_straight(500);
+    go_straight(100);
   } while (i < 20);
 
   return 1;

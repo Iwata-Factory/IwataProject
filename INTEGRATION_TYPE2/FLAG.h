@@ -9,9 +9,9 @@
 #define _S1_ 0
 #define _S2_ 0
 #define _S3_ 0
-#define _S4_ 1
+#define _S4_ 0
 #define _S5_ 1
-#define _S6_ 1
+#define _S6_ 0
 
 // 設定用フラグ(1のほうが標準)
 #define XBEE_SWITCH 1  // 0にするとxbeeを全て無視します(今は動作不安定っぽい)
@@ -27,8 +27,8 @@
 #define PI_FLAG 1  // 1の時PI制御で直進する。
 
 // テスト用フラグ
-#define STACK_EXP 0  // 1の場合スタックのフラグが立った地点までスキップ
-#define NEAR_GOAL_STACK_EXP 0 // 本来のシーケンスではゴール付近でスタック判定は行いませんが、1にした場合はゴール付近でもスタック判定を行います.
+#define STACK_EXP 1  // 1の場合スタックのフラグが立った地点までスキップ
+#define NEAR_GOAL_STACK_EXP 1 // 本来のシーケンスではゴール付近でスタック判定は行いませんが、1にした場合はゴール付近でもスタック判定を行います.
 #define SHINSAKAI 1  // 審査会用
 
 #define YOUR_MODEL 1  // 0でEM、1でFM
