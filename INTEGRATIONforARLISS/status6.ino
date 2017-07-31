@@ -1,3 +1,5 @@
+// 今は2台のGPSでゴールを目指します
+
 int status6(ROVER *rover) {
 
   if (_S6_ == 0) {
@@ -47,8 +49,6 @@ int status6(ROVER *rover) {
 
     // 方向転換
     turn_target_direction(rover->Target_Direction, &rover->My_Direction, 0);
-
-    //    go_straight_control(5, rover->Target_Direction);
     go_straight(500);
 
 

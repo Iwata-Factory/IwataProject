@@ -2,12 +2,28 @@
 #define __DEFINE_H__
 
 // 定数の定義
-# define GOAL_LATITUDE 35.756165
-# define GOAL_LONGITUDE 139.770740
+
+// ゴール位置
+#define GOAL_LATITUDE 35.760317
+#define GOAL_LONGITUDE 139.766030
+
+#define GOAL_CIRCLE 2.8
+#define LAST_GOAL_CIRCLE 1.0
+
+// 海抜制限
+#define ALT_REGULATION 100
+
+//SD関連
+#define LOG_TIME ("timelog.txt")
+#define LOG_AC ("aclog.txt")
+#define LOG_TM ("tmlog.txt")
+#define LOG_GPS ("gpslog.txt")
+#define LOG_CRITICAL ("critical.txt")  // 現在使っていない
 
 //GPS関連
-#define PIN_GPS_Rx  10 // GPSのシリアル通信でデータを受信するピン
-#define PIN_GPS_Tx  12 // GPSのシリアル通信でデータを送信するピン
+#define PIN_GPS1_Rx  10 // GPSのシリアル通信でデータを受信するピン
+#define PIN_GPS2_Rx  12 // GPSのシリアル通信でデータを受信するピン
+#define PIN_GPS_TX_DUMMY 13 // GPSのTXピンのダミー
 #define LATITUDE_MINIMUM 35  //緯度の最小値
 #define LATITUDE_MAXIMUM 45  //緯度の最大値
 #define LONGITUDE_MINIMUM 133  //経度の最小値
@@ -15,19 +31,39 @@
 #define GPSBAUDRATE 9600 //シリアル通信のデータ送信レートを9600bpsに定義するための定数(GPSとArduino)
 #define READBUFFERSIZE  (256)
 #define DELIMITER   (",")  // 区切り文字定数
+#define GPS_JUMP_DISTANCE 30 // GPSのジャンプ許容距離
 
 //地磁気センサ関連
 #define HMC5883L 0x1E   //HMC5883L(地磁気センサ)のスレーブアドレス
+#define SINGLE_MODE 0x01   //single mode
+#define CONTINUOUS_MODE 0x00  //continuous mode
 #define TM_DIFFERENCE -7.2
 
 //加速度センサ関連
 #define ADXL345 0x53  //ADXL345(加速度センサ)のスレーブアドレス
 
 //モーター関連
-#define M1_1 4 // モーター制御用ピン
-#define M1_2 5 // モーター制御用ピン
-#define M2_1 6 // モーター制御用ピン
-#define M2_2 7 // モーター制御用ピン
+/*FMとEMでオンオフ切り替えて下さい*/
+//#define M1_1 4 // モーター制御用ピン
+//#define M1_2 5 // モーター制御用ピン
+//#define M2_1 7 // モーター制御用ピン
+//#define M2_2 6 // モーター制御用ピン
+
+#define M1_1 7  // こっちが正しいっぽい
+#define M1_2 6
+#define M2_1 4
+#define M2_2 5
+
+// PID制御関連
+#define PI_RIGHT_DEFAULT 240
+#define PI_LEGHT_DEFAULT 250
+#define PI_INTEGRAL_RISET 10
+#define PID_STREIGHT_BETWEEN 100
+#define PI_KP 1.5
+#define PI_KP2 0
+#define PI_KI 0.20
+#define PI_MIN 80
+#define PI_MAX 250
 
 //スピーカー関連
 #define BEAT_LONG 300   // 音の長さを指定
@@ -85,7 +121,10 @@
 //SD関連
 #define SS 53
 
-
+//XBEE関連
+#define XBEE_BUFFERSIZE 63
+#define ENTER 0x0D
+#define O_CAP 0x4F
 
 // その他
 #define SERIAL_BAUDRATE 9600 //シリアル通信のデータ送信レートを9600bpsに定義するための定数(ArduinoとPC)
@@ -93,7 +132,9 @@
 
 // グローバル変数の定義(ごちゃごちゃしているためいずれ整理したい)
 static unsigned long time; //タイマー起動
-byte dev[] = {0x00, 0x13, 0xA2, 0x00, 0x40, 0xCA, 0x9A, 0x3D}; //XBEE親機アドレス
+
+byte dev[] = {0x00, 0x13, 0xA2, 0x00, 0x40, 0xE7, 0xED, 0x61};  // XBEE親機アドレス（６月３０日改造版）
+
 static const uint8_t length = 6;   //読み出しデータの個数
 char g_szReadBuffer[READBUFFERSIZE] = "";
 int  g_iIndexChar = 0;
@@ -107,14 +148,22 @@ byte flag_phase[8] = {
   FLAG_LAND, FLAG_GND1, FLAG_GND2, FLAG_END
 };
 const int chipSelect = 4;
-// 地磁気のキャリブレーションに関するやつ
-double tm_x_offset = 0.0;
-double tm_y_offset = 0.0;
-double x_def = 1.0;
-double y_def = 1.0;
 
-SoftwareSerial g_gps( PIN_GPS_Rx, PIN_GPS_Tx); // ArduinoとGPS間のシリアル通信用に
-Servo servo1;
+// 地磁気のキャリブレーションに関するやつ
+double tm_x_offset = 97.5;
+double tm_y_offset = 109.5;
+double x_def = 806.0;
+double y_def = 676.0;
+
+// 立ち入り禁止エリア(10個まで生成可能)
+POINT danger_area_points[10];
+
+char xbee_send[XBEE_BUFFERSIZE];  //とりあえずのxbee送信用配列
+
+SoftwareSerial g_gps1( PIN_GPS1_Rx, PIN_GPS_TX_DUMMY); // ArduinoとGPS間のシリアル通信用に
+SoftwareSerial g_gps2( PIN_GPS2_Rx, PIN_GPS_TX_DUMMY); // ArduinoとGPS間のシリアル通信用に
+int use_which_gps = 1;  // 1か2どちらのGPSを使用するか
+int gps_timeout_counter_global = 0;
 
 #endif
 
