@@ -11,9 +11,10 @@ int status3(ROVER *rover) {  // Status3 降下の関数(着陸判定を行う)
   int landing_flag = 0;
 
   do {
-    get_censor_status(rover);  // 最新のセンサーの状態を取得
+    
+    get_censor_status(rover);  // 最新のセンサーの状態を取得(引数のroverを値書き換え)
 
-    switch_num = get_switch(rover);
+    switch_num = get_switch(rover);  // どのセンサーで判定を行うのかを決定
 
     write_timelog_sd(rover);  //  ログを残す
 

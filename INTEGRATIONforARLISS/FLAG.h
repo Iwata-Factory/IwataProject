@@ -8,8 +8,8 @@
 // 1なら実行、0なら飛ばします
 #define _S1_ 0
 #define _S2_ 0
-#define _S3_ 0
-#define _S4_ 0
+#define _S3_ 1
+#define _S4_ 1
 #define _S5_ 1
 #define _S6_ 0
 

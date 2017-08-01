@@ -36,7 +36,7 @@ int status4(ROVER *rover) {  // Status4 着陸の関数
 
   } else if (SHINSAKAI == 1) {
 
-    //    xbee_standby();  // 現状enter押下したのちに大文字のOを入力することによって脱出します。
+    xbee_standby();  // 現状enter押下したのちに大文字のOを入力することによって脱出します。
     xbee_uart( dev, "start end2end\r");
     // ここで時間をとっておく。
 
