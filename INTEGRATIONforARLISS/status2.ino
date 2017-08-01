@@ -21,7 +21,7 @@ int judge_release() {
 
     light = 0;
 
-    for (i = 0; i < 5; i++) {
+    for (i = 0; i < 3; i++) {
       light += digitalRead(LIGHT_PIN);
       xbee_uart( dev, "count\r");
       sprintf(xbee_send, "%d\r", i);
@@ -30,7 +30,7 @@ int judge_release() {
       t++;
     }
 
-    if (light == 5) {
+    if (light == 3) {
       break;
     }
     i = 0;
