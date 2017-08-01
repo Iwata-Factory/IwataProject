@@ -86,12 +86,12 @@ int xbee_standby() {
 
     AC ac;  // 振動試験用
 
+    ac = get_ac();  // 振動試験用
+    write_ac_sd(ac);  // 振動試験用
+    delay(100);
+
     if (xbee_rcv(ENTER)) {
       xbprintf("are you ready?");
-      
-      ac = get_ac();  // 振動試験用
-      write_ac_sd(ac);  // 振動試験用
-      delay(100);
 
       while (1) {
         if (xbee_rcv( O_CAP )) {
