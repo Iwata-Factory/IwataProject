@@ -6,7 +6,7 @@
 
 // 各ステータスを飛ばすかどうか
 // 1なら実行、0なら飛ばします
-#define _S1_ 0
+#define _S1_ 1
 #define _S2_ 0
 #define _S3_ 0
 #define _S4_ 0
@@ -27,9 +27,9 @@
 #define PI_FLAG 1  // 1の時PI制御で直進する。
 
 // テスト用フラグ
-#define STACK_EXP 1  // 1の場合スタックのフラグが立った地点までスキップ
-#define NEAR_GOAL_STACK_EXP 1 // 本来のシーケンスではゴール付近でスタック判定は行いませんが、1にした場合はゴール付近でもスタック判定を行います.
-#define SHINSAKAI 1  // 審査会用
+#define STACK_EXP 0  // 1の場合スタックのフラグが立った地点までスキップ
+#define NEAR_GOAL_STACK_EXP 0 // 本来のシーケンスではゴール付近でスタック判定は行いませんが、1にした場合はゴール付近でもスタック判定を行います.
+#define SHINSAKAI 0  // 審査会用
 
 #define YOUR_MODEL 1  // 0でEM、1でFM
 

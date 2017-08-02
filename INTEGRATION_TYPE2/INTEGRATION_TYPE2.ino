@@ -57,7 +57,7 @@ void setup() {
     }
   }
 
-  write_critical_sd(0);
+  //write_critical_sd(0);
 
   //照度センサ用のピン
   pinMode(LIGHT_PIN, INPUT);
@@ -93,6 +93,9 @@ void setup() {
   xbee_standby();  // 現状enter押下したのちに大文字のOを入力することによって脱出します。
 
   xbee_uart( dev, "setup done\rchange to main phase\r");
+
+  //スリープmode関連
+  attachInterrupt(0, wakeUpNow, RISING);
 }
 
 
