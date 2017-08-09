@@ -101,7 +101,7 @@ int judge_landing_by_gps_detail() {
 
   for (int i = 0; i < 10; i++) {
     gps_get_al(&alt_array[i]);
-    //    xbee_send_1double(alt_array[i]);  // ここでバグるかもしれない（動作確認まだ）なので注意
+    xbprintf("%f", alt_array[i]); // ここでバグるかもしれない（動作確認まだ）なので注意
     delay(1000);
 
     if ((0 < i) && ( 3 < (alt_array[i - 1] - alt_array[i]))) {  // 前回-今回
@@ -137,14 +137,33 @@ int judge_landing_by_ac() {
   // 加速度のサンプルを10個取る
   int i = 0;
 
-  //xbee_uart( dev,"加速度のサンプルを取得します");
+  //  xbee_uart( dev,"加速度のサンプルを取得します");
 
   while (i < 10) {
     ac = get_ac(); // 加速度を取得
     if (!(ac.x == 100 && ac.y == 100 && ac.z == 100)) {
       // 値を取れている
       // 加速度の大きさを計算
+      xbprintf("sampling AC");
+      dtostrf(ac.x, 10, 6, xbee_send);
+      xbprintf(xbee_send);
+      dtostrf(ac.y, 10, 6, xbee_send);
+      xbprintf(xbee_send);
+      dtostrf(ac.z, 10, 6, xbee_send);
+      xbprintf(xbee_send);
+      
       ac_array[i] = sqrt(pow(ac.x, 2) + pow(ac.y, 2) + pow(ac.z, 2));
+
+      xbprintf("sampling altitude...");
+
+      double alt_array[10] = {0.0};
+      gps_get_al(&alt_array[i]);
+      if (use_which_gps == 1) {
+          xbprintf("used gps1");
+        } else if (use_which_gps == 2) {
+          xbprintf("used gps2");
+        }
+
       delay(3000); // サンプリングは3秒ごとに
       i += 1;
     } else {

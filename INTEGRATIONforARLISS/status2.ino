@@ -26,6 +26,15 @@ int judge_release() {
       xbee_uart( dev, "count\r");
       sprintf(xbee_send, "%d\r", i);
       xbee_uart( dev, xbee_send);
+      xbprintf("count:%d\rlight:%d",i,light);
+      xbprintf("sampling altitude...");
+      double alt_array[10] = {0.0};
+      gps_get_al(&alt_array[i]);
+      if (use_which_gps == 1) {
+        xbprintf("used gps1");
+      } else if (use_which_gps == 2) {
+        xbprintf("used gps2");
+      }
       delay(1000);
       t++;
     }

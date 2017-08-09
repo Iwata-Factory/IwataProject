@@ -11,6 +11,8 @@ int status4(ROVER *rover) {  // Status4 着陸の関数
     delay(1000);
     return 1;
   }
+  xbprintf("status4 for balloon test");
+  xbee_standby();
 
 
   if (SHINSAKAI == 0) {

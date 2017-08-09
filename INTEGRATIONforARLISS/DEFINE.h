@@ -18,6 +18,7 @@
 #define LOG_AC ("aclog.txt")
 #define LOG_TM ("tmlog.txt")
 #define LOG_GPS ("gpslog.txt")
+#define LOG_ALT ("altlog.txt")
 #define LOG_CRITICAL ("critical.txt")  // 現在使っていない
 
 //GPS関連
