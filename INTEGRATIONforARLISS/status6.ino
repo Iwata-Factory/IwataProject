@@ -87,6 +87,9 @@ int status6(ROVER *rover) {
     go_straight(100);
   } while (i < 20);
 
+  get_goal(rover);
+
+
   return 1;
 
 
@@ -134,4 +137,55 @@ POINT gps_get_by_two_module() {
 
   return success_point;
 }
+
+double get_goal(ROVER *rover) {
+  int i = 0;
+  int t = 0;
+  double para_distance = 0;
+  double volt = 0;
+
+  xbee_uart(dev, "get_goal\n");
+  DRIVE turn; // DRIVE型の宣言
+  //右向き回転
+  turn.right1 = 0;
+  turn.right2 = 50;
+  turn.leght1 = 50;
+  turn.leght2 = 0;
+  rover_analog(turn);
+  while (t <= 10000) {
+    volt = analogRead( DISTANCE ) * 5 / 1023.0;
+    if ( 1.35 < volt & volt < 2.7 ) {            //有効測距範囲内
+      para_distance = 140.0 / ( volt - 1.10 ) ;
+      turn.right1 = 1;
+      turn.right2 = 1;
+      turn.leght1 = 1;
+      turn.leght2 = 1;
+      rover_degital(turn);
+      delay(1000);
+      rover->My_Direction = get_my_direction();
+      //とりあえず取得した方向に進む
+      if (para_distance >= 2) {
+        go_straight(1000);
+      } else {
+        go_straight(1000);
+        return 1;
+      }
+
+    }
+    delay(1);
+    t++;
+  }
+  //停止
+  turn.right1 = 1;
+  turn.right2 = 1;
+  turn.leght1 = 1;
+  turn.leght2 = 1;
+  rover_degital(turn);
+  delay(1000);
+
+  return 0;
+
+}
+
+
 
