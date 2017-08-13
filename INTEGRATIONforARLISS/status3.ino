@@ -17,30 +17,24 @@ int status3(ROVER *rover) {  // Status3 降下の関数(着陸判定を行う)
 
     write_timelog_sd(rover);  //  ログを残す
 
-
     switch (switch_num) {
 
       case 1:
         landing_flag = judge_landing_by_gps();  // GPS1による着陸判定
         xbee_uart( dev, "end judge_landing_by_gps\r");
-        // delay(30000);  // 本番では多めにdelay取った方がいいかも？
         delay(3000);
         break;
 
       case 2:  /* GPS1と2の振る舞いの違いを実装する必要がありますね by とうま*/
         landing_flag = judge_landing_by_gps();  // GPS2による着陸判定
         xbee_uart( dev, "end judge_landing_by_gps\r");
-        // delay(30000);
         delay(3000);
-
         break;
 
       case 3:
         landing_flag = judge_landing_by_ac();
         xbee_uart( dev, "end judge_landing_by_ac\r");  // 加速度センサによる着陸判定
-        // delay(30000);
         delay(3000);
-
         break;
 
       case 4:  // 着陸判定にかかるセンサ系の死亡
@@ -54,8 +48,6 @@ int status3(ROVER *rover) {  // Status3 降下の関数(着陸判定を行う)
 
   write_timelog_sd(rover);  //  ログを残す
 
-  /* クリティカルなログも残しましょう*/
-
   return 1;
 }
 
@@ -64,7 +56,7 @@ int status3(ROVER *rover) {  // Status3 降下の関数(着陸判定を行う)
 int get_switch(ROVER *rover) {
   if (rover->ac_arive == 1) {  // 加速度
     return 3;
-  } else if (rover->gps1_arive == 1) {  // GPS1
+  } else if (rover->gps1_arive == 1) { // GPS1
     return 1;
   } else if (rover->gps2_arive == 1) { // GPS2
     return 2;

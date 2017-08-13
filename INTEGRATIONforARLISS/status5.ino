@@ -83,16 +83,7 @@ int status5(ROVER *rover) {
     int arg = get_go_argument(rover->distance);
 
     if (PI_FLAG == 1) {
-      if (SHINSAKAI == 1) {  // 審査会では最初の3回は少しだけ動きます
-        if (i < 3) {
-          xbee_uart( dev, "initial action\r");
-          go_straight_control(30, rover->Target_Direction);
-        } else {
-          go_straight_control(arg, rover->Target_Direction);
-        }
-      } else {
-        go_straight_control(arg, rover->Target_Direction);
-      }
+      go_straight_control(arg, rover->Target_Direction);
     } else {
       if (500 < arg) {  // 出力調整
         arg = 10000;
@@ -104,10 +95,7 @@ int status5(ROVER *rover) {
 
     i += 1;
 
-    if (i == 3) {
-      do_stack_check = 1;  // スタック判定をon
-    }
-
+    do_stack_check = 1;  // スタック判定をon
 
   } while (1);
 
@@ -118,8 +106,6 @@ int status5(ROVER *rover) {
 // 直進関数の引数を決める
 int get_go_argument (double last_distance) {
   if (last_distance < 0 || 50 < last_distance) {
-    // 1分15秒
-    //    return 3000;
     return 1000;
   } else if (25 < last_distance && last_distance <= 50) {
     return 600;

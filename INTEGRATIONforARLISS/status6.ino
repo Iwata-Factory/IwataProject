@@ -1,3 +1,5 @@
+// 今は2台のGPSでゴールを目指します
+
 int status6(ROVER *rover) {
 
   if (_S6_ == 0) {
@@ -7,6 +9,7 @@ int status6(ROVER *rover) {
   }
 
   int i = 0;  // 最終処理のカウント数
+  int distance_flag = 0;  //距離センサのチェックをしたかのフラグ
 
   POINT my_point;
   POINT goal_point;
@@ -39,7 +42,16 @@ int status6(ROVER *rover) {
     xbee_uart(dev, xbee_send);
 
     if (0 < rover->distance && rover->distance < LAST_GOAL_CIRCLE) {
-      return 1;
+      //距離センサ試してみる
+      if (distance_flag == 0) {
+        if (get_goal(rover) == 1) {
+          //うまくいけばok
+          return 1;
+        }
+        //失敗したら元の場所に帰って終了
+        i = 0;
+        distance_flag = 1;
+      }
     }
 
     rover->Target_Direction = direction_get(&my_gps_only, &goal_point);
@@ -47,8 +59,6 @@ int status6(ROVER *rover) {
 
     // 方向転換
     turn_target_direction(rover->Target_Direction, &rover->My_Direction, 0);
-
-    //    go_straight_control(5, rover->Target_Direction);
     go_straight(500);
 
 
@@ -86,6 +96,8 @@ int status6(ROVER *rover) {
 
     go_straight(100);
   } while (i < 20);
+
+
 
   return 1;
 
@@ -134,4 +146,74 @@ POINT gps_get_by_two_module() {
 
   return success_point;
 }
+
+double get_goal(ROVER *rover) {
+  int i = 0;
+  int t = 0;
+  double para_distance = 0;
+  double volt = 0;
+  int goal_flag = 0;
+
+  xbee_uart(dev, "get_goal\n");
+  DRIVE turn; // DRIVE型の宣言
+  //右向き回転
+  turn.right1 = 0;
+  turn.right2 = 50;
+  turn.leght1 = 50;
+  turn.leght2 = 0;
+  rover_analog(turn);
+  while (t <= 10000) {
+    volt = analogRead( DISTANCE ) * 5 / 1023.0;
+    if ( 1.35 < volt & volt < 2.7 ) {            //有効測距範囲内
+      para_distance = 140.0 / ( volt - 1.10 ) ;
+      turn.right1 = 1;
+      turn.right2 = 1;
+      turn.leght1 = 1;
+      turn.leght2 = 1;
+      rover_degital(turn);
+      rover->My_Direction = get_my_direction();
+      delay(1000);
+      //とりあえず取得した方向に進む
+      if (para_distance >= 3) {
+        go_straight(500);
+        //右向き回転
+        turn.right1 = 0;
+        turn.right2 = 50;
+        turn.leght1 = 50;
+        turn.leght2 = 0;
+      } else {
+        if (para_distance > 1 && para_distance <= 3) {
+          go_straight(500);
+          //右向き回転
+          turn.right1 = 0;
+          turn.right2 = 50;
+          turn.leght1 = 50;
+          turn.leght2 = 0;
+          goal_flag = 1;
+        }
+        if (goal_flag = 1) {
+          go_straight(500);
+          return 1;
+        } else {
+          return 0;
+        }
+      }
+
+    }
+    delay(1);
+    t++;
+  }
+  //停止
+  turn.right1 = 1;
+  turn.right2 = 1;
+  turn.leght1 = 1;
+  turn.leght2 = 1;
+  rover_degital(turn);
+  delay(1000);
+
+  return 0;
+
+}
+
+
 

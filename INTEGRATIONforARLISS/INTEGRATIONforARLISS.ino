@@ -40,36 +40,35 @@ void setup() {
     pinMode(SS, OUTPUT);
     int sd_ok_counter = 0;
     while (1) {
-      if (!SD.begin(chipSelect)) {
+      if (!SD.begin(chipSelect)) {  // SDのセットアップに失敗
         sd_ok_counter += 1;
         xbee_uart( dev, "Card failed, or not present\r");
-        // 失敗、何もしない
         delay(1000);
-        if (sd_ok_counter == 60) {
+        if (sd_ok_counter == 60) {  // 60回セットアップを試みても駄目だったらループを抜ける
           xbee_uart( dev, "SD CARD DEATH\r");
           renew_status(STATUS_SD, 0);
           break;
         }
-      } else {
+      } else {  // SDのセットアップに成功
         xbee_uart( dev, "SD OK\r");
         break;
       }
     }
   }
 
-  write_critical_sd(0);
+  write_critical_sd(0);  // クリティカルログを残す
 
   //照度センサ用のピン
   pinMode(LIGHT_PIN, INPUT);
   //距離センサ用のピン
   pinMode(DISTANCE, INPUT);
-
   // モーター用ピンの設定
   pinMode(M1_1, OUTPUT);
   pinMode(M1_2, OUTPUT);
   pinMode(M2_1, OUTPUT);
   pinMode(M2_2, OUTPUT);
 
+  // 明示的なモーターのオフ
   DRIVE set;
   set.right1 = 1;
   set.right2 = 1;
@@ -77,17 +76,15 @@ void setup() {
   set.leght2 = 1;
   rover_degital(set);
 
-  if (YOUR_MODEL == 1) {  // FMの場合の値に切り替え（暫定的処理
-    tm_x_offset = 97.5;
-    tm_y_offset = 109.5;
-    x_def = 806.0;
-    y_def = 676.0;
+  if (YOUR_MODEL_NUM == 1) {
+    ;
   }
 
   //ニクロム線のピンモード
+  //明示的なオフ
   pinMode(NICROM_1, OUTPUT);
   pinMode(NICROM_2, OUTPUT);
-  digitalWrite(NICROM_1, LOW);  //明示的なオフ
+  digitalWrite(NICROM_1, LOW);
   digitalWrite(NICROM_2, LOW);
 
   xbee_standby();  // 現状enter押下したのちに大文字のOを入力することによって脱出します。
@@ -99,19 +96,19 @@ void setup() {
 
 void loop() {
 
-
-
   speaker(C_TONE);
   delay(2000);
 
-  ROVER rover;  // 自身の情報を初期化
-
+  // 自身の情報を初期化
+  ROVER rover;
+  // モーターの明示的なオフ
   DRIVE reset;
   reset.right1 = 1;
   reset.right2 = 1;
   reset.leght1 = 1;
   reset.leght2 = 1;
 
+  // 実験用の部分
   if (STACK_EXP == 0) {
     rover.status_number = 1;  // 現在ステータスを1に更新
     write_timelog_sd(&rover);
@@ -126,15 +123,12 @@ void loop() {
     // ここでセンサーの状態チェックを走らせる
     get_censor_status(&rover);  // 最新のセンサーの状態を取得
 
-
     switch (rover.status_number) {
 
       case 1:
 
         xbee_uart( dev, "start status1\r");
         delay(1000);
-
-        //        write_timelog_sd(&rover);
 
         if (status1(&rover) == 1) {
           rover_degital(reset);
@@ -150,11 +144,8 @@ void loop() {
       case 2:
         xbee_uart( dev, "start status2\r");
 
-        //        write_timelog_sd(&rover);
-
         if (status2(&rover) == 1) {
           rover_degital(reset);
-          xbee_uart( dev, "clear status2\r");
           trans_phase(rover.status_number);
           rover.status_number += 1;
           xbee_uart( dev, "success status2\r");
@@ -165,8 +156,6 @@ void loop() {
 
       case 3:
         xbee_uart( dev, "start status3\r");
-
-        //        write_timelog_sd(&rover);
 
         if (status3(&rover) == 1) {
           rover_degital(reset);
@@ -180,8 +169,6 @@ void loop() {
 
       case 4:
         xbee_uart( dev, "start status4\r");
-
-        //        write_timelog_sd(&rover);
 
         if (status4(&rover) == 1) {
           rover_degital(reset);
@@ -198,27 +185,16 @@ void loop() {
 
         write_timelog_sd(&rover);
 
-        if (GROUND1_FLAG == 0) {
-          if (status5(&rover) == 1) {
-            rover_degital(reset);
-            trans_phase(rover.status_number);
-            rover.status_number += 1;
-            xbee_uart( dev, "success status5-1\r");
-            break;
-          } else {
-            break;
-          }
-        } else if (GROUND1_FLAG == 1) {
-          if (status5_2(&rover) == 1) {
-            rover_degital(reset);
-            trans_phase(rover.status_number);
-            rover.status_number += 1;
-            xbee_uart( dev, "success status5-2\r");
-            break;
-          } else {
-            break;
-          }
+        if (status5(&rover) == 1) {
+          rover_degital(reset);
+          trans_phase(rover.status_number);
+          rover.status_number += 1;
+          xbee_uart( dev, "success status5-1\r");
+          break;
+        } else {
+          break;
         }
+
 
       case 6:
         xbee_uart( dev, "start status6\r");
