@@ -2,12 +2,13 @@
   メインコード
 */
 
+#define MACHINE 1  // 1 or 2を指定
 #include "INCLUDE.h"
 /*
    セットアップ　　
 */
 void setup() {
-
+  write_control_sd("setup start");
   // 各種初期化処理
   Wire.begin();           //I2C通信の初期化
   Serial.begin(SERIAL_BAUDRATE); //シリアル通信の初期化
@@ -54,6 +55,7 @@ void setup() {
         break;
       }
     }
+
   }
 
   write_critical_sd(0);  // クリティカルログを残す
@@ -76,10 +78,6 @@ void setup() {
   set.leght2 = 1;
   rover_degital(set);
 
-  if (YOUR_MODEL_NUM == 1) {
-    ;
-  }
-
   //ニクロム線のピンモード
   //明示的なオフ
   pinMode(NICROM_1, OUTPUT);
@@ -90,6 +88,8 @@ void setup() {
   xbee_standby();  // 現状enter押下したのちに大文字のOを入力することによって脱出します。
 
   xbee_uart( dev, "setup done\rchange to main phase\r");
+  write_control_sd("setup end");
+
 }
 
 
@@ -128,7 +128,10 @@ void loop() {
       case 1:
 
         xbee_uart( dev, "start status1\r");
+        write_control_sd("status1 start");
+
         delay(1000);
+
 
         if (status1(&rover) == 1) {
           rover_degital(reset);
@@ -143,6 +146,7 @@ void loop() {
 
       case 2:
         xbee_uart( dev, "start status2\r");
+        write_control_sd("status2 start");
 
         if (status2(&rover) == 1) {
           rover_degital(reset);
@@ -156,6 +160,8 @@ void loop() {
 
       case 3:
         xbee_uart( dev, "start status3\r");
+        write_control_sd("status3 start");
+
 
         if (status3(&rover) == 1) {
           rover_degital(reset);
@@ -169,6 +175,8 @@ void loop() {
 
       case 4:
         xbee_uart( dev, "start status4\r");
+        write_control_sd("status4 start");
+
 
         if (status4(&rover) == 1) {
           rover_degital(reset);
@@ -182,6 +190,8 @@ void loop() {
 
       case 5:
         xbee_uart( dev, "start status5\r");
+        write_control_sd("status5 start");
+
 
         write_timelog_sd(&rover);
 
@@ -198,6 +208,8 @@ void loop() {
 
       case 6:
         xbee_uart( dev, "start status6\r");
+        write_control_sd("status6 start");
+
         write_timelog_sd(&rover);
         if (status6(&rover) == 1) {
           rover_degital(reset);
@@ -214,6 +226,8 @@ void loop() {
   } while (0 < rover.status_number && rover.status_number < 7);
 
   xbee_uart( dev, "reach status7\rEND CONTROL\r");
+  write_control_sd("all end");
+
 
   while (1) {
     write_timelog_sd(&rover);

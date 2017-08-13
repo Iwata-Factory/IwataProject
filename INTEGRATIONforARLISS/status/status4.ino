@@ -17,29 +17,19 @@ int status4(ROVER *rover) {  // Status4 着陸の関数
   GPS gps;  // GPS
   double lc_difference = 1.0;
   get_rover_point(&landing_point);
-  write_control_sd("landing point is (" + String(landing_point.latitude, DEC) + ", " + String(landing_point.longitude, DEC) + " )");
   cut_nicrom(10000);  // ニクロム線を切る
   set_danger_area();  // 危険エリアを定義
-
   int posture_coefficient = set_posture_coefficient();  //  姿勢係数(正しい姿勢なら1、反転なら-1)を取得(反転を直すわけではないことに注意)
   int escape_counter = 0;
   xbee_uart( dev, "escape from landing-point\r");
-  write_control_sd("start to escape from landing-point");
   do {
     //本当は真っ直ぐ進みたい
     go_straight(10000);   //オフセットの式設定できたら、方向決めて直進できるようなやつに変えてください
     gps_get(&gps);
     lc_difference = distance_get(&gps, &landing_point);
-    write_control_sd("diffrence is " + String(lc_difference, DEC));
-    delay(500);
+    delay( 500 );
     escape_counter += 1;
   } while ((lc_difference < 10) && (escape_counter < 7));
-  if (escape_counter == 7) {
-    write_control_sd("count out(7 times)");
-  } else {
-    write_control_sd("get sufficient distance");
-
-  }
   xbee_uart( dev, "escape complete\r");
 
 
@@ -66,7 +56,7 @@ int set_posture_coefficient() {
 */
 
 int cut_nicrom(int cut_time) {
-  write_control_sd("try to cut nicrom");
+
   xbee_uart(dev, "call cut_nicrom\n");
   //ニクロム線溶断する
   speaker(C_TONE);

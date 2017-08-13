@@ -40,7 +40,9 @@ void go_rotate(double rotate) {
 
   // どちら向きに回転するかを判断
 
-  if (YOUR_MODEL == 1) { // FMではこのようになるみたいです。実験で発覚
+  if (MACHINE == 1) { // FMではこのようになるみたいです。実験で発覚
+    rotate = -1 * rotate;
+  } else if (MACHINE == 2) {
     rotate = -1 * rotate;
   }
 
@@ -65,10 +67,11 @@ void go_rotate(double rotate) {
   // 回転を行う
   rover_degital(turn);
 
-  if (YOUR_MODEL == 1) {  // モデルよる差
+  if (MACHINE == 1) {  // モデルよる差
     rotate_time = rotate_time * 0.8;
     delay(rotate_time);
-  } else {
+  } else if (MACHINE == 2) {
+    rotate_time = rotate_time * 0.8;
     delay(rotate_time);
   }
 
@@ -88,6 +91,7 @@ void go_rotate(double rotate) {
   ------------------------------------------*/
 
 void go_straight(int go_time) {
+  write_control_sd("go straight (argument is" + String(go_time, DEC)  + ")");
   DRIVE go; //DRIVE型の宣言
   // 初期化
   int wait_time = go_time - 1300;
@@ -101,47 +105,21 @@ void go_straight(int go_time) {
   go.leght1 = 1;
   go.leght2 = 1;
 
-  if (YOUR_MODEL == 0) { // EM
-    for (int i = 1; i < 256; i++) {
-      go.right1 = 0;
-      go.right2 = i;
-      go.leght1 = 0;
-      go.leght2 = i;
-      rover_analog(go);
-      delay(2);
-    }
-    go.right1 = 0;
-    go.right2 = 1;
-    go.leght1 = 0;
-    go.leght2 = 1;
-    rover_degital(go);
-    delay(wait_time);
-    for (int i = 255; i > 0; i--) {
-      go.right1 = 0;
-      go.right2 = i;
-      go.leght1 = 0;
-      go.leght2 = i;
-      rover_analog(go);
-      delay(7);
-    }
-  } else if (YOUR_MODEL == 1) {  // FM(直進出来るように調整する)
+  // 直進するように調整したパラメタ
+  go.right1 = 0;
+  go.right2 = 255;
+  go.leght1 = 0;
+  go.leght2 = 255;
+  rover_analog(go);
 
-    // 直進するように調整したパラメタ
+  delay(wait_time);
+  for (int i = 255; i > 0; i--) {
     go.right1 = 0;
-    go.right2 = 255;
+    go.right2 = i;
     go.leght1 = 0;
-    go.leght2 = 255;
+    go.leght2 = i;
     rover_analog(go);
-
-    delay(wait_time);
-    for (int i = 255; i > 0; i--) {
-      go.right1 = 0;
-      go.right2 = i;
-      go.leght1 = 0;
-      go.leght2 = i;
-      rover_analog(go);
-      delay(7);
-    }
+    delay(7);
   }
 
   go.right1 = 1;
@@ -156,6 +134,9 @@ void go_straight(int go_time) {
 // go_time:実際の時間と一致しないので注意
 void go_straight_control(int go_time, double target_direction) {
 
+  write_control_sd("go_straight_control (argument is" + String(go_time, DEC)  + ")");
+
+
   DRIVE go; //DRIVE型の宣言
   // 初期化
   go.right1 = 1;
@@ -164,67 +145,59 @@ void go_straight_control(int go_time, double target_direction) {
   go.leght2 = 1;
 
 
-  if (YOUR_MODEL == 0) { // EM
+  // 直進するように調整したパラメタ
+  go.right1 = 0;
+  go.right2 = PI_RIGHT_DEFAULT;
+  go.leght1 = 0;
+  go.leght2 = PI_LEGHT_DEFAULT;
+  rover_analog(go);
 
-    go_straight(go_time);  // EMの場合はPI出来ません。
+  int get_control_counter = int(go_time / PID_STREIGHT_BETWEEN);  // サイクル数を決定
+  double my_direction = target_direction;  // 自身の方向
+  double d_direction = 0;  // 偏差
+  int integral_counter = 0;  // 積分のカウント数
+  double integral = 0;  // 積分の足し合わせ
+  int error_count = 0;
 
-  } else if (YOUR_MODEL == 1) {  // FM(直進出来るように調整する)
-
-    // 直進するように調整したパラメタ
+  for (int i = 0; i < get_control_counter + 1 ; i++) {
     go.right1 = 0;
     go.right2 = PI_RIGHT_DEFAULT;
     go.leght1 = 0;
     go.leght2 = PI_LEGHT_DEFAULT;
-    rover_analog(go);
+    delay(PID_STREIGHT_BETWEEN);
 
-    int get_control_counter = int(go_time / PID_STREIGHT_BETWEEN);  // サイクル数を決定
-    double my_direction = target_direction;  // 自身の方向
-    double d_direction = 0;  // 偏差
-    int integral_counter = 0;  // 積分のカウント数
-    double integral = 0;  // 積分の足し合わせ
-    int error_count = 0;
+    my_direction = get_my_direction();  // 新しい角度
+    d_direction = get_angle_devision(my_direction, target_direction);  // 偏差を求める
 
-    for (int i = 0; i < get_control_counter + 1 ; i++) {
-      go.right1 = 0;
-      go.right2 = PI_RIGHT_DEFAULT;
-      go.leght1 = 0;
-      go.leght2 = PI_LEGHT_DEFAULT;
-      delay(PID_STREIGHT_BETWEEN);
-
-      my_direction = get_my_direction();  // 新しい角度
-      d_direction = get_angle_devision(my_direction, target_direction);  // 偏差を求める
-
-      if (90 < fabs(d_direction)) {  // 角度がバグっている時は止まる
-        error_count += 1;
-        if (error_count == 2) {
-          xbee_uart(dev, "false pi control\r");
-          brake();
-          return;
-        }
-      } else {
-        error_count = 0;
+    if (90 < fabs(d_direction)) {  // 角度がバグっている時は止まる
+      error_count += 1;
+      if (error_count == 2) {
+        xbee_uart(dev, "false pi control\r");
+        brake();
+        return;
       }
-
-      integral += d_direction;  // 積分の増加、リセット等を行う
-      integral_counter += 1;
-      integral = integral * integral_riset(integral_counter);
-
-      xbee_uart(dev, "integ:");  // double型だからバグる？
-      dtostrf(integral, 10, 6, xbee_send);
-      xbprintf(xbee_send);
-
-      go = get_drive_input(go, d_direction, integral);   // 入力を得る
-
-      xbee_uart(dev, "right:");
-      xbprintf("%d", go.right2);
-      xbee_uart(dev, "leght:");
-      xbprintf("%d", go.leght2);
-
-      rover_analog(go);  // 入力の反映
+    } else {
+      error_count = 0;
     }
-    brake();
 
+    integral += d_direction;  // 積分の増加、リセット等を行う
+    integral_counter += 1;
+    integral = integral * integral_riset(integral_counter);
+
+    xbee_uart(dev, "integ:");  // double型だからバグる？
+    dtostrf(integral, 10, 6, xbee_send);
+    xbprintf(xbee_send);
+
+    go = get_drive_input(go, d_direction, integral);   // 入力を得る
+
+    xbee_uart(dev, "right:");
+    xbprintf("%d", go.right2);
+    xbee_uart(dev, "leght:");
+    xbprintf("%d", go.leght2);
+
+    rover_analog(go);  // 入力の反映
   }
+  brake();
 
   go.right1 = 1;
   go.right2 = 1;

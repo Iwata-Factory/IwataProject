@@ -200,10 +200,14 @@ int gps_data_get(GPS* gps) {
   xbee_uart(dev, sz_dire);
   xbee_uart(dev, "\r");
 
+  write_control_sd("result " + String(LatB, DEC) + " " + String(LongB, DEC) + " " + String(distance, DEC) + " " + String(direct, DEC));
+
+
   return 1;
 }
 
 int gps_get(GPS* gps) {
+  write_control_sd("call gps_gett");
 
   if (GPS_GET_FLAG == 0) {
     xbee_uart(dev, "GPS SKIP\r");
@@ -212,8 +216,10 @@ int gps_get(GPS* gps) {
 
   // 受信するシリアルの切り替え
   if (use_which_gps == 1) {
+    write_control_sd("use gps 1");
     g_gps1.listen();
   } else if (use_which_gps == 2) {
+    write_control_sd("use gps 2");
     g_gps2.listen();
   }
 
@@ -889,29 +895,13 @@ int set_danger_area() {
   danger_area_points[0].latitude = danger_gps.latitude;
   danger_area_points[0].longitude = danger_gps.longitude;
 
+  write_control_sd("set danger point (" + String(danger_gps.latitude, DEC) + ", " + String(danger_gps.longitude, DEC) + " )");
+
+
   xbee_uart( dev, "success set_danger_area\r");
   return 1;
 }
 
-// int set_danger_area() {
-
-//   xbee_uart( dev, "call set_danger_area\r");
-
-//   /* GPSとれなかったら死ぬからそのままでも良いけどgps_getの無限ループは避けたいbyとうま */
-//   GPS danger_gps;
-//   gps_get(&danger_gps);
-
-//   for (int i = 0; i < 9; i++) {
-//     if ((danger_area_points[i].latitude == -1.0 && danger_area_points[i].longitude == -1.0)) {
-//       danger_area_points[i].latitude = danger_gps.latitude;
-//       danger_area_points[i].longitude = danger_gps.longitude;
-//       xbee_uart( dev, "success set_danger_area\r");
-//       return 1;  // 登録完了
-//     }
-//   }
-//   xbee_uart( dev, "false set_danger_area\r");
-//   return 0;  // 登録が10箇所埋まっている
-// }
 
 
 /*-----------check_danger_area()--------------------

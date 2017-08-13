@@ -10,6 +10,7 @@ int status2(ROVER *rover) {  // Status2 打ち上げの関数
   return (judge_release());
 }
 
+
 int judge_release() {
   int i = 0;
   int light = 0; //照度センサのカウンタ
@@ -25,7 +26,6 @@ int judge_release() {
       xbee_uart( dev, "count\r");
       sprintf(xbee_send, "%d\r", i);
       xbee_uart( dev, xbee_send);
-      write_control_sd("light count is " + String(i, DEC));
       delay(1000);
       t++;
     }
@@ -37,7 +37,6 @@ int judge_release() {
     light = 0;
 
     if ( t >= 1000) { //仮に1000秒たったら強制で投下されたと判断する
-      write_control_sd("timeout");
       return 1;
     }
 

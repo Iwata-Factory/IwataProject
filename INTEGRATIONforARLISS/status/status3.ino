@@ -55,16 +55,12 @@ int status3(ROVER *rover) {  // Status3 降下の関数(着陸判定を行う)
 // 着陸判定をどのセンサで行うのかを定める関数
 int get_switch(ROVER *rover) {
   if (rover->ac_arive == 1) {  // 加速度
-    write_control_sd("use ac-censor");
     return 3;
   } else if (rover->gps1_arive == 1) { // GPS1
-    write_control_sd("use gps-censor-1");
     return 1;
   } else if (rover->gps2_arive == 1) { // GPS2
-    write_control_sd("use gps-censor-2");
     return 2;
   } else {
-    write_control_sd("no consor");
     return 4;  // 詰み(センサ回復を待ちつつ時間で抜ける)
   }
 
@@ -88,13 +84,9 @@ int judge_landing_by_gps() {
   double alt = 100;
   gps_get_al(&alt);  // 高度を一旦取得
 
-  write_control_sd("altitude is " + String(alt, DEC));
-
   if (alt < ALT_REGULATION) {
-    write_control_sd("detail check");
     return (judge_landing_by_gps_detail());
   } else {
-    write_control_sd("No landing");
     return 0;
   }
 }
@@ -109,15 +101,14 @@ int judge_landing_by_gps_detail() {
 
   for (int i = 0; i < 10; i++) {
     gps_get_al(&alt_array[i]);
-    write_control_sd("altitude[" + String(i, DEC) + "] is " + String(alt_array[i], DEC));
+    //    xbee_send_1double(alt_array[i]);  // ここでバグるかもしれない（動作確認まだ）なので注意
     delay(1000);
+
     if ((0 < i) && ( 3 < (alt_array[i - 1] - alt_array[i]))) {  // 前回-今回
-      write_control_sd(String("difference > 3"));
-      write_control_sd("No landing");
       return 0;  // まだ降下中である。
     }
   }
-  write_control_sd("landing");
+
   return 1;  // 高度変化がなくなった
 }
 
@@ -154,7 +145,6 @@ int judge_landing_by_ac() {
       // 値を取れている
       // 加速度の大きさを計算
       ac_array[i] = sqrt(pow(ac.x, 2) + pow(ac.y, 2) + pow(ac.z, 2));
-      write_control_sd("ac[" + String(i, DEC) + "] is " + String(ac_array[i], DEC));
       delay(3000); // サンプリングは3秒ごとに
       i += 1;
     } else {
@@ -167,11 +157,9 @@ int judge_landing_by_ac() {
   ac_ave = value_ave(10, ac_array);  // 平均値を取る
 
   if (200 <= ac_ave && ac_ave <= 300) {  // パラメタは要調整
-    write_control_sd("200 < ac_average < 300 ---> landing");
     xbee_uart( dev, "success determine_landing\r");
     return 1; //着陸判定にパス
   } else {
-    write_control_sd("not (200 < ac_average < 300) ---> No landing");
     xbee_uart( dev, "false determine_landing\r");
     return 0;
   }

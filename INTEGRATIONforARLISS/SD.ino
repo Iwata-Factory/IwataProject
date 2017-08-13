@@ -11,6 +11,29 @@
   読み取る系:read(使っていない)
 */
 
+
+/*
+   制御履歴を保存
+*/
+
+int write_control_sd(String str) {
+  int i = 0; // 試行回数記録用
+  while (i < 30) { // 30回SDカードを開けなかったら諦める
+    File dataFile = SD.open(LOG_CONTROL, FILE_WRITE);
+    if (dataFile) { // ファイルが開けたときの処理
+      dataFile.seek(dataFile.size());
+      dataFile.print(millis());
+      dataFile.print(":");
+      dataFile.println(str);
+      dataFile.close();
+      return 1; // 成功を返す
+    } else {
+      i += 1;
+    }
+  }
+  return 0; // 失敗を返す
+}
+
 /*
    SDに時間を保存
 */

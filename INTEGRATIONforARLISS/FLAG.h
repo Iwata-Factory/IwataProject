@@ -1,9 +1,6 @@
 #ifndef __FLAG_H__
 #define __FLAG_H__
 
-// 使用するモデル
-#define YOUR_MODEL 1  // 0でEM、1でFM
-
 // 各ステータスを飛ばすかどうか
 // 1なら実行、0なら飛ばします
 #define _S1_ 0
@@ -28,7 +25,5 @@
 // テスト用フラグ
 #define STACK_EXP 1  // 1の場合スタックのフラグが立った地点までスキップ
 #define NEAR_GOAL_STACK_EXP 1 // 本来のシーケンスではゴール付近でスタック判定は行いませんが、1にした場合はゴール付近でもスタック判定を行います.
-#define SHINSAKAI 1  // 審査会用
-#define YOUR_MODEL_NUM 1
 
 #endif
