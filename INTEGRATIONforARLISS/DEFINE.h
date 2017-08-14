@@ -176,10 +176,10 @@
 //加速度センサ関連
 #define ADXL345 0x53  //ADXL345(加速度センサ)のスレーブアドレス
 //モーター関連
-#define M1_1 5
-#define M1_2 6
-#define M2_1 7
-#define M2_2 8
+#define M1_1 8
+#define M1_2 5
+#define M2_1 6
+#define M2_2 7
 // PID制御関連
 #define PI_RIGHT_DEFAULT 240
 #define PI_LEGHT_DEFAULT 250
