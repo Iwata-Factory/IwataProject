@@ -7,6 +7,7 @@
   degital write　の時
   ------------------------------------------*/
 void rover_degital(DRIVE drive) {
+  //  write_control_sd("input degital motor(" + String(drive.right1) + " " + String(drive.right2) + " " + String(drive.leght1) + " " + String(drive.leght2) + " " ")");
   digitalWrite(M1_1, drive.right1);
   digitalWrite(M1_2, drive.right2);
   digitalWrite(M2_1, drive.leght1);
@@ -17,6 +18,7 @@ void rover_degital(DRIVE drive) {
   analog write　の時
   ------------------------------------------*/
 void rover_analog(DRIVE drive) {
+  //  write_control_sd("input anarog motor(" + String(drive.right1) + " " + String(drive.right2) + " " + String(drive.leght1) + " " + String(drive.leght2) + " " ")");
   analogWrite(M1_1, drive.right1);
   analogWrite(M1_2, drive.right2);
   analogWrite(M2_1, drive.leght1);
@@ -51,6 +53,7 @@ void go_rotate(double rotate) {
     turn.right2 = 1;
     turn.leght1 = 1;
     turn.leght2 = 0;
+    write_control_sd("input degital motor(" + String(turn.right1) + " " + String(turn.right2) + " " + String(turn.leght1) + " " + String(turn.leght2) + " " ")");
 
     rotate_time = (rotate / 400) * 1000;
 
@@ -59,6 +62,7 @@ void go_rotate(double rotate) {
     turn.right2 = 0;
     turn.leght1 = 0;
     turn.leght2 = 1;
+    write_control_sd("input degital motor(" + String(turn.right1) + " " + String(turn.right2) + " " + String(turn.leght1) + " " + String(turn.leght2) + " " ")");
 
     rotate_time = -1 * (rotate / 400) * 1000;
 
@@ -79,6 +83,7 @@ void go_rotate(double rotate) {
   turn.right2 = 1;
   turn.leght1 = 1;
   turn.leght2 = 1;
+  write_control_sd("input degital motor(" + String(turn.right1) + " " + String(turn.right2) + " " + String(turn.leght1) + " " + String(turn.leght2) + " " ")");
 
   // 停止
   rover_degital(turn);
@@ -91,7 +96,6 @@ void go_rotate(double rotate) {
   ------------------------------------------*/
 
 void go_straight(int go_time) {
-  write_control_sd("go straight (argument is" + String(go_time, DEC)  + ")");
   DRIVE go; //DRIVE型の宣言
   // 初期化
   int wait_time = go_time - 1300;
@@ -99,6 +103,9 @@ void go_straight(int go_time) {
     wait_time = 100;
   }
 
+  write_control_sd("motor(0, 1, 0, 1) to motor(0, 255, 0, 255) (increase one by one for every additinal 7 millisecond)");
+  write_control_sd("motor(0, 255, 0, 255) time is " + String(go_time, DEC) + " milliseconds");
+  write_control_sd("motor(0, 255, 0, 255) to motor(255, 0, 255, 0) (decrease one by one for every additinal 7 millisecond)");
 
   go.right1 = 1;
   go.right2 = 1;
@@ -121,6 +128,7 @@ void go_straight(int go_time) {
     rover_analog(go);
     delay(7);
   }
+
 
   go.right1 = 1;
   go.right2 = 1;
@@ -365,6 +373,8 @@ void brake() {
 /*-----------急発進→ブレーキをかける--------------------
   ------------------------------------------*/
 void go_suddenly_brake(int times) {
+  write_control_sd("motor(0, 1, 0, 1) to motor(0, 255, 0, 255) (increase one by one for every additinal 4 millisecond)");
+  write_control_sd("motor(0, 255, 0, 255) time is " + String(times, DEC) + " milliseconds");
   DRIVE go; //DRIVE型の宣言
   // 初期化
   go.right1 = 0;
@@ -381,6 +391,7 @@ void go_suddenly_brake(int times) {
     rover_analog(go);
     delay(4);
   }
+  write_control_sd("motor(0, 255, 0, 255) ---> motor(1, 1, 1, 1)");
   go.right1 = 1;
   go.right2 = 1;
   go.leght1 = 1;

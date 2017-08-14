@@ -42,7 +42,6 @@ int status4(ROVER *rover) {  // Status4 着陸の関数
   }
   xbee_uart( dev, "escape complete\r");
 
-
   return 1;
 }
 

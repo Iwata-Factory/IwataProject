@@ -46,6 +46,7 @@ int status5(ROVER *rover) {
     rover->distance = gps.distance;  // ターゲットまでの距離
 
     if (check_gps_jump(&gps, &last_point) == 0) { // GPSのジャンプのチェック
+      write_control_sd("gps difference > " + String(GPS_JUMP_DISTANCE, DEC) + "---> gps jump");
       continue;
     }
 
@@ -59,6 +60,7 @@ int status5(ROVER *rover) {
         last_distance  = rover->distance;
       } else {
         if ((fabs(rover->distance - last_distance) < 2.5) && (0 < last_distance)) {  //Trueでスタック
+          write_control_sd("distance difference < 2.5 ---> stack");
           int scs_result = stack_check_state(rover);
           if (scs_result != 1) {
             continue;

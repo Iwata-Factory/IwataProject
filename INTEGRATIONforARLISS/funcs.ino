@@ -553,6 +553,8 @@ double get_my_direction() {
       tm.x = 100; tm.y = 100; tm.z = 100;
       tm = get_tm();
 
+      write_control_sd("tm: " + String(tm.x, DEC) + ", " + String(tm.y, DEC) + ",  " + String(tm.z, DEC));
+
       tm_v.x = 2 * (tm.x - tm_x_offset) / x_def;
       tm_v.y = 2 * (tm.y - tm_y_offset) / y_def;
 
@@ -589,6 +591,7 @@ double get_my_direction() {
   }
 
   my_direction = degree_out(10, direction_array);  // 10サンプルから平均を計算
+  write_control_sd("my direction is " + String(my_direction, DEC));
 
   xbee_uart( dev, " direction of rover is ");
   xbee_send_1double(my_direction);
@@ -687,7 +690,7 @@ int tm_calibration() {
   }
 
   reset_tm();
-
+  write_control_sd("try calibration" );
   xbee_uart( dev, " call tm_calibration\r");
 
   AC ac_calib;  // キャリブレーション時の水平判定用
@@ -696,10 +699,13 @@ int tm_calibration() {
   while (1) {
 
     ac_calib = get_ac();
+    write_control_sd("ac:" + String(ac_calib.x, DEC) + " " + String(ac_calib.y, DEC) + " " + String(ac_calib.z, DEC));
+    write_control_sd("counter is " + String(count_calib, DEC));
 
     if ((fabs(ac_calib.x) < 100 && fabs(ac_calib.y) < 100 && 150 < ac_calib.z) || count_calib == 5) {  // 水平な感じの場所にいるならキャリブレーション。試行回数過多でもキャリブレーション
       speaker(C_TONE);
       speaker(D_TONE);
+      write_control_sd("Conditions are met");
 
       delay(500);
 
@@ -710,6 +716,8 @@ int tm_calibration() {
       turn.right2 = 1;
       turn.leght1 = 1;
       turn.leght2 = 0;
+
+      write_control_sd("motor(0, 1, 1, 0) (10000milliseconds)");
 
       double min_x;
       double max_x;
@@ -770,6 +778,11 @@ int tm_calibration() {
       tm_x_offset = (max_x + min_x) / 2;
       tm_y_offset = (max_y + min_y) / 2;
 
+      write_control_sd("x_def " + String(x_def, DEC));
+      write_control_sd("ydef " + String(y_def, DEC));
+      write_control_sd("tm_x_offset " + String(tm_x_offset, DEC));
+      write_control_sd("tm_y_offset " + String(tm_y_offset, DEC));
+
       xbee_uart( dev, "x_def, y_def \r");
 
       dtostrf(x_def, 10, 6, xbee_send);
@@ -827,6 +840,8 @@ double pid_get_control(double target_direction, double *my_Direction) {
 }
 
 int correct_posture() {
+
+  write_control_sd("check posture");
   xbee_uart( dev, "call correct_posture\r");
 
   for (int ji = 0; ji < 5; ji++) {  // 状態復旧
@@ -835,11 +850,14 @@ int correct_posture() {
       return 1;  // 問題なし
     } else {
       xbee_uart( dev, "revive ---> go_suddenly_brake \r");
+      write_control_sd("working to revive");
       go_suddenly_brake(2500);  // 急発進緩停止
     }
   }
+
   xbee_uart( dev, "failed correct_posture\r");
   return 0;  // 反転したまま
+
 }
 
 
@@ -863,10 +881,14 @@ int judge_invered() {
   }
   double ac_z_ave =  value_ave(10, z);
 
+  write_control_sd("ac(z-axis) is " + String(ac_z_ave, DEC));
+
   if (ac_z_ave < -1.0) {  // この式が真なら反転している。
+    write_control_sd("ac(z-axis) < -1.0 ---> invered");
     return 0;
   } else {
     xbee_uart( dev, "success judge_invered_revive\r");
+    write_control_sd("ac(z-axis) < -1.0 ---> no problem");
     return 1; // 問題なし
   }
 }
@@ -1087,6 +1109,8 @@ int escape_from_wadachi(ROVER *rover) {
   boolean turn_flag = 0;
 
   get_rover_point(&point_efw);  // 初期位置を記録
+
+  write_control_sd("init point is (" + String(point_efw.latitude, DEC) + " " + String(point_efw.longitude, DEC) + ")");
 
   do {
 

@@ -26,6 +26,7 @@ int write_control_sd(String str) {
       dataFile.print(":");
       dataFile.println(str);
       dataFile.close();
+
       return 1; // 成功を返す
     } else {
       i += 1;
