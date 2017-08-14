@@ -152,6 +152,7 @@ void go_straight_control(int go_time, double target_direction) {
   go.leght1 = 1;
   go.leght2 = 1;
 
+  write_control_sd("input degital motor(" + String(go.right1) + " " + String(go.right2) + " " + String(go.leght1) + " " + String(go.leght2) + " " ")");
 
   // 直進するように調整したパラメタ
   go.right1 = 0;
@@ -159,6 +160,8 @@ void go_straight_control(int go_time, double target_direction) {
   go.leght1 = 0;
   go.leght2 = PI_LEGHT_DEFAULT;
   rover_analog(go);
+
+  write_control_sd("input analog motor(" + String(go.right1) + " " + String(go.right2) + " " + String(go.leght1) + " " + String(go.leght2) + " " ")");
 
   int get_control_counter = int(go_time / PID_STREIGHT_BETWEEN);  // サイクル数を決定
   double my_direction = target_direction;  // 自身の方向
@@ -204,6 +207,8 @@ void go_straight_control(int go_time, double target_direction) {
     xbprintf("%d", go.leght2);
 
     rover_analog(go);  // 入力の反映
+
+    write_control_sd("input analog motor(" + String(go.right1) + " " + String(go.right2) + " " + String(go.leght1) + " " + String(go.leght2) + " " ")");
   }
   brake();
 
@@ -212,6 +217,11 @@ void go_straight_control(int go_time, double target_direction) {
   go.leght1 = 1;
   go.leght2 = 1;
   rover_degital(go);
+
+  write_control_sd("input analog motor(" + String(go.right1) + " " + String(go.right2) + " " + String(go.leght1) + " " + String(go.leght2) + " " ")");
+
+
+
 
 }
 
@@ -286,6 +296,8 @@ void go_back(int go_time) {
     go_time = 100;
   }
 
+  write_control_sd("motor(1, 1, 1, 1) to motor(100, 0, 100, 0) (increase one by one for every additinal 8 millisecond)");
+
   go.right1 = 1;
   go.right2 = 1;
   go.leght1 = 1;
@@ -298,12 +310,17 @@ void go_back(int go_time) {
     rover_analog(go);
     delay(8);
   }
+
+  write_control_sd("motor(180, 0, 180, 0) time is " + String(go_time, DEC) + " milliseconds");
+
   go.right1 = 180;
   go.right2 = 0;
   go.leght1 = 180;
   go.leght2 = 0;
   rover_analog(go);
   delay(go_time);
+  write_control_sd("motor(1, 1, 1, 1)");
+
   go.right1 = 1;  // バック時は急停止
   go.right2 = 1;
   go.leght1 = 1;

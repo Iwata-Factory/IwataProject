@@ -613,6 +613,8 @@ double get_my_direction() {
 
 int turn_target_direction(double target_direction, double *my_Direction, int branch) {
 
+  write_control_sd("turn target direction");
+
   xbee_uart( dev, "call turn_target_direction() \r");
 
   int i = 0;  // 回転の試行回数をカウントしていく
@@ -638,6 +640,7 @@ int turn_target_direction(double target_direction, double *my_Direction, int bra
 
     if ((-20 < rotate_angle) && (rotate_angle < 20)) {
       rotate_angle = 0;
+      write_control_sd("direction difference < 20 ---> success");
       xbee_uart( dev, " success turn_target_direction() \r");
       return 1;
     }
@@ -652,6 +655,7 @@ int turn_target_direction(double target_direction, double *my_Direction, int bra
       go_rotate(rotate_angle);
     }
   } while (i < 5); // 5回回転してもダメだったら失敗
+  write_control_sd("count out (5)");
   xbee_uart( dev, " false turn_target_direction() \r");
   return 0;
 }
@@ -1124,6 +1128,7 @@ int escape_from_wadachi(ROVER *rover) {
 
     double r_number = random(0, 11); // 0から10の乱数を生成
     double rotate_random = 40 + 150 * (r_number + 1 / 10);
+    write_control_sd("random num: " + String(r_number, DEC));
     go_rotate(rotate_random);
 
     go_straight(3500);
@@ -1134,11 +1139,13 @@ int escape_from_wadachi(ROVER *rover) {
     try_counter += 1;
 
     if (10 <= try_counter) {
+      write_control_sd("count out (10)");
       xbee_uart(dev, "false escape_from_wadachi\r");
       return 0;
     }
 
   } while (distance_get(&gps_efw, &point_efw) < 2);
+  write_control_sd("distance > 2");
   xbee_uart(dev, "success escape_from_wadachi\r");
   return 1;
 }
