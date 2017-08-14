@@ -273,7 +273,6 @@ SoftwareSerial g_gps1( PIN_GPS1_Rx, PIN_GPS_TX_DUMMY); // ArduinoとGPS間のシ
 SoftwareSerial g_gps2( PIN_GPS2_Rx, PIN_GPS_TX_DUMMY); // ArduinoとGPS間のシリアル通信用に
 int use_which_gps = 1;  // 1か2どちらのGPSを使用するか
 int gps_timeout_counter_global = 0;
-int sd_count = 0;
 
 //#endif
 

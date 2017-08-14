@@ -54,7 +54,6 @@ void setup() {
         break;
       }
     }
-
   }
 
   write_control_sd("setup start");
