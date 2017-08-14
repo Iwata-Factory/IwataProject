@@ -2,13 +2,12 @@
   メインコード
 */
 
-#define MACHINE 1  // 1 or 2を指定
+#define MACHINE 2  // 1 or 2を指定
 #include "INCLUDE.h"
 /*
    セットアップ　　
 */
 void setup() {
-  write_control_sd("setup start");
   // 各種初期化処理
   Wire.begin();           //I2C通信の初期化
   Serial.begin(SERIAL_BAUDRATE); //シリアル通信の初期化
@@ -57,6 +56,8 @@ void setup() {
     }
 
   }
+
+  write_control_sd("setup start");
 
   write_critical_sd(0);  // クリティカルログを残す
 
