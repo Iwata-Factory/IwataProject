@@ -27,13 +27,13 @@ int status4(ROVER *rover) {  // Status4 着陸の関数
   write_control_sd("start to escape from landing-point");
   do {
     //本当は真っ直ぐ進みたい
-    go_straight(10000);   //オフセットの式設定できたら、方向決めて直進できるようなやつに変えてください
+    go_straight(5000);   //直進
     gps_get(&gps);
     lc_difference = distance_get(&gps, &landing_point);
     write_control_sd("diffrence is " + String(lc_difference, DEC));
     delay(500);
     escape_counter += 1;
-  } while ((lc_difference < 10) && (escape_counter < 7));
+  } while ((lc_difference < 7) && (escape_counter < 7));
   if (escape_counter == 7) {
     write_control_sd("count out(7 times)");
   } else {

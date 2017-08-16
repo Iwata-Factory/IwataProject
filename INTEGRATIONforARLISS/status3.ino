@@ -9,8 +9,15 @@ int status3(ROVER *rover) {  // Status3 降下の関数(着陸判定を行う)
 
   int switch_num = 1;  // 判定する素子のスイッチ
   int landing_flag = 0;
+  int judge_land_counter = 0;
 
   do {
+    judge_land_counter += 1;
+
+    if (judge_land_counter == 5) {  // 強制降下判定
+      landing_flag = 1;
+    }
+    
     get_censor_status(rover);  // 最新のセンサーの状態を取得
 
     switch_num = get_switch(rover);
@@ -39,7 +46,7 @@ int status3(ROVER *rover) {  // Status3 降下の関数(着陸判定を行う)
 
       case 4:  // 着陸判定にかかるセンサ系の死亡
         xbee_uart( dev, "sensor death ---> wait\r");
-        delay(60000);  // 1分待つ
+        delay(30000);  // 30秒待つ
         // ここで治ったか判定する関数を回します。//
         check_realive();
         break;
