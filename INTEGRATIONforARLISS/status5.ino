@@ -90,7 +90,7 @@ int status5(ROVER *rover) {
       if (500 < arg) {  // 出力調整
         arg = 10000;
       } else {
-        arg = 3000;
+        arg = 6000;
       }
       go_straight(arg);
     }

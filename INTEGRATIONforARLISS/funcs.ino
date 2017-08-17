@@ -649,6 +649,11 @@ int turn_target_direction(double target_direction, double *my_Direction, int bra
     xbee_send_1double(rotate_angle);
     if (branch == 0) {
       rotate_angle = rotate_angle * (12 - i) / 10;  // 回転角度を収束させる
+
+      if (MACHINE == 1) {
+        rotate_angle = rotate_angle * (-1);
+      }
+      
       go_rotate(rotate_angle);  // 回転を行う
     } else { //発散ver
       rotate_angle = rotate_angle * (i + 1);
@@ -1120,7 +1125,7 @@ int escape_from_wadachi(ROVER *rover) {
 
     gps_get(&gps_efw);  // GPSを取得
 
-    go_back(150);  // 少し下がる
+    go_back(1000);  // 少し下がる
 
     rover->My_Direction = get_my_direction();
 
@@ -1131,7 +1136,7 @@ int escape_from_wadachi(ROVER *rover) {
     write_control_sd("random num: " + String(r_number, DEC));
     go_rotate(rotate_random);
 
-    go_straight(3500);
+    go_straight(6000);
 
     point_last.latitude = gps_efw.latitude;  // 前回の情報を記述
     point_last.longitude = gps_efw.longitude;

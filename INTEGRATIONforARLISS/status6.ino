@@ -9,7 +9,6 @@ int status6(ROVER *rover) {
   }
 
   int i = 0;  // 最終処理のカウント数
-  int distance_flag = 0;  //距離センサのチェックをしたかのフラグ
 
   POINT my_point;
   POINT goal_point;
@@ -42,16 +41,7 @@ int status6(ROVER *rover) {
     xbee_uart(dev, xbee_send);
 
     if (0 < rover->distance && rover->distance < LAST_GOAL_CIRCLE) {
-      //距離センサ試してみる
-      if (distance_flag == 0) {
-        if (get_goal(rover) == 1) {
-          //うまくいけばok
-          return 1;
-        }
-        //失敗したら元の場所に帰って終了
-        i = 0;
-        distance_flag = 1;
-      }
+      return 1;
     }
 
     rover->Target_Direction = direction_get(&my_gps_only, &goal_point);
@@ -60,7 +50,6 @@ int status6(ROVER *rover) {
     // 方向転換
     turn_target_direction(rover->Target_Direction, &rover->My_Direction, 0);
     go_straight(500);
-
 
   } while (i < 15);
 
