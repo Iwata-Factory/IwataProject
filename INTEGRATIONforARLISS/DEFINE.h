@@ -5,8 +5,8 @@
 
 // 定数の定義
 // ゴール位置(能代)
-#define GOAL_LATITUDE 40.0193040
-#define GOAL_LONGITUDE 139.9565888
+#define GOAL_LATITUDE 40.1423434
+#define GOAL_LONGITUDE 139.9872237
 
 #define GOAL_CIRCLE 2.8
 #define LAST_GOAL_CIRCLE 1.0
@@ -111,8 +111,8 @@
 #define pi 3.14159265359
 // グローバル変数の定義(ごちゃごちゃしているためいずれ整理したい)
 static unsigned long time; //タイマー起動
-//byte dev[] = {0x00, 0x13, 0xA2, 0x00, 0x40, 0xE7, 0xED, 0x61};  // XBEE親機アドレス（６月３０日改造版）
-byte dev[] = {0x00, 0x13, 0xA2, 0x00, 0x40, 0xB9, 0x3D, 0xCD};  // XBEE親機アドレス
+byte dev[] = {0x00, 0x13, 0xA2, 0x00, 0x40, 0xE7, 0xED, 0x61};  // XBEE親機アドレス（６月３０日改造版）
+//byte dev[] = {0x00, 0x13, 0xA2, 0x00, 0x40, 0xB9, 0x3D, 0xCD};  // XBEE親機アドレス
 
 static const uint8_t length = 6;   //読み出しデータの個数
 char g_szReadBuffer[READBUFFERSIZE] = "";
@@ -127,10 +127,10 @@ byte flag_phase[8] = {
 };
 const int chipSelect = 4;
 // 地磁気のキャリブレーションに関するやつ
-double tm_x_offset = 97.5;
-double tm_y_offset = 109.5;
-double x_def = 806.0;
-double y_def = 676.0;
+double tm_x_offset = -94.5;
+double tm_y_offset = 33.0;
+double x_def = 711.0;
+double y_def = 646.0;
 // 立ち入り禁止エリア(10個まで生成可能)
 POINT danger_area_points[10];
 char xbee_send[XBEE_BUFFERSIZE];  //とりあえずのxbee送信用配列
