@@ -19,7 +19,6 @@ int status6(ROVER *rover) {
 
   do {
 
-
     write_gps_sd(my_gps_only);
     write_timelog_sd(rover);
 
@@ -132,6 +131,9 @@ POINT gps_get_by_two_module() {
   success_point.longitude = (point1.longitude + point2.longitude) / 2;
 
   xbee_uart( dev, "success gps_get_by_two_module\r");
+
+
+  write_control_sd("rover`s point by double gps is (" + String(success_point.latitude, DEC) + ", " + String(success_point.longitude, DEC) + ")");
 
   return success_point;
 }

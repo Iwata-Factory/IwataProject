@@ -36,7 +36,7 @@ int judge_release() {
     i = 0;
     light = 0;
 
-    if ( t >= 300) { //仮に300秒たったら強制で投下されたと判断する
+    if ( t >= 600) { //仮に600秒たったら強制で投下されたと判断する
       write_control_sd("timeout");
       return 1;
     }

@@ -59,8 +59,8 @@ int status5(ROVER *rover) {
       if (i == 0) {  // last_distanceの初期値を生成
         last_distance  = rover->distance;
       } else {
-        if ((fabs(rover->distance - last_distance) < 2.5) && (0 < last_distance)) {  //Trueでスタック
-          write_control_sd("distance difference < 2.5 ---> stack");
+        if ((fabs(rover->distance - last_distance) < 2) && (0 < last_distance)) {  //Trueでスタック
+          write_control_sd("distance difference < 2 ---> stack");
           int scs_result = stack_check_state(rover);
           if (scs_result != 1) {
             continue;
@@ -89,6 +89,8 @@ int status5(ROVER *rover) {
     } else {
       if (500 < arg) {  // 出力調整
         arg = 10000;
+      } else if (250 < arg && arg <= 500) {
+        arg = 8000;
       } else {
         arg = 6000;
       }

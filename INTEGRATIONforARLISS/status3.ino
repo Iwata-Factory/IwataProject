@@ -14,7 +14,7 @@ int status3(ROVER *rover) {  // Status3 降下の関数(着陸判定を行う)
   do {
     judge_land_counter += 1;
 
-    if (judge_land_counter == 5) {  // 強制降下判定
+    if (judge_land_counter == 3) {  // 強制降下判定
       landing_flag = 1;
     }
     

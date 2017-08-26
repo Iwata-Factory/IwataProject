@@ -13,7 +13,7 @@
 // 設定用フラグ(1のほうが標準)
 #define XBEE_SWITCH 1  // 0にするとxbeeを全て無視します(今は動作不安定っぽい)
 #define LAND_JUDGE_FLAG 1 // 着陸判定を行うならば1.飛ばすなら0.
-#define CALIBRATION_FLAG 1 // キャリブレーションを行うなら1.しないなら0.
+#define CALIBRATION_FLAG 0 // キャリブレーションを行うなら1.しないなら0.
 #define STACK_ESCAPE_FLAG 1 // スタック関連の処理を行うならば1.行わないならば0
 #define STACK_MODE 1  //0でスタック状況を確かめる。1で面倒なことをしない.
 #define DANGER_AREA_FRAG 0 //危険エリア脱出処理を行うならば1.行わないならば0.
