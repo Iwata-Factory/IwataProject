@@ -1,4 +1,6 @@
-/*********************************************************************/
+/*
+ * １０秒おきに写真を計１０枚撮影
+ */
 void take_picture()
 {
   int pict_cnt = 0;
@@ -16,10 +18,11 @@ void take_picture()
         cam_GetData();
       }
       xbprintf("Taking pictures success ,number : %d", pict_cnt);
-      pict_cnt++ ;
       if(pict_cnt>10){
         break;
       }
+      pict_cnt++ ;
+      delay(10000);
     }
   }
 }
