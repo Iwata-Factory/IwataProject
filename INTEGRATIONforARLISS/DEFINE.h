@@ -109,6 +109,31 @@
 // その他
 #define SERIAL_BAUDRATE 9600 //シリアル通信のデータ送信レートを9600bpsに定義するための定数(ArduinoとPC)
 #define pi 3.14159265359
+
+//camera関連
+#define PIN_CAM_Rx 24
+#define PIN_CAM_Tx 26
+#define CAMBAUDRATE 115200
+
+//SoftwareSerial g_cam( PIN_CAM_Rx, PIN_CAM_Tx );  //arduino-camera間のSerial通信用これだと空撮中のgpsが取れない
+
+#define PIC_PKT_LEN    128                  //data length of each read, dont set this too big because ram is limited 
+#define PIC_FMT_VGA    7
+#define PIC_FMT_CIF    5
+#define PIC_FMT_OCIF   3
+#define CAM_ADDR       0
+#define CAM_SERIAL     Serial2
+#define CAM_BUTTON     24
+#define PIC_FMT        PIC_FMT_VGA
+
+File cam_pic;
+
+const byte cameraAddr = (CAM_ADDR << 5);  // addr
+unsigned long picTotalLen = 0;            // picture length
+int picNameNum = 0;
+
+
+
 // グローバル変数の定義(ごちゃごちゃしているためいずれ整理したい)
 static unsigned long time; //タイマー起動
 byte dev[] = {0x00, 0x13, 0xA2, 0x00, 0x40, 0xE7, 0xED, 0x61};  // XBEE親機アドレス（６月３０日改造版）
@@ -248,6 +273,22 @@ int sd_count = 0;
 // その他
 #define SERIAL_BAUDRATE 9600 //シリアル通信のデータ送信レートを9600bpsに定義するための定数(ArduinoとPC)
 #define pi 3.14159265359
+
+//camera関連
+#define PIC_PKT_LEN    128                  //data length of each read, dont set this too big because ram is limited 
+#define PIC_FMT_VGA    7
+#define PIC_FMT_CIF    5
+#define PIC_FMT_OCIF   3
+#define CAM_ADDR       0
+#define CAM_SERIAL     Serial2
+#define CAM_BUTTON     24
+#define PIC_FMT        PIC_FMT_VGA
+
+File cam_pic;
+
+const byte cameraAddr = (CAM_ADDR << 5);  // addr
+unsigned long picTotalLen = 0;            // picture length
+int picNameNum = 0;
 // グローバル変数の定義(ごちゃごちゃしているためいずれ整理したい)
 static unsigned long time; //タイマー起動
 byte dev[] = {0x00, 0x13, 0xA2, 0x00, 0x40, 0xE7, 0xED, 0x61};  // XBEE親機アドレス（６月３０日改造版）
