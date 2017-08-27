@@ -275,6 +275,9 @@ int sd_count = 0;
 #define pi 3.14159265359
 
 //camera関連
+#define PIN_CAM_Rx 24
+#define PIN_CAM_Tx 26
+#define CAMBAUDRATE 115200
 #define PIC_PKT_LEN    128                  //data length of each read, dont set this too big because ram is limited 
 #define PIC_FMT_VGA    7
 #define PIC_FMT_CIF    5

@@ -2,7 +2,7 @@
   メインコード
 */
 
-#define MACHINE 1  // 1 or 2を指定
+#define MACHINE 2  // 1 or 2を指定
 #include "INCLUDE.h"
 
 /*
