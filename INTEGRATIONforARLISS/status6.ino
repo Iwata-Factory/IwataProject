@@ -40,7 +40,17 @@ int status6(ROVER *rover) {
     xbee_uart(dev, xbee_send);
 
     if (0 < rover->distance && rover->distance < LAST_GOAL_CIRCLE) {
-      return 1;
+      if (i < 10) {    //すうかい
+        if (get_goal(rover) == 0) {
+          //距離センサ関数
+        } else {
+
+          return 1;
+        }
+      } else {
+        return 1;
+      }
+
     }
 
     rover->Target_Direction = direction_get(&my_gps_only, &goal_point);
@@ -77,7 +87,16 @@ int status6(ROVER *rover) {
 
     if (0 <= rover->distance && rover->distance <= LAST_GOAL_CIRCLE) {  // status6へ
       xbee_uart( dev, "near goal!!!!\r");
-      return 1;
+      if (i < 10) {    //すうかい
+        if (get_goal(rover) == 0) {
+          //距離センサ関数
+        } else {
+
+          return 1;
+        }
+      } else {
+        return 1;
+      }
     }
 
     turn_target_direction(rover->Target_Direction, &rover->My_Direction, 0);
@@ -173,7 +192,7 @@ double get_goal(ROVER *rover) {
         turn.leght1 = 50;
         turn.leght2 = 0;
       } else {
-        if (para_distance > 1 && para_distance <= 3) {
+        if (para_distance > 1 && para_distance <= 3) {  //一定距離より小さければ、直進して終わり
           go_straight(500);
           //右向き回転
           turn.right1 = 0;
@@ -194,6 +213,8 @@ double get_goal(ROVER *rover) {
     delay(1);
     t++;
   }
+
+
   //停止
   turn.right1 = 1;
   turn.right2 = 1;
@@ -201,6 +222,14 @@ double get_goal(ROVER *rover) {
   turn.leght2 = 1;
   rover_degital(turn);
   delay(1000);
+
+  //失敗した場合ランダムウォーク
+  double r_number = random(0, 11); // 0から10の乱数を生成
+  double rotate_random = 40 + 150 * (r_number + 1 / 10);
+  write_control_sd("random num: " + String(r_number, DEC));
+  go_rotate(rotate_random);
+  go_straight(1000);
+
 
   return 0;
 
