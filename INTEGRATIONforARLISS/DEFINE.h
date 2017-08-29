@@ -122,7 +122,7 @@
 #define PIC_FMT_CIF    5
 #define PIC_FMT_OCIF   3
 #define CAM_ADDR       0
-#define CAM_SERIAL     Serial2
+#define CAM_SERIAL     Serial3
 #define CAM_BUTTON     24
 #define PIC_FMT        PIC_FMT_VGA
 
@@ -283,7 +283,7 @@ int sd_count = 0;
 #define PIC_FMT_CIF    5
 #define PIC_FMT_OCIF   3
 #define CAM_ADDR       0
-#define CAM_SERIAL     Serial2
+#define CAM_SERIAL     Serial3
 #define CAM_BUTTON     24
 #define PIC_FMT        PIC_FMT_VGA
 

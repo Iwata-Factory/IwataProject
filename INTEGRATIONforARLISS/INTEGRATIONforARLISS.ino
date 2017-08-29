@@ -93,6 +93,8 @@ void setup() {
 
   cam_initialize(); //camera set up
 
+  take_picture();
+
   xbee_standby();  // 現状enter押下したのちに大文字のOを入力することによって脱出します。
 
   xbee_uart( dev, "setup done\rchange to main phase\r");
