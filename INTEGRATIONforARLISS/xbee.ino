@@ -95,12 +95,12 @@ int xbee_standby() {
       }
     }
 
-    //    xb_rxcnt++;
+    xb_rxcnt++;
     xbee_uart(dev, " ");  // これを回さないとxbeeが動かない。。。
-    //    if (xb_rxcnt > 100000 ) {  //timeout時間約8000秒
-    //      xbprintf("can't receive command...");
-    //      break;
-    //    }
+    if (xb_rxcnt > 100000 ) {  //timeout時間約8000秒試験したのがだいぶ昔なので再検証？？
+      xbprintf("can't receive command...");
+      break;
+    }
   }
   return 0;
 }
