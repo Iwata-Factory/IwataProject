@@ -3,6 +3,9 @@
  */
 void take_picture()
 {
+  if (CAMERA == 0) {
+    xbee_uart(dev, "GPS SKIP\r");
+  }
   int pict_cnt = 0;
   while (1) {
     xbprintf("\r\nPress the button to take a picture");
@@ -29,16 +32,16 @@ void take_picture()
 /*********************************************************************/
 void clearRxBuf()
 {
-  while (Serial2.available())
+  while (CAM_SERIAL.available())
   {
-    Serial2.read();
+    CAM_SERIAL.read();
   }
 }
 /*********************************************************************/
 void sendCmd(char cmd[], int cmd_len)
 {
   for (char i = 0; i < cmd_len; i++) {
-    Serial2.print(cmd[i]);
+    CAM_SERIAL.print(cmd[i]);
     xbprintf(cmd[i]);
   }
 }
@@ -49,18 +52,18 @@ void cam_initialize()
   unsigned char resp[6];
 
 
-  Serial2.setTimeout(500);
+  CAM_SERIAL.setTimeout(500);
   while (1)
   {
     //clearRxBuf();
     sendCmd(cmd, 6);
-    if (Serial2.readBytes((char *)resp, 6) != 6)
+    if (CAM_SERIAL.readBytes((char *)resp, 6) != 6)
     {
       continue;
     }
     if (resp[0] == 0xaa && resp[1] == (0x0e | cameraAddr) && resp[2] == 0x0d && resp[4] == 0 && resp[5] == 0)
     {
-      if (Serial2.readBytes((char *)resp, 6) != 6) continue;
+      if (CAM_SERIAL.readBytes((char *)resp, 6) != 6) continue;
       if (resp[0] == 0xaa && resp[1] == (0x0d | cameraAddr) && resp[2] == 0 && resp[3] == 0 && resp[4] == 0 && resp[5] == 0) break;
     }
   }
@@ -76,12 +79,12 @@ void preCapture()
   unsigned char resp[6];
 
 
-  Serial2.setTimeout(100);
+  CAM_SERIAL.setTimeout(100);
   while (1)
   {
     clearRxBuf();
     sendCmd(cmd, 6);
-    if (Serial2.readBytes((char *)resp, 6) != 6) continue;
+    if (CAM_SERIAL.readBytes((char *)resp, 6) != 6) continue;
     if (resp[0] == 0xaa && resp[1] == (0x0e | cameraAddr) && resp[2] == 0x01 && resp[4] == 0 && resp[5] == 0) break;
   }
 }
@@ -91,12 +94,12 @@ void Capture()
   unsigned char resp[6];
 
 
-  Serial2.setTimeout(100);
+  CAM_SERIAL.setTimeout(100);
   while (1)
   {
     clearRxBuf();
     sendCmd(cmd, 6);
-    if (Serial2.readBytes((char *)resp, 6) != 6) continue;
+    if (CAM_SERIAL.readBytes((char *)resp, 6) != 6) continue;
     if (resp[0] == 0xaa && resp[1] == (0x0e | cameraAddr) && resp[2] == 0x06 && resp[4] == 0 && resp[5] == 0) break;
   }
   cmd[1] = 0x05 | cameraAddr;
@@ -108,7 +111,7 @@ void Capture()
   {
     clearRxBuf();
     sendCmd(cmd, 6);
-    if (Serial2.readBytes((char *)resp, 6) != 6) continue;
+    if (CAM_SERIAL.readBytes((char *)resp, 6) != 6) continue;
     if (resp[0] == 0xaa && resp[1] == (0x0e | cameraAddr) && resp[2] == 0x05 && resp[4] == 0 && resp[5] == 0) break;
   }
   cmd[1] = 0x04 | cameraAddr;
@@ -117,11 +120,11 @@ void Capture()
   {
     clearRxBuf();
     sendCmd(cmd, 6);
-    if (Serial2.readBytes((char *)resp, 6) != 6) continue;
+    if (CAM_SERIAL.readBytes((char *)resp, 6) != 6) continue;
     if (resp[0] == 0xaa && resp[1] == (0x0e | cameraAddr) && resp[2] == 0x04 && resp[4] == 0 && resp[5] == 0)
     {
-      Serial2.setTimeout(1000);
-      if (Serial2.readBytes((char *)resp, 6) != 6)
+      CAM_SERIAL.setTimeout(1000);
+      if (CAM_SERIAL.readBytes((char *)resp, 6) != 6)
       {
         continue;
       }
@@ -163,7 +166,7 @@ void cam_GetData()
     xbprintf("cam_picture open fail...");
   }
   else {
-    Serial2.setTimeout(1000);
+    CAM_SERIAL.setTimeout(1000);
     for (unsigned int i = 0; i < pktCnt; i++)
     {
       cmd[4] = i & 0xff;
@@ -175,7 +178,7 @@ retry:
       delay(10);
       clearRxBuf();
       sendCmd(cmd, 6);
-      uint16_t cnt = Serial2.readBytes((char *)pkt, PIC_PKT_LEN);
+      uint16_t cnt = CAM_SERIAL.readBytes((char *)pkt, PIC_PKT_LEN);
 
 
       unsigned char sum = 0;
