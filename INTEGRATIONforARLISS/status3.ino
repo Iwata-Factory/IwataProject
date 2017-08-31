@@ -56,6 +56,9 @@ int status3(ROVER *rover) {  // Status3 降下の関数(着陸判定を行う)
       write_control_sd("wait start");
       // 秒速5m/sで落下するとし1.25のマージンを取る
       int wait_time = (alt * 1.25 * 1000) / 5;   //単位ミリ秒
+      if (5000000 < wait_time){
+        wait_time = 5000000;
+      }
       delay(wait_time);
       return 1;
 
