@@ -180,8 +180,8 @@ int sd_count = 0;
 //モーター関連
 #define M1_1 5
 #define M1_2 6
-#define M2_1 8
-#define M2_2 7
+#define M2_1 7
+#define M2_2 8
 // PID制御関連
 #define PI_RIGHT_DEFAULT 240
 #define PI_LEGHT_DEFAULT 250

@@ -1,8 +1,12 @@
 /*
   メインコード
 */
-
-#define MACHINE 1  // 1 or 2を指定
+/*
+ * 1号機は死亡
+ * 2号機　生存
+ * 3号機　製作中
+ */
+#define MACHINE 2  // 1 or 2を指定
 #include "INCLUDE.h"
 
 /*
@@ -88,7 +92,7 @@ void setup() {
   digitalWrite(NICROM_1, LOW);
   digitalWrite(NICROM_2, LOW);
 
-  xbee_standby();  // 現状enter押下したのちに大文字のOを入力することによって脱出します。
+  //xbee_standby();  // 現状enter押下したのちに大文字のOを入力することによって脱出します。
 
   xbee_uart( dev, "setup done\rchange to main phase\r");
   write_control_sd("setup end");
