@@ -91,9 +91,9 @@ void setup() {
   digitalWrite(NICROM_1, LOW);
   digitalWrite(NICROM_2, LOW);
 
-  cam_initialize(); //camera set up
-
-  take_picture();
+//  cam_initialize(); //camera set up
+//
+//  take_picture();
 
   xbee_standby();  // 現状enter押下したのちに大文字のOを入力することによって脱出します。
 

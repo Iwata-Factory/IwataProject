@@ -5,7 +5,7 @@
 #include <SoftwareSerial.h>
 #include <math.h>
 #include <SD.h>
-#include <xbee.h>  //このライブラリはslackを参照して各自PCに入れてください。
+#include <xbee_mod.h>  //このライブラリはslackを参照して各自PCに入れてください。
 #include <EEPROM.h>
 #include <Servo.h>
 #include "TYPEDEF.h"
