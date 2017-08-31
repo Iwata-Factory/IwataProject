@@ -26,17 +26,24 @@ int status3(ROVER *rover) {  // Status3 降下の関数(着陸判定を行う)
   } else {  // 高度を用いてタイムアウトを計算
 
     double alt = 0;
+    double alt_array[5];
     int i = 0;
+    int j = 0;
 
-    do {
-
-      gps_get_al(&alt);  // 高度を取得
-      if (alt > 2000) {
+    for (j = 0; j < 5; j++) {
+      i = 0;
+      do {
+        gps_get_al(&alt);  // 高度を取得
+        if (6000 > alt > 2000) {
+          alt_array[j] = alt;
+          break;
+        }
+        i += 1;
+      } while (i == 3);
+      if (i == 3) {
         break;
       }
-      i += 1;
-
-    } while (i == 3);
+    }
 
     if (i == 3) {
       xbee_uart( dev, "failed　get alt\r");
@@ -52,11 +59,14 @@ int status3(ROVER *rover) {  // Status3 降下の関数(着陸判定を行う)
         }
       }
     } else {
+      //alt_arrayの最大値を出す
+      alt = value_max(5, alt_array);
+      
       xbee_uart( dev, "wait start\r");
       write_control_sd("wait start");
       // 秒速5m/sで落下するとし1.25のマージンを取る
       int wait_time = (alt * 1.25 * 1000) / 5;   //単位ミリ秒
-      if (5000000 < wait_time){
+      if (5000000 < wait_time) {
         wait_time = 5000000;
       }
       delay(wait_time);
