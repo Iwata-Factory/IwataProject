@@ -139,6 +139,8 @@ SoftwareSerial g_gps2( PIN_GPS2_Rx, PIN_GPS_TX_DUMMY); // ArduinoとGPS間のシ
 int use_which_gps = 2;  // 1か2どちらのGPSを使用するか
 int gps_timeout_counter_global = 0;
 int sd_count = 0;
+unsigned long time_out = 0;
+int time_out_flag = 1;
 
 #elif MACHINE == 2
 
@@ -278,6 +280,8 @@ SoftwareSerial g_gps2( PIN_GPS2_Rx, PIN_GPS_TX_DUMMY); // ArduinoとGPS間のシ
 int use_which_gps = 2;  // 1か2どちらのGPSを使用するか
 int gps_timeout_counter_global = 0;
 int sd_count = 0;
+unsigned long time_out = 0;
+int time_out_flag = 1;
 
 
 #endif

@@ -33,9 +33,11 @@ int status4(ROVER *rover) {  // Status4 着陸の関数
     write_control_sd("diffrence is " + String(lc_difference, DEC));
     delay(500);
     escape_counter += 1;
+
   } while ((lc_difference < 7) && (escape_counter < 7));
   if (escape_counter == 7) {
     write_control_sd("count out(7 times)");
+    cut_nicrom(10000);  // ニクロム線を切る
   } else {
     write_control_sd("get sufficient distance");
 

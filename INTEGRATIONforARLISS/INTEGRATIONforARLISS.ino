@@ -14,7 +14,7 @@
 */
 
 void setup() {
-  
+
   // 各種初期化処理
   Wire.begin();           //I2C通信の初期化
   Serial.begin(SERIAL_BAUDRATE); //シリアル通信の初期化
@@ -152,6 +152,9 @@ void loop() {
         break;
 
       case 2:
+
+        time_out = millis();  // 降下までのトータルのタイムアウト  // トータルで二時間とか 7200000ミリ秒
+
         xbee_uart( dev, "start status2\r");
         write_control_sd("status2 start");
 
