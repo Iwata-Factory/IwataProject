@@ -208,7 +208,7 @@ int time_out_flag = 1;
 #define M2_1 7
 #define M2_2 8
 // PID制御関連
-#define PI_RIGHT_DEFAULT 240
+#define PI_RIGHT_DEFAULT 230
 #define PI_LEGHT_DEFAULT 250
 #define PI_INTEGRAL_RISET 10
 #define PID_STREIGHT_BETWEEN 100
