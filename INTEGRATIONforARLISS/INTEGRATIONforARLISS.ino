@@ -6,7 +6,9 @@
  * 2号機　生存
  * 3号機　製作中
  */
+ 
 #define MACHINE 2  // 1 or 2を指定
+#define XB_LIB 1  // 1(new) or 0(old) を指定
 #include "INCLUDE.h"
 
 /*
