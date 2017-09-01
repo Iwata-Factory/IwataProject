@@ -1,33 +1,32 @@
 /*
- * １０秒おきに写真を計１０枚撮影
- */
+   １０秒おきに写真を計１０枚撮影
+*/
 void take_picture()
 {
+  xbprintf("begin to take a picture");
   if (CAMERA == 0) {
     xbee_uart(dev, "GPS SKIP\r");
   }
   int pict_cnt = 0;
-  while (1) {
-    xbprintf("\r\nPress the button to take a picture");
-    while (digitalRead(CAM_BUTTON) == LOW);      //wait for buttonPin status to HIGH
-    if (digitalRead(CAM_BUTTON) == HIGH) {
-      delay(20);                               //Debounce・ボタン式にしないのでいらない。。。？
-      if (digitalRead(CAM_BUTTON) == HIGH)
-      {
-        xbprintf("\nbegin to take picture\n");
-        delay(200);
-        if (pict_cnt == 0) preCapture();
-        Capture();
-        cam_GetData();
-      }
-      xbprintf("Taking pictures success ,number : %d", pict_cnt);
-      if(pict_cnt>10){
-        break;
-      }
-      pict_cnt++ ;
-      delay(10000);
-    }
-  }
+  //  while (1) {
+  xbprintf("\r\nPress the button to take a picture");
+  //    while (digitalRead(CAM_BUTTON) == LOW);      //wait for buttonPin status to HIGH
+  delay(20);                               //Debounce・ボタン式にしないのでいらない。。。？
+  //    if (digitalRead(CAM_BUTTON) == HIGH)
+  //    {
+  delay(200);
+  if (pict_cnt == 0) preCapture();
+  Capture();
+  cam_GetData();
+  //    }
+  xbprintf("Taking pictures success ,number : %d", pict_cnt);
+  //    if (pict_cnt > 10) {
+  //      break;
+  //    }
+  //    pict_cnt++ ;
+  delay(10000);
+  xbprintf("finish taking picture");
+  //  }
 }
 /*********************************************************************/
 void clearRxBuf()
@@ -48,6 +47,7 @@ void sendCmd(char cmd[], int cmd_len)
 /*********************************************************************/
 void cam_initialize()
 {
+  xbprintf("camera initializing...");
   char cmd[] = {0xaa, 0x0d | cameraAddr, 0x00, 0x00, 0x00, 0x00} ;
   unsigned char resp[6];
 
@@ -75,6 +75,7 @@ void cam_initialize()
 /*********************************************************************/
 void preCapture()
 {
+  xbprintf("call preCap");
   char cmd[] = { 0xaa, 0x01 | cameraAddr, 0x00, 0x07, 0x00, PIC_FMT };
   unsigned char resp[6];
 
@@ -87,9 +88,11 @@ void preCapture()
     if (CAM_SERIAL.readBytes((char *)resp, 6) != 6) continue;
     if (resp[0] == 0xaa && resp[1] == (0x0e | cameraAddr) && resp[2] == 0x01 && resp[4] == 0 && resp[5] == 0) break;
   }
+  xbprintf("end preCap");
 }
 void Capture()
 {
+  xbprintf("call Capture");
   char cmd[] = { 0xaa, 0x06 | cameraAddr, 0x08, PIC_PKT_LEN & 0xff, (PIC_PKT_LEN >> 8) & 0xff , 0};
   unsigned char resp[6];
 
@@ -136,12 +139,12 @@ void Capture()
       }
     }
   }
-
-
+  xbprintf("end Capture");
 }
 /*********************************************************************/
 void cam_GetData()
 {
+  xbprintf("call cam_geaData");
   unsigned int pktCnt = (picTotalLen) / (PIC_PKT_LEN - 6);
   if ((picTotalLen % (PIC_PKT_LEN - 6)) != 0) pktCnt += 1;
 
@@ -202,4 +205,5 @@ retry:
   }
   cam_pic.close();
   picNameNum ++;
+  xbprintf("end cam_GetData");
 }

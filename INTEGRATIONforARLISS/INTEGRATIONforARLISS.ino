@@ -100,8 +100,8 @@ void setup() {
   digitalWrite(NICROM_2, LOW);
 
 //  cam_initialize(); //camera set up
-//
-//  take_picture();
+
+  take_picture();
 
   xbee_standby();  // 現状enter押下したのちに大文字のOを入力することによって脱出します。
 

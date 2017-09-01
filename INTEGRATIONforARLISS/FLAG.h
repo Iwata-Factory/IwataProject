@@ -19,9 +19,9 @@
 #define DANGER_AREA_FRAG 0 //危険エリア脱出処理を行うならば1.行わないならば0.
 #define SD_LOG_FLAG 1  // SDに書き込みを行うなら1.行わないなら0.
 #define SPHERE_FLAG 1  // 1で球面三角法を用いる.0では平面として処理.(球面三角法推奨
-#define GPS_GET_FLAG 1 // 0の時GPSを取らない
+#define GPS_GET_FLAG 0 // 0の時GPSを取らない
 #define PI_FLAG 0
-#define CAMERA 0  // 0の時カメラを動作させない
+#define CAMERA 1  // 0の時カメラを動作させない
 // 1の時PI制御で直進する。
 
 // テスト用フラグ
