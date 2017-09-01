@@ -133,7 +133,6 @@ unsigned long picTotalLen = 0;            // picture length
 int picNameNum = 0;
 
 
-
 // グローバル変数の定義(ごちゃごちゃしているためいずれ整理したい)
 static unsigned long time; //タイマー起動
 byte dev[] = {0x00, 0x13, 0xA2, 0x00, 0x40, 0xE7, 0xED, 0x61};  // XBEE親機アドレス（６月３０日改造版）
@@ -170,9 +169,8 @@ int time_out_flag = 1;
 #elif MACHINE == 2
 
 // 定数の定義
-// ゴール位置(能代)
-#define GOAL_LATITUDE 40.1423434
-#define GOAL_LONGITUDE 139.9872237
+#define GOAL_LATITUDE 35.7137421
+#define GOAL_LONGITUDE 139.75964943
 
 #define GOAL_CIRCLE 3
 #define LAST_GOAL_CIRCLE 1.0
