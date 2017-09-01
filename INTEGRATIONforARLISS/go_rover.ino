@@ -239,7 +239,7 @@ DRIVE get_drive_input(DRIVE drive, double d, double i) {
 
   if (0 <= d) {  // 右方向によりたい（右を落とす）
     //    drive.right2 -= fabs(d * PI_KP);  /* ここのfabs(d)ってfabs(i)ですねbyとうま */
-    drive.right2 -= fabs(d * PI_KP);  /* ここのfabs(d)ってfabs(i)ですねbyとうま */
+    drive.leght2 -= fabs(d * PI_KP);  /* ここのfabs(d)ってfabs(i)ですねbyとうま */
 
 
     if (i > 0) {
@@ -265,7 +265,7 @@ DRIVE get_drive_input(DRIVE drive, double d, double i) {
     i = -1 * i;
 
     //    drive.leght2 -= fabs(d * PI_KP);
-    drive.leght2 -= fabs(d * PI_KP);
+    drive.right2 -= fabs(d * PI_KP);
 
     if (i > 0) {
       drive.right2 -= fabs(i * PI_KI);
