@@ -84,7 +84,7 @@ int status5(ROVER *rover) {
     write_timelog_sd(rover);
 
     // 目的の方向を目指して回転を行う。rover->My_Directionは書き換えていく。
-    turn_target_direction(rover->Target_Direction + 90, &rover->My_Direction, 0);
+    turn_target_direction(rover->Target_Direction, &rover->My_Direction, 0);
 
     int arg = get_go_argument(rover->distance);
 
