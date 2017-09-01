@@ -168,8 +168,8 @@ double get_goal(ROVER *rover) {
   DRIVE turn; // DRIVE型の宣言
   //右向き回転
   turn.right1 = 0;
-  turn.right2 = 50;
-  turn.leght1 = 50;
+  turn.right2 = 150;
+  turn.leght1 = 150;
   turn.leght2 = 0;
   rover_analog(turn);
   xbee_uart( dev, "get_goal \r");
@@ -194,8 +194,8 @@ double get_goal(ROVER *rover) {
         go_straight(500);
         //右向き回転
         turn.right1 = 0;
-        turn.right2 = 50;
-        turn.leght1 = 50;
+        turn.right2 = 150;
+        turn.leght1 = 150;
         turn.leght2 = 0;
         rover_analog(turn);
         t = 0;
@@ -205,7 +205,6 @@ double get_goal(ROVER *rover) {
           goal_flag = 1;
         }
         if (goal_flag = 1) {
-          go_straight(500);
           return 1;
         } else {
           return 0;
