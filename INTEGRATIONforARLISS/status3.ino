@@ -61,7 +61,6 @@ int status3(ROVER *rover) {  // Status3 降下の関数(着陸判定を行う)
     } else {
       //alt_arrayの最大値を出す
       alt = value_max(5, alt_array);
-      
       xbee_uart( dev, "wait start\r");
       write_control_sd("wait start");
       // 秒速5m/sで落下するとし1.25のマージンを取る
@@ -71,7 +70,6 @@ int status3(ROVER *rover) {  // Status3 降下の関数(着陸判定を行う)
       }
       delay(wait_time);
       return 1;
-
     }
   }
 }
