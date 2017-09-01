@@ -87,7 +87,7 @@ int xbee_standby() {
     if (xbee_rcv(ENTER)) {
       xbprintf("are you ready?");
       while (1) {
-        if (xbee_rcv( O_CAP )) {
+        if (xbee_rcv(O_CAP)) {
           xbprintf("your command finally accepted!");
           return 1;
         }
@@ -104,6 +104,7 @@ int xbee_standby() {
     xb_rxcnt++;
     xbee_uart(dev, " ");  // これを回さないとxbeeが動かない。。。
     if (xb_rxcnt > 1000 ) {  //TIMEOUT２０秒XB＿RXCNTエンターおしても時間は伸びません！！
+
       xbprintf("can't receive command...");
       return 0;
     }

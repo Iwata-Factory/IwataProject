@@ -21,6 +21,7 @@
 #define SPHERE_FLAG 1  // 1で球面三角法を用いる.0では平面として処理.(球面三角法推奨
 #define GPS_GET_FLAG 0 // 0の時GPSを取らない
 #define PI_FLAG 0
+#define CAMERA 0  // 0の時カメラを動作させない
 // 1の時PI制御で直進する。
 
 // テスト用フラグ
