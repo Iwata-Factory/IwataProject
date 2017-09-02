@@ -389,7 +389,7 @@ void brake() {
 }
 
 /*-----------急発進→ブレーキをかける--------------------
-  ------------------------------------------*/
+  --------------------------- ---------------*/
 void go_suddenly_brake(int times) {
   write_control_sd("motor(0, 1, 0, 1) to motor(0, 255, 0, 255) (increase one by one for every additinal 4 millisecond)");
   write_control_sd("motor(0, 255, 0, 255) time is " + String(times, DEC) + " milliseconds");

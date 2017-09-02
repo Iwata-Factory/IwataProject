@@ -22,7 +22,7 @@ void setup() {
   // 各種初期化処理
   Wire.begin();           //I2C通信の初期化
   Serial.begin(SERIAL_BAUDRATE); //シリアル通信の初期化
-  Serial2.begin(CAMBAUDRATE); //シリアル通信の初期化
+  CAM_SERIAL.begin(CAMBAUDRATE); //シリアル通信の初期化
   g_gps1.begin(GPSBAUDRATE); //シリアル通信の初期化
   g_gps2.begin(GPSBAUDRATE); //シリアル通信の初期化
 
