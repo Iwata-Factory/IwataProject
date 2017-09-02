@@ -235,11 +235,67 @@ int integral_riset(int counter) {
   }
 }
 
+//DRIVE get_drive_input(DRIVE drive, double d, double i) {
+//
+//  if (0 <= d) {  // 右方向によりたい（右を落とす）
+//
+//    drive.right2 -= fabs(d * PI_KP);  /* ここのfabs(d)ってfabs(i)ですねbyとうま */
+//
+//
+//
+//    if (i > 0) {
+//      drive.right2 -= fabs(i * PI_KI);
+//    } else {
+//      drive.leght2 -= fabs(i * PI_KI);
+//    }
+//
+//    if (drive.right2 < PI_MIN) {
+//      drive.right2 = PI_MIN;
+//    } else if (PI_MAX < drive.right2) {
+//      drive.right2 = PI_MAX;
+//    }
+//    if (drive.leght2 < PI_MIN) {
+//      drive.leght2 = PI_MIN;
+//    } else if (PI_MAX < drive.leght2) {
+//      drive.leght2 = PI_MAX;
+//    }
+//
+//  } else {
+//
+//    d = -1 * d;
+//    i = -1 * i;
+//
+//    drive.leght2 -= fabs(d * PI_KP);
+//
+//
+//    if (i > 0) {
+//      drive.right2 -= fabs(i * PI_KI);
+//    } else {
+//      drive.leght2 -= fabs(i * PI_KI);
+//    }
+//
+//    if (drive.right2 < PI_MIN) {
+//      drive.right2 = PI_MIN;
+//    } else if (PI_MAX < drive.right2) {
+//      drive.right2 = PI_MAX;
+//    }
+//
+//    if (drive.leght2 < PI_MIN) {
+//      drive.leght2 = PI_MIN;
+//    } else if (PI_MAX < drive.leght2) {
+//      drive.leght2 = PI_MAX;
+//    }
+//  }
+//  return drive;
+//
+//}
+
 DRIVE get_drive_input(DRIVE drive, double d, double i) {
 
-  if (0 <= d) {  // 右方向によりたい（右を落とす）
-    //    drive.right2 -= fabs(d * PI_KP);  /* ここのfabs(d)ってfabs(i)ですねbyとうま */
-    drive.right2 -= fabs(d * PI_KP);  /* ここのfabs(d)ってfabs(i)ですねbyとうま */
+  if (0 >= d) {  // 右方向によりたい（右を落とす）
+
+    drive.leght2 -= fabs(d * PI_KP);  /* ここのfabs(d)ってfabs(i)ですねbyとうま */
+
 
 
     if (i > 0) {
@@ -264,10 +320,10 @@ DRIVE get_drive_input(DRIVE drive, double d, double i) {
     d = -1 * d;
     i = -1 * i;
 
-    //    drive.leght2 -= fabs(d * PI_KP);
-    drive.leght2 -= fabs(d * PI_KP);
+    drive.right2 -= fabs(d * PI_KP);
 
-    if (i > 0) {
+
+    if (i < 0) {
       drive.right2 -= fabs(i * PI_KI);
     } else {
       drive.leght2 -= fabs(i * PI_KI);

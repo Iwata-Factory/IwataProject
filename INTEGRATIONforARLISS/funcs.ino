@@ -653,7 +653,7 @@ int turn_target_direction(double target_direction, double *my_Direction, int bra
       if (MACHINE == 1) {
         rotate_angle = rotate_angle * (-1);
       } else if (MACHINE == 2) {
-        rotate_angle = rotate_angle * (-1);
+        rotate_angle = rotate_angle;
       }
       
       go_rotate(rotate_angle);  // 回転を行う
