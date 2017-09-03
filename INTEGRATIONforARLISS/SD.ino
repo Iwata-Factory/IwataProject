@@ -17,6 +17,10 @@
 */
 
 int write_control_sd(String str) {
+  if (digitalRead(PROTECT)) {
+    xbprintf("SD not inserted.");
+    return 0;
+  }
   int i = 0; // 試行回数記録用
   while (i < 30) { // 30回SDカードを開けなかったら諦める
     File dataFile = SD.open(LOG_CONTROL, FILE_WRITE);
@@ -50,8 +54,11 @@ int write_timelog_sd(ROVER *rover) {
   if (SD_LOG_FLAG == 0) { // スキップ
     return 0;
   }
-
   xbee_uart(dev, "call write_timelog_sd\r" );
+  if (digitalRead(PROTECT)) {
+    xbprintf("SD not inserted.");
+    return 0;
+  }
   rover->time_from_start = millis();  // 機体時間を取得
   int i = 0; // 試行回数記録用
   while (i < 30) { // 30回SDカードを開けなかったら諦める
@@ -90,6 +97,10 @@ int write_ac_sd(AC ac) {
   }
 
   xbee_uart(dev, "call write_ac_s\r" );
+  if (digitalRead(PROTECT)) {
+    xbprintf("SD not inserted.");
+    return 0;
+  }
   int i = 0; // 試行回数記録用
   while (i < 30) { // 30回SDカードを開けなかったら諦める
     File dataFile = SD.open(LOG_AC, FILE_WRITE);
@@ -126,6 +137,10 @@ int write_tm_sd(TM tm) {
   }
 
   xbee_uart(dev, "call write_tm_sd\r" );
+  if (digitalRead(PROTECT)) {
+    xbprintf("SD not inserted.");
+    return 0;
+  }
   int i = 0; // 試行回数記録用
   while (i < 30) { // 30回SDカードを開けなかったら諦める
     File dataFile = SD.open(LOG_TM, FILE_WRITE);
@@ -161,6 +176,10 @@ int write_gps_sd(GPS gps) {
   }
 
   xbee_uart(dev, "call write_gps_sd\r" );
+  if (digitalRead(PROTECT)) {
+    xbprintf("SD not inserted.");
+    return 0;
+  }
   int i = 0; // 試行回数記録用
   while (i < 30) { // 30回SDカードを開けなかったら諦める
 
@@ -219,6 +238,10 @@ int write_critical_sd(int flag) {
   gps_get(&gps);
 
   xbee_uart(dev, "call write_critical_sd\r" );
+  if (digitalRead(PROTECT)) {
+    xbprintf("SD not inserted.");
+    return 0;
+  }
 
   int i = 0; // 試行回数記録用
   while (i < 30) { // 30回SDカードを開けなかったら諦める
@@ -319,7 +342,10 @@ int read_ac_sd(AC ac[100], int num) {
     ac[i].y = 0.0;
     ac[i].z = 0.0;
   }
-
+  if (digitalRead(PROTECT)) {
+    xbprintf("SD not inserted.");
+    return 0;
+  }
   int i = 0; // 試行回数記録用
   while (i < 30) { // 30回SDカードを開けなかったら諦める
 
@@ -394,6 +420,10 @@ int read_tm_sd(TM tm[100], int num) {
     tm[i].z = 0.0;
   }
 
+  if (digitalRead(PROTECT)) {
+    xbprintf("SD not inserted.");
+    return 0;
+  }
   int i = 0; // 試行回数記録用
   while (i < 30) { // 30回SDカードを開けなかったら諦める
 
@@ -475,6 +505,10 @@ int read_gps_sd(GPS gps[100], int num) {
     gps[i].distance = 0.0;
   }
 
+  if (digitalRead(PROTECT)) {
+    xbprintf("SD not inserted.");
+    return 0;
+  }
   int i = 0; // 試行回数記録用
   while (i < 30) { // 30回SDカードを開けなかったら諦める
 

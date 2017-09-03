@@ -47,6 +47,8 @@ void setup() {
   EEPROM.write( EEP_STATUS, flag_phase[0] ); // status1で初期化
   EEPROM.write( EEP_CENSOR_STATUS, 0xff);  //eepのflag類の初期化
 
+  pinMode(PROTECT, INPUT); // SD挿入是非判定回路
+
   //SD関連
   if (SD_LOG_FLAG == 1) {
     pinMode(SS, OUTPUT);
@@ -55,12 +57,12 @@ void setup() {
       if (!SD.begin(chipSelect)) {  // SDのセットアップに失敗
         sd_ok_counter += 1;
         xbee_uart( dev, "Card failed, or not present\r");
-        delay(1000);
         if (sd_ok_counter == 60) {  // 60回セットアップを試みても駄目だったらループを抜ける
           xbee_uart( dev, "SD CARD DEATH\r");
           renew_status(STATUS_SD, 0);
           break;
         }
+        delay(1000);
       } else {  // SDのセットアップに成功
         xbee_uart( dev, "SD OK\r");
         break;

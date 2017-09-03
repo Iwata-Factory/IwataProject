@@ -102,6 +102,7 @@
 #define NICROM_2 30
 //SD関連
 #define SS 53
+#define PROTECT 22  //SD挿入是非判定
 //XBEE関連
 #define XBEE_BUFFERSIZE 63
 #define ENTER 0x0D
@@ -266,6 +267,7 @@ int time_out_flag = 1;
 #define NICROM_2 30
 //SD関連
 #define SS 53
+#define PROTECT 22  //SD挿入是非判定
 //XBEE関連
 #define XBEE_BUFFERSIZE 63
 #define ENTER 0x0D
