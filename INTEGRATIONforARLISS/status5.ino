@@ -31,10 +31,6 @@ int status5(ROVER *rover) {
       tm_calibration();  // 条件が揃ったらキャリブレーション
     }
 
-    if (i % 10 == 0) {  // 定期的に反転修正
-      go_suddenly_brake(2500);
-    }  
-
     if (5 <= i) {  // 5回目からは危険エリアチェック
       check_danger_area();
     }

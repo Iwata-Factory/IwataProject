@@ -36,9 +36,8 @@ int judge_release() {
     i = 0;
     light = 0;
 
-    if ( t >= 600) { //仮に600秒たったら強制で投下されたと判断する  // この時点でstatus3は色々と信用ならなくなるので二時間待つことを確定
+    if ( t >= 600) { //仮に600秒たったら強制で投下されたと判断する
       write_control_sd("timeout");
-      time_out_flag = 0;
       return 1;
     }
 

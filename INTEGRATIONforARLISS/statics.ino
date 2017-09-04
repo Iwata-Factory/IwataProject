@@ -19,15 +19,6 @@ double descending_sort(const int array_num, double* value ) {
   }
 }
 
-/*
- * 値の最大値を返す
- */
-double value_max(const int array_num, double* value){
-  double maximum = 0;   //最大値
-
-  descending_sort(array_num, value);  //並び替え
-  return value[array_num - 1];   //最大値を返す
-}
 
 
 /*

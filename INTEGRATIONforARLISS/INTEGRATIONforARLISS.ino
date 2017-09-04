@@ -2,15 +2,8 @@
   メインコード
 */
 
-/*
- * 1号機は死亡
- * 2号機　生存
- * 3号機　製作1中
- */
- 
 #define MACHINE 2  // 1 or 2を指定
-#define XB_LIB 1  // 1(new) or 0(old) を指定
-
+#define XB_LIB  0 
 #include "INCLUDE.h"
 
 /*
@@ -18,11 +11,10 @@
 */
 
 void setup() {
-
+  
   // 各種初期化処理
   Wire.begin();           //I2C通信の初期化
   Serial.begin(SERIAL_BAUDRATE); //シリアル通信の初期化
-  Serial2.begin(CAMBAUDRATE); //シリアル通信の初期化
   g_gps1.begin(GPSBAUDRATE); //シリアル通信の初期化
   g_gps2.begin(GPSBAUDRATE); //シリアル通信の初期化
 
@@ -81,9 +73,7 @@ void setup() {
   pinMode(M1_2, OUTPUT);
   pinMode(M2_1, OUTPUT);
   pinMode(M2_2, OUTPUT);
-  //camera
-  pinMode(CAM_BUTTON, INPUT);    // initialize the pushbutton pin as an input
-  
+
   // 明示的なモーターのオフ
   DRIVE set;
   set.right1 = 1;
@@ -98,10 +88,6 @@ void setup() {
   pinMode(NICROM_2, OUTPUT);
   digitalWrite(NICROM_1, LOW);
   digitalWrite(NICROM_2, LOW);
-
-//  cam_initialize(); //camera set up
-//
-//  take_picture();
 
   xbee_standby();  // 現状enter押下したのちに大文字のOを入力することによって脱出します。
 
@@ -163,9 +149,6 @@ void loop() {
         break;
 
       case 2:
-
-        time_out = millis();  // 降下までのトータルのタイムアウト  // トータルで二時間とか 7200000ミリ秒
-
         xbee_uart( dev, "start status2\r");
         write_control_sd("status2 start");
 
