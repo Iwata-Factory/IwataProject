@@ -169,8 +169,8 @@ int time_out_flag = 1;
 #elif MACHINE == 2
 
 // 定数の定義
-#define GOAL_LATITUDE 35.7137421
-#define GOAL_LONGITUDE 139.75964943
+#define GOAL_LATITUDE 35.760310
+#define GOAL_LONGITUDE 139.765961
 
 #define GOAL_CIRCLE 3
 #define LAST_GOAL_CIRCLE 1.0
