@@ -205,14 +205,14 @@ int time_out_flag = 1;
 //モーター関連
 #define M1_1 5
 #define M1_2 6
-#define M2_1 7
-#define M2_2 8
+#define M2_1 8
+#define M2_2 7
 // PID制御関連
 #define PI_RIGHT_DEFAULT 230
 #define PI_LEGHT_DEFAULT 250
 #define PI_INTEGRAL_RISET 10
 #define PID_STREIGHT_BETWEEN 100
-#define PI_KP 1.5
+#define PI_KP 0
 #define PI_KP2 0
 #define PI_KI 0.20
 #define PI_MIN 80
@@ -310,10 +310,10 @@ byte flag_phase[8] = {
 };
 const int chipSelect = 4;
 // 地磁気のキャリブレーションに関するやつ
-double tm_x_offset = -94.5;
-double tm_y_offset = 33.0;
-double x_def = 711.0;
-double y_def = 646.0;
+double tm_x_offset = 31;
+double tm_y_offset = -105.0;
+double x_def = 788.0;
+double y_def = 787.0;
 // 立ち入り禁止エリア(10個まで生成可能)
 POINT danger_area_points[10];
 char xbee_send[XBEE_BUFFERSIZE];  //とりあえずのxbee送信用配列
