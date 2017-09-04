@@ -651,7 +651,7 @@ int turn_target_direction(double target_direction, double *my_Direction, int bra
       rotate_angle = rotate_angle * (12 - i) / 10;  // 回転角度を収束させる
 
       if (MACHINE == 1) {
-        rotate_angle = rotate_angle * (-1);
+        rotate_angle = rotate_angle;
       } else if (MACHINE == 2) {
         rotate_angle = rotate_angle;
       }

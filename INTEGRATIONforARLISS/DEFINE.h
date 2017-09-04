@@ -5,8 +5,9 @@
 
 // 定数の定義
 // ゴール位置(能代)
-#define GOAL_LATITUDE 40.1423542
-#define GOAL_LONGITUDE 139.9872709
+#define GOAL_LATITUDE 35.71484
+#define GOAL_LONGITUDE 139.75908
+
 
 #define GOAL_CIRCLE 3
 #define LAST_GOAL_CIRCLE 1.0
@@ -40,17 +41,17 @@
 #define ADXL345 0x53  //ADXL345(加速度センサ)のスレーブアドレス
 //モーター関連
 #define M1_1 8
-#define M1_2 5
-#define M2_1 7
+#define M1_2 7
+#define M2_1 5
 #define M2_2 6
 // PID制御関連
 #define PI_RIGHT_DEFAULT 240
 #define PI_LEGHT_DEFAULT 250
 #define PI_INTEGRAL_RISET 10
 #define PID_STREIGHT_BETWEEN 100
-#define PI_KP 1.5
+#define PI_KP 1.2
 #define PI_KP2 0
-#define PI_KI 0.20
+#define PI_KI 0.2
 #define PI_MIN 80
 #define PI_MAX 250
 //スピーカー関連
