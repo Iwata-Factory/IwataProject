@@ -103,7 +103,7 @@ int xbee_standby() {
 
     xb_rxcnt++;
     xbee_uart(dev, " ");  // これを回さないとxbeeが動かない。。。
-    if (xb_rxcnt > 100000 ) {  //TIMEOUT２０秒XB＿RXCNTエンターおしても時間は伸びません！！
+    if (xb_rxcnt > 100000 ) {  //TIMEOUTXB＿RXCNTエンターおしても時間は伸びません！！
 
       xbprintf("can't receive command...");
       return 0;

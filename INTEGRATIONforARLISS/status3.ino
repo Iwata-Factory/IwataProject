@@ -28,7 +28,7 @@ int status3(ROVER *rover) {  // Status3 降下の関数(着陸判定を行う)
     double alt = 0;
     double alt_array[5];
     int i = 0;
-    int get_alt_flag = 1;
+    int get_alt_flag = 0;
 
     for (int j = 0; j < 5; j++) {
       i = 0;
@@ -54,8 +54,8 @@ int status3(ROVER *rover) {  // Status3 降下の関数(着陸判定を行う)
     }
 
     for (int j = 0; j < 5; j++) {
-      if (alt_array[j] == 0) {
-        get_alt_flag = 0;
+      if (0 < alt_array[j]) {
+        get_alt_flag = 1;
       }
     }
 

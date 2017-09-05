@@ -3,13 +3,13 @@
 */
 
 /*
- * 1号機は死亡
- * 2号機　生存
- * 3号機　製作1中
- */
- 
-#define MACHINE 1  // 1 or 2を指定(1は3号機)
-#define XB_LIB 0  // 1(new) or 0(old) を指定
+   1号機は死亡
+   2号機　生存
+   3号機　製作1中
+*/
+
+#define MACHINE 2  // 1 or 2を指定(1は3号機)
+#define XB_LIB 1  // 1(new) or 0(old) を指定
 
 #include "INCLUDE.h"
 
@@ -44,9 +44,9 @@ void setup() {
 
   //eeprom関連
   //eep_clear();   //EEPROMのリセット。４KB全てに書き込むので時間かかる。
+  //
   EEPROM.write( EEP_STATUS, flag_phase[0] ); // status1で初期化
   EEPROM.write( EEP_CENSOR_STATUS, 0xff);  //eepのflag類の初期化
-
   //SD関連
   if (SD_LOG_FLAG == 1) {
     pinMode(SS, OUTPUT);
@@ -83,7 +83,7 @@ void setup() {
   pinMode(M2_2, OUTPUT);
   //camera
   pinMode(CAM_BUTTON, INPUT);    // initialize the pushbutton pin as an input
-  
+
   // 明示的なモーターのオフ
   DRIVE set;
   set.right1 = 1;
@@ -99,11 +99,10 @@ void setup() {
   digitalWrite(NICROM_1, LOW);
   digitalWrite(NICROM_2, LOW);
 
-//  cam_initialize(); //camera set up
-//
-//  take_picture();
+  //  cam_initialize(); //camera set up
+  //
+  //  take_picture();
 
-  xbee_standby();  // 現状enter押下したのちに大文字のOを入力することによって脱出します。
 
   xbee_uart( dev, "setup done\rchange to main phase\r");
   write_control_sd("setup end");
@@ -125,6 +124,10 @@ void loop() {
   reset.right2 = 1;
   reset.leght1 = 1;
   reset.leght2 = 1;
+
+  rover.status_number = EEPROM.read(EEP_STATUS);
+  xbprintf("status_number: %d",rover.status_number);
+  
 
   // 実験用の部分
   if (STACK_EXP == 0) {
@@ -189,6 +192,7 @@ void loop() {
           trans_phase(rover.status_number);
           rover.status_number += 1;
           xbee_uart( dev, "success status3\r");
+
           break;
         } else {
           break;
@@ -204,6 +208,7 @@ void loop() {
           trans_phase(rover.status_number);
           rover.status_number += 1;
           xbee_uart( dev, "success status4\r");
+
           break;
         } else {
           break;
@@ -221,6 +226,7 @@ void loop() {
           trans_phase(rover.status_number);
           rover.status_number += 1;
           xbee_uart( dev, "success status5-1\r");
+
           break;
         } else {
           break;
@@ -238,6 +244,7 @@ void loop() {
           rover.status_number += 1;
           write_critical_sd(2);  // 制御終了
           xbee_uart( dev, "success status6\r");
+
           break;
         } else {
           break;

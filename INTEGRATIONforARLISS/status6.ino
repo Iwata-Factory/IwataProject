@@ -19,6 +19,8 @@ int status6(ROVER *rover) {
 
   do {
 
+    write_control_sd("loop");
+
     write_gps_sd(my_gps_only);
     write_timelog_sd(rover);
 
@@ -40,6 +42,7 @@ int status6(ROVER *rover) {
     xbee_uart(dev, xbee_send);
 
     if (0 < rover->distance && rover->distance < LAST_GOAL_CIRCLE) {
+      write_control_sd("near goal!");
       return 1;
     }
 
@@ -53,10 +56,11 @@ int status6(ROVER *rover) {
   } while (i < 15);
 
   xbee_uart( dev, "DANGER DANGER DANGER\r");
-
   i = 0;
   GPS gps_last;
   do {  // ヤバイ時に走る
+
+    write_control_sd("loop");
 
     write_gps_sd(gps_last);
     write_timelog_sd(rover);
@@ -76,6 +80,7 @@ int status6(ROVER *rover) {
 
 
     if (0 <= rover->distance && rover->distance <= LAST_GOAL_CIRCLE) {  // status6へ
+      write_control_sd("near goal");
       xbee_uart( dev, "near goal!!!!\r");
       return 1;
     }

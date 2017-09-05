@@ -244,11 +244,11 @@ double distance_get(GPS* gps, POINT* point) {
   } else {
     d = get_distance_by_sphere(gps, point);
   }
-  char sz_d[16];
-  dtostrf(d, 10, 6, sz_d);
-  xbee_uart(dev, "between_distance:");
-  xbee_uart(dev, sz_d);
-  xbee_uart(dev, "\r");
+//  char sz_d[16];
+//  dtostrf(d, 10, 6, sz_d);
+//  xbee_uart(dev, "between_distance:");
+//  xbee_uart(dev, sz_d);
+//  xbee_uart(dev, "\r");
   return d;
 }
 

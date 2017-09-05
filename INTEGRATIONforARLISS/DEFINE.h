@@ -170,8 +170,8 @@ int time_out_flag = 1;
 #elif MACHINE == 2
 
 // 定数の定義
-#define GOAL_LATITUDE 35.760310
-#define GOAL_LONGITUDE 139.765961
+#define GOAL_LATITUDE 35.760275
+#define GOAL_LONGITUDE 139.765946
 
 #define GOAL_CIRCLE 3
 #define LAST_GOAL_CIRCLE 1.0
@@ -290,12 +290,14 @@ int time_out_flag = 1;
 
 File cam_pic;
 
-const byte cameraAddr = (CAM_ADDR << 5);  // addr
-unsigned long picTotalLen = 0;            // picture length
-int picNameNum = 0;
+//const byte cameraAddr = (CAM_ADDR << 5);  // addr
+//unsigned long picTotalLen = 0;            // picture length
+//int picNameNum = 0;
 // グローバル変数の定義(ごちゃごちゃしているためいずれ整理したい)
 static unsigned long time; //タイマー起動
-byte dev[] = {0x00, 0x13, 0xA2, 0x00, 0x40, 0xE7, 0xED, 0x61};  // XBEE親機アドレス（６月３０日改造版）
+byte dev[] = {0x00, 0x13, 0xA2, 0x00, 0x40, 0xE7, 0xEB, 0xBA}; 
+
+//byte dev[] = {0x00, 0x13, 0xA2, 0x00, 0x40, 0xE7, 0xED, 0x61};  // XBEE親機アドレス（６月３０日改造版）
 //byte dev[] = {0x00, 0x13, 0xA2, 0x00, 0x40, 0xB9, 0x3D, 0xCD};  // XBEE親機アドレス
 
 static const uint8_t length = 6;   //読み出しデータの個数

@@ -114,9 +114,9 @@ void go_straight(int go_time) {
 
   // 直進するように調整したパラメタ
   go.right1 = 0;
-  go.right2 = 255;
+  go.right2 = PI_RIGHT_DEFAULT;
   go.leght1 = 0;
-  go.leght2 = 255;
+  go.leght2 = PI_LEGHT_DEFAULT;
   rover_analog(go);
 
   delay(wait_time);

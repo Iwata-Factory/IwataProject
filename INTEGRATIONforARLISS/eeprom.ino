@@ -13,16 +13,10 @@ void eep_clear() {       //EEPのすべてのアドレスに０書き込み
    EEPROM.read(EEP_STATUS);
    を使えば１バイトの形で読み出せます。
 */
-boolean EEP_STATUSwrite(int adr, byte oldflag, byte newflag) {
-  byte flagread = EEPROM.read(adr);
-  if ( oldflag == flagread ) {
-    EEPROM.write( adr, newflag );
-    return true;
-  }
-  else {
-    return false;
-  }
-}
+//int EEP_STATUSwrite(byte newflag) {
+//    EEPROM.write( EEP_STATUS, newflag );
+//    return 1;
+//}
 
 
 /*
