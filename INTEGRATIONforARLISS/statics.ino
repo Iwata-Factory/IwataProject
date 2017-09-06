@@ -19,6 +19,15 @@ double descending_sort(const int array_num, double* value ) {
   }
 }
 
+/*
+ * 値の最大値を返す
+ */
+double value_max(const int array_num, double* value){
+  double maximum = 0;   //最大値
+
+  descending_sort(array_num, value);  //並び替え
+  return value[array_num - 1];   //最大値を返す
+}
 
 
 /*
@@ -235,11 +244,11 @@ double distance_get(GPS* gps, POINT* point) {
   } else {
     d = get_distance_by_sphere(gps, point);
   }
-  char sz_d[16];
-  dtostrf(d, 10, 6, sz_d);
-  xbee_uart(dev, "between_distance:");
-  xbee_uart(dev, sz_d);
-  xbee_uart(dev, "\r");
+//  char sz_d[16];
+//  dtostrf(d, 10, 6, sz_d);
+//  xbee_uart(dev, "between_distance:");
+//  xbee_uart(dev, sz_d);
+//  xbee_uart(dev, "\r");
   return d;
 }
 

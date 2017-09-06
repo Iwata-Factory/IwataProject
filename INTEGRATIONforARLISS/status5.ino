@@ -31,6 +31,10 @@ int status5(ROVER *rover) {
       tm_calibration();  // 条件が揃ったらキャリブレーション
     }
 
+    if (i % 10 == 0) {  // 定期的に反転修正
+      go_suddenly_brake(2500);
+    }  
+
     if (5 <= i) {  // 5回目からは危険エリアチェック
       check_danger_area();
     }
@@ -60,7 +64,7 @@ int status5(ROVER *rover) {
         last_distance  = rover->distance;
       } else {
         if ((fabs(rover->distance - last_distance) < 2) && (0 < last_distance)) {  //Trueでスタック
-          write_control_sd("distance difference < 2 ---> stack");
+          write_control_sd(F("distance difference < 2 ---> stack"));
           int scs_result = stack_check_state(rover);
           if (scs_result != 1) {
             continue;

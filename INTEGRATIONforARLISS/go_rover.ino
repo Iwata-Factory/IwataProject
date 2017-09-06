@@ -103,9 +103,9 @@ void go_straight(int go_time) {
     wait_time = 100;
   }
 
-  write_control_sd("motor(0, 1, 0, 1) to motor(0, 255, 0, 255) (increase one by one for every additinal 7 millisecond)");
+  write_control_sd(F("motor(0, 1, 0, 1) to motor(0, 255, 0, 255) (increase one by one for every additinal 7 millisecond)"));
   write_control_sd("motor(0, 255, 0, 255) time is " + String(go_time, DEC) + " milliseconds");
-  write_control_sd("motor(0, 255, 0, 255) to motor(255, 0, 255, 0) (decrease one by one for every additinal 7 millisecond)");
+  write_control_sd(F("motor(0, 255, 0, 255) to motor(255, 0, 255, 0) (decrease one by one for every additinal 7 millisecond)"));
 
   go.right1 = 1;
   go.right2 = 1;
@@ -114,9 +114,9 @@ void go_straight(int go_time) {
 
   // 直進するように調整したパラメタ
   go.right1 = 0;
-  go.right2 = 255;
+  go.right2 = PI_RIGHT_DEFAULT;
   go.leght1 = 0;
-  go.leght2 = 255;
+  go.leght2 = PI_LEGHT_DEFAULT;
   rover_analog(go);
 
   delay(wait_time);
@@ -235,11 +235,68 @@ int integral_riset(int counter) {
   }
 }
 
+//DRIVE get_drive_input(DRIVE drive, double d, double i) {
+//
+//  if (0 <= d) {  // 右方向によりたい（右を落とす）
+//
+//    drive.right2 -= fabs(d * PI_KP);  /* ここのfabs(d)ってfabs(i)ですねbyとうま */
+//
+//
+//
+//    if (i > 0) {
+//      drive.right2 -= fabs(i * PI_KI);
+//    } else {
+//      drive.leght2 -= fabs(i * PI_KI);
+//    }
+//
+//    if (drive.right2 < PI_MIN) {
+//      drive.right2 = PI_MIN;
+//    } else if (PI_MAX < drive.right2) {
+//      drive.right2 = PI_MAX;
+//    }
+//    if (drive.leght2 < PI_MIN) {
+//      drive.leght2 = PI_MIN;
+//    } else if (PI_MAX < drive.leght2) {
+//      drive.leght2 = PI_MAX;
+//    }
+//
+//  } else {
+//
+//    d = -1 * d;
+//    i = -1 * i;
+//
+//    drive.leght2 -= fabs(d * PI_KP);
+//
+//
+//    if (i > 0) {
+//      drive.right2 -= fabs(i * PI_KI);
+//    } else {
+//      drive.leght2 -= fabs(i * PI_KI);
+//    }
+//
+//    if (drive.right2 < PI_MIN) {
+//      drive.right2 = PI_MIN;
+//    } else if (PI_MAX < drive.right2) {
+//      drive.right2 = PI_MAX;
+//    }
+//
+//    if (drive.leght2 < PI_MIN) {
+//      drive.leght2 = PI_MIN;
+//    } else if (PI_MAX < drive.leght2) {
+//      drive.leght2 = PI_MAX;
+//    }
+//  }
+//  return drive;
+//
+//}
+
 DRIVE get_drive_input(DRIVE drive, double d, double i) {
 
-  if (0 <= d) {  // 右方向によりたい（右を落とす）
-    //    drive.right2 -= fabs(d * PI_KP + fabs(d) * PI_KP2 + i * PI_KI);  /* ここのfabs(d)ってfabs(i)ですねbyとうま */
-    drive.right2 -= fabs(d * PI_KP);  /* ここのfabs(d)ってfabs(i)ですねbyとうま */
+  if (0 >= d) {  // 右方向によりたい（右を落とす）
+
+    drive.leght2 -= fabs(d * PI_KP);  /* ここのfabs(d)ってfabs(i)ですねbyとうま */
+
+
 
     if (i > 0) {
       drive.right2 -= fabs(i * PI_KI);
@@ -263,10 +320,10 @@ DRIVE get_drive_input(DRIVE drive, double d, double i) {
     d = -1 * d;
     i = -1 * i;
 
-    //    drive.leght2 -= fabs(d * PI_KP + fabs(d) * PI_KP2 + i * PI_KI);
-    drive.leght2 -= fabs(d * PI_KP);
+    drive.right2 -= fabs(d * PI_KP);
 
-    if (i > 0) {
+
+    if (i < 0) {
       drive.right2 -= fabs(i * PI_KI);
     } else {
       drive.leght2 -= fabs(i * PI_KI);
@@ -296,7 +353,7 @@ void go_back(int go_time) {
     go_time = 100;
   }
 
-  write_control_sd("motor(1, 1, 1, 1) to motor(100, 0, 100, 0) (increase one by one for every additinal 8 millisecond)");
+  write_control_sd(F("motor(1, 1, 1, 1) to motor(100, 0, 100, 0) (increase one by one for every additinal 8 millisecond)"));
 
   go.right1 = 1;
   go.right2 = 1;
@@ -319,7 +376,7 @@ void go_back(int go_time) {
   go.leght2 = 0;
   rover_analog(go);
   delay(go_time);
-  write_control_sd("motor(1, 1, 1, 1)");
+  write_control_sd(F("motor(1, 1, 1, 1)"));
 
   go.right1 = 1;  // バック時は急停止
   go.right2 = 1;
@@ -390,7 +447,7 @@ void brake() {
 /*-----------急発進→ブレーキをかける--------------------
   ------------------------------------------*/
 void go_suddenly_brake(int times) {
-  write_control_sd("motor(0, 1, 0, 1) to motor(0, 255, 0, 255) (increase one by one for every additinal 4 millisecond)");
+  write_control_sd(F("motor(0, 1, 0, 1) to motor(0, 255, 0, 255) (increase one by one for every additinal 4 millisecond)"));
   write_control_sd("motor(0, 255, 0, 255) time is " + String(times, DEC) + " milliseconds");
   DRIVE go; //DRIVE型の宣言
   // 初期化
@@ -408,7 +465,7 @@ void go_suddenly_brake(int times) {
     rover_analog(go);
     delay(4);
   }
-  write_control_sd("motor(0, 255, 0, 255) ---> motor(1, 1, 1, 1)");
+  write_control_sd(F("motor(0, 255, 0, 255) ---> motor(1, 1, 1, 1)"));
   go.right1 = 1;
   go.right2 = 1;
   go.leght1 = 1;

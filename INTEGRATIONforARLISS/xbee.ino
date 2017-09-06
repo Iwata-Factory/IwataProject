@@ -87,20 +87,28 @@ int xbee_standby() {
     if (xbee_rcv(ENTER)) {
       xbprintf("are you ready?");
       while (1) {
-        if (xbee_rcv( O_CAP )) {
+        if (xbee_rcv(O_CAP)) {
           xbprintf("your command finally accepted!");
           return 1;
         }
+        xb_rxcnt++;
         xbee_uart(dev, " ");  // これを回さないとxbeeが動かない。。。
+        if (xb_rxcnt > 100000 ) { 
+          xbprintf("can't receive command...");
+          return 0;
+        }
+        delay(10);
       }
     }
 
-    //    xb_rxcnt++;
+    xb_rxcnt++;
     xbee_uart(dev, " ");  // これを回さないとxbeeが動かない。。。
-    //    if (xb_rxcnt > 100000 ) {  //timeout時間約8000秒
-    //      xbprintf("can't receive command...");
-    //      break;
-    //    }
+    if (xb_rxcnt > 100000 ) {  //TIMEOUTXB＿RXCNTエンターおしても時間は伸びません！！
+
+      xbprintf("can't receive command...");
+      return 0;
+    }
+    delay(10);
   }
   return 0;
 }

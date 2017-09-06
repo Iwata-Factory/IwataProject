@@ -207,7 +207,7 @@ int gps_data_get(GPS* gps) {
 }
 
 int gps_get(GPS* gps) {
-  write_control_sd("call gps_gett");
+  write_control_sd(F("call gps_gett"));
 
   if (GPS_GET_FLAG == 0) {
     xbee_uart(dev, "GPS SKIP\r");
@@ -216,10 +216,10 @@ int gps_get(GPS* gps) {
 
   // 受信するシリアルの切り替え
   if (use_which_gps == 1) {
-    write_control_sd("use gps 1");
+    write_control_sd(F("use gps 1"));
     g_gps1.listen();
   } else if (use_which_gps == 2) {
-    write_control_sd("use gps 2");
+    write_control_sd(F("use gps 2"));
     g_gps2.listen();
   }
 
@@ -253,9 +253,9 @@ int gps_get(GPS* gps) {
     }
     if (gps_flag == 4) {
       ;
-      speaker(E_TONE);
-      speaker(F_TONE);
-      speaker(E_TONE);
+      //speaker(E_TONE);
+      //speaker(F_TONE);
+      //speaker(E_TONE);
 
       //通信ができて値も解析されたが緯度経度の値がバグってる
       //      xbee_uart( dev, "wrong Lat or Long\r");
@@ -419,7 +419,7 @@ int gps_get_al(double* altitude) {
     }
     if (gps_flag == 4) {
       ;
-      speaker(E_TONE);
+      //speaker(E_TONE);
 
       //通信ができて値も解析されたが緯度経度の値がバグってる
       //xbee_uart( dev, "wrong Lat or Long\r");
@@ -613,7 +613,7 @@ double get_my_direction() {
 
 int turn_target_direction(double target_direction, double *my_Direction, int branch) {
 
-  write_control_sd("turn target direction");
+  write_control_sd(F("turn target direction"));
 
   xbee_uart( dev, "call turn_target_direction() \r");
 
@@ -640,7 +640,7 @@ int turn_target_direction(double target_direction, double *my_Direction, int bra
 
     if ((-20 < rotate_angle) && (rotate_angle < 20)) {
       rotate_angle = 0;
-      write_control_sd("direction difference < 20 ---> success");
+      write_control_sd(F("direction difference < 20 ---> success"));
       xbee_uart( dev, " success turn_target_direction() \r");
       return 1;
     }
@@ -651,7 +651,9 @@ int turn_target_direction(double target_direction, double *my_Direction, int bra
       rotate_angle = rotate_angle * (12 - i) / 10;  // 回転角度を収束させる
 
       if (MACHINE == 1) {
-        rotate_angle = rotate_angle * (-1);
+        rotate_angle = rotate_angle;
+      } else if (MACHINE == 2) {
+        rotate_angle = rotate_angle;
       }
       
       go_rotate(rotate_angle);  // 回転を行う
@@ -660,7 +662,7 @@ int turn_target_direction(double target_direction, double *my_Direction, int bra
       go_rotate(rotate_angle);
     }
   } while (i < 5); // 5回回転してもダメだったら失敗
-  write_control_sd("count out (5)");
+  write_control_sd(F("count out (5)"));
   xbee_uart( dev, " false turn_target_direction() \r");
   return 0;
 }
@@ -699,7 +701,7 @@ int tm_calibration() {
   }
 
   reset_tm();
-  write_control_sd("try calibration" );
+  write_control_sd(F("try calibration" ));
   xbee_uart( dev, " call tm_calibration\r");
 
   AC ac_calib;  // キャリブレーション時の水平判定用
@@ -712,9 +714,8 @@ int tm_calibration() {
     write_control_sd("counter is " + String(count_calib, DEC));
 
     if ((fabs(ac_calib.x) < 100 && fabs(ac_calib.y) < 100 && 150 < ac_calib.z) || count_calib == 5) {  // 水平な感じの場所にいるならキャリブレーション。試行回数過多でもキャリブレーション
-      speaker(C_TONE);
-      speaker(D_TONE);
-      write_control_sd("Conditions are met");
+
+      write_control_sd(F("Conditions are met"));
 
       delay(500);
 
@@ -726,7 +727,7 @@ int tm_calibration() {
       turn.leght1 = 1;
       turn.leght2 = 0;
 
-      write_control_sd("motor(0, 1, 1, 0) (10000milliseconds)");
+      write_control_sd(F("motor(0, 1, 1, 0) (10000milliseconds)"));
 
       double min_x;
       double max_x;
@@ -850,7 +851,7 @@ double pid_get_control(double target_direction, double *my_Direction) {
 
 int correct_posture() {
 
-  write_control_sd("check posture");
+  write_control_sd(F("check posture"));
   xbee_uart( dev, "call correct_posture\r");
 
   for (int ji = 0; ji < 5; ji++) {  // 状態復旧
@@ -859,7 +860,7 @@ int correct_posture() {
       return 1;  // 問題なし
     } else {
       xbee_uart( dev, "revive ---> go_suddenly_brake \r");
-      write_control_sd("working to revive");
+      write_control_sd(F("working to revive"));
       go_suddenly_brake(2500);  // 急発進緩停止
     }
   }
@@ -893,11 +894,11 @@ int judge_invered() {
   write_control_sd("ac(z-axis) is " + String(ac_z_ave, DEC));
 
   if (ac_z_ave < -1.0) {  // この式が真なら反転している。
-    write_control_sd("ac(z-axis) < -1.0 ---> invered");
+    write_control_sd(F("ac(z-axis) < -1.0 ---> invered"));
     return 0;
   } else {
     xbee_uart( dev, "success judge_invered_revive\r");
-    write_control_sd("ac(z-axis) < -1.0 ---> no problem");
+    write_control_sd(F("ac(z-axis) < -1.0 ---> no problem"));
     return 1; // 問題なし
   }
 }
@@ -1144,13 +1145,13 @@ int escape_from_wadachi(ROVER *rover) {
     try_counter += 1;
 
     if (10 <= try_counter) {
-      write_control_sd("count out (10)");
+      write_control_sd(F("count out (10)"));
       xbee_uart(dev, "false escape_from_wadachi\r");
       return 0;
     }
 
   } while (distance_get(&gps_efw, &point_efw) < 2);
-  write_control_sd("distance > 2");
+  write_control_sd(F("distance > 2"));
   xbee_uart(dev, "success escape_from_wadachi\r");
   return 1;
 }
@@ -1163,9 +1164,9 @@ int no_x_bee(byte a, char b) { // xbeeを潰す関数
 /*
    スピーカーになります.tone_(ピン番号, 音の周波数, 音の長さ)
 */
-void speaker(int TONE) {
-  tone(TONE_PINNO, TONE, BEAT_LONG);
-  delay(BEAT_LONG);
-}
+//void speaker(int TONE) {
+//  tone(TONE_PINNO, TONE, BEAT_LONG);
+//  delay(BEAT_LONG);
+//}
 
 

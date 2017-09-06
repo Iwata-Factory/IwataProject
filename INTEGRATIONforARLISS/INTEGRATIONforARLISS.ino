@@ -2,8 +2,15 @@
   メインコード
 */
 
-#define MACHINE 2  // 1 or 2を指定
-#define XB_LIB  0 
+/*
+   1号機は死亡
+   2号機　生存
+   3号機　製作1中
+*/
+
+#define MACHINE 2  // 1 or 2を指定(1は3号機)
+#define XB_LIB 1  // 1(new) or 0(old) を指定
+
 #include "INCLUDE.h"
 
 /*
@@ -11,10 +18,11 @@
 */
 
 void setup() {
-  
+
   // 各種初期化処理
   Wire.begin();           //I2C通信の初期化
   Serial.begin(SERIAL_BAUDRATE); //シリアル通信の初期化
+//  Serial2.begin(CAMBAUDRATE); //シリアル通信の初期化
   g_gps1.begin(GPSBAUDRATE); //シリアル通信の初期化
   g_gps2.begin(GPSBAUDRATE); //シリアル通信の初期化
 
@@ -36,9 +44,9 @@ void setup() {
 
   //eeprom関連
   //eep_clear();   //EEPROMのリセット。４KB全てに書き込むので時間かかる。
+  //
   EEPROM.write( EEP_STATUS, flag_phase[0] ); // status1で初期化
   EEPROM.write( EEP_CENSOR_STATUS, 0xff);  //eepのflag類の初期化
-
   //SD関連
   if (SD_LOG_FLAG == 1) {
     pinMode(SS, OUTPUT);
@@ -60,7 +68,7 @@ void setup() {
     }
   }
 
-  write_control_sd("setup start");
+  write_control_sd(F("setup start"));
 
   write_critical_sd(0);  // クリティカルログを残す
 
@@ -73,6 +81,8 @@ void setup() {
   pinMode(M1_2, OUTPUT);
   pinMode(M2_1, OUTPUT);
   pinMode(M2_2, OUTPUT);
+  //camera
+//  pinMode(CAM_BUTTON, INPUT);    // initialize the pushbutton pin as an input
 
   // 明示的なモーターのオフ
   DRIVE set;
@@ -89,10 +99,13 @@ void setup() {
   digitalWrite(NICROM_1, LOW);
   digitalWrite(NICROM_2, LOW);
 
-  xbee_standby();  // 現状enter押下したのちに大文字のOを入力することによって脱出します。
+  //  cam_initialize(); //camera set up
+  //
+  //  take_picture();
+
 
   xbee_uart( dev, "setup done\rchange to main phase\r");
-  write_control_sd("setup end");
+  write_control_sd(F("setup end"));
 
 }
 
@@ -100,7 +113,7 @@ void setup() {
 
 void loop() {
 
-  speaker(C_TONE);
+  //speaker(C_TONE);
   delay(2000);
 
   // 自身の情報を初期化
@@ -111,6 +124,10 @@ void loop() {
   reset.right2 = 1;
   reset.leght1 = 1;
   reset.leght2 = 1;
+
+  rover.status_number = EEPROM.read(EEP_STATUS);
+  xbprintf("status_number: %d", rover.status_number);
+
 
   // 実験用の部分
   if (STACK_EXP == 0) {
@@ -132,7 +149,7 @@ void loop() {
       case 1:
 
         xbee_uart( dev, "start status1\r");
-        write_control_sd("status1 start");
+        write_control_sd(F("status1 start"));
 
         delay(1000);
 
@@ -149,8 +166,11 @@ void loop() {
         break;
 
       case 2:
+
+        time_out = millis();  // 降下までのトータルのタイムアウト  // トータルで二時間とか 7200000ミリ秒
+
         xbee_uart( dev, "start status2\r");
-        write_control_sd("status2 start");
+        write_control_sd(F("status2 start"));
 
         if (status2(&rover) == 1) {
           rover_degital(reset);
@@ -164,7 +184,7 @@ void loop() {
 
       case 3:
         xbee_uart( dev, "start status3\r");
-        write_control_sd("status3 start");
+        write_control_sd(F("status3 start"));
 
 
         if (status3(&rover) == 1) {
@@ -172,6 +192,7 @@ void loop() {
           trans_phase(rover.status_number);
           rover.status_number += 1;
           xbee_uart( dev, "success status3\r");
+
           break;
         } else {
           break;
@@ -179,7 +200,7 @@ void loop() {
 
       case 4:
         xbee_uart( dev, "start status4\r");
-        write_control_sd("status4 start");
+        write_control_sd(F("status4 start"));
 
 
         if (status4(&rover) == 1) {
@@ -187,6 +208,7 @@ void loop() {
           trans_phase(rover.status_number);
           rover.status_number += 1;
           xbee_uart( dev, "success status4\r");
+
           break;
         } else {
           break;
@@ -194,7 +216,7 @@ void loop() {
 
       case 5:
         xbee_uart( dev, "start status5\r");
-        write_control_sd("status5 start");
+        write_control_sd(F("status5 start"));
 
 
         write_timelog_sd(&rover);
@@ -204,6 +226,7 @@ void loop() {
           trans_phase(rover.status_number);
           rover.status_number += 1;
           xbee_uart( dev, "success status5-1\r");
+
           break;
         } else {
           break;
@@ -212,7 +235,7 @@ void loop() {
 
       case 6:
         xbee_uart( dev, "start status6\r");
-        write_control_sd("status6 start");
+        write_control_sd(F("status6 start"));
 
         write_timelog_sd(&rover);
         if (status6(&rover) == 1) {
@@ -221,6 +244,7 @@ void loop() {
           rover.status_number += 1;
           write_critical_sd(2);  // 制御終了
           xbee_uart( dev, "success status6\r");
+
           break;
         } else {
           break;
@@ -230,17 +254,17 @@ void loop() {
   } while (0 < rover.status_number && rover.status_number < 7);
 
   xbee_uart( dev, "reach status7\rEND CONTROL\r");
-  write_control_sd("all end");
+  write_control_sd(F("all end"));
 
 
   while (1) {
     write_timelog_sd(&rover);
-    speaker(HIGH_C);
-    speaker(HIGH_C);
-    speaker(HIGH_C);
-    speaker(HIGH_C);
-    speaker(HIGH_C);
-    speaker(HIGH_C);
+    //speaker(HIGH_C);
+    //speaker(HIGH_C);
+    //speaker(HIGH_C);
+    //speaker(HIGH_C);
+    //speaker(HIGH_C);
+    //speaker(HIGH_C);
     delay(100000);
     delay(100000);
     delay(100000);

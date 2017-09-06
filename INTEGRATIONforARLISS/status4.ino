@@ -24,7 +24,7 @@ int status4(ROVER *rover) {  // Status4 着陸の関数
   int posture_coefficient = set_posture_coefficient();  //  姿勢係数(正しい姿勢なら1、反転なら-1)を取得(反転を直すわけではないことに注意)
   int escape_counter = 0;
   xbee_uart( dev, "escape from landing-point\r");
-  write_control_sd("start to escape from landing-point");
+  write_control_sd(F("start to escape from landing-point"));
   do {
     //本当は真っ直ぐ進みたい
     go_straight(5000);   //直進
@@ -33,11 +33,13 @@ int status4(ROVER *rover) {  // Status4 着陸の関数
     write_control_sd("diffrence is " + String(lc_difference, DEC));
     delay(500);
     escape_counter += 1;
+
   } while ((lc_difference < 7) && (escape_counter < 7));
   if (escape_counter == 7) {
-    write_control_sd("count out(7 times)");
+    write_control_sd(F("count out(7 times)"));
+    cut_nicrom(10000);  // ニクロム線を切る
   } else {
-    write_control_sd("get sufficient distance");
+    write_control_sd(F("get sufficient distance"));
 
   }
   xbee_uart( dev, "escape complete\r");
@@ -65,18 +67,18 @@ int set_posture_coefficient() {
 */
 
 int cut_nicrom(int cut_time) {
-  write_control_sd("try to cut nicrom");
+  write_control_sd(F("try to cut nicrom"));
   xbee_uart(dev, "call cut_nicrom\n");
   //ニクロム線溶断する
-  speaker(C_TONE);
-  speaker(E_TONE);
+  //speaker(C_TONE);
+  //speaker(E_TONE);
   digitalWrite(NICROM_1, HIGH);
   digitalWrite(NICROM_2, HIGH);
   delay(cut_time);
   digitalWrite(NICROM_2, LOW);
   digitalWrite(NICROM_1, LOW);
   xbee_uart(dev, "end cut_nicrom\n");
-  speaker(G_TONE);
+  //speaker(G_TONE);
   return 1;
 
 }
