@@ -64,7 +64,7 @@ int status5(ROVER *rover) {
         last_distance  = rover->distance;
       } else {
         if ((fabs(rover->distance - last_distance) < 2) && (0 < last_distance)) {  //Trueでスタック
-          write_control_sd("distance difference < 2 ---> stack");
+          write_control_sd(F("distance difference < 2 ---> stack"));
           int scs_result = stack_check_state(rover);
           if (scs_result != 1) {
             continue;

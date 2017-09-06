@@ -68,7 +68,7 @@ void setup() {
     }
   }
 
-  write_control_sd("setup start");
+  write_control_sd(F("setup start"));
 
   write_critical_sd(0);  // クリティカルログを残す
 
@@ -105,7 +105,7 @@ void setup() {
 
 
   xbee_uart( dev, "setup done\rchange to main phase\r");
-  write_control_sd("setup end");
+  write_control_sd(F("setup end"));
 
 }
 
@@ -126,8 +126,8 @@ void loop() {
   reset.leght2 = 1;
 
   rover.status_number = EEPROM.read(EEP_STATUS);
-  xbprintf("status_number: %d",rover.status_number);
-  
+  xbprintf("status_number: %d", rover.status_number);
+
 
   // 実験用の部分
   if (STACK_EXP == 0) {
@@ -149,7 +149,7 @@ void loop() {
       case 1:
 
         xbee_uart( dev, "start status1\r");
-        write_control_sd("status1 start");
+        write_control_sd(F("status1 start"));
 
         delay(1000);
 
@@ -170,7 +170,7 @@ void loop() {
         time_out = millis();  // 降下までのトータルのタイムアウト  // トータルで二時間とか 7200000ミリ秒
 
         xbee_uart( dev, "start status2\r");
-        write_control_sd("status2 start");
+        write_control_sd(F("status2 start"));
 
         if (status2(&rover) == 1) {
           rover_degital(reset);
@@ -184,7 +184,7 @@ void loop() {
 
       case 3:
         xbee_uart( dev, "start status3\r");
-        write_control_sd("status3 start");
+        write_control_sd(F("status3 start"));
 
 
         if (status3(&rover) == 1) {
@@ -200,7 +200,7 @@ void loop() {
 
       case 4:
         xbee_uart( dev, "start status4\r");
-        write_control_sd("status4 start");
+        write_control_sd(F("status4 start"));
 
 
         if (status4(&rover) == 1) {
@@ -216,7 +216,7 @@ void loop() {
 
       case 5:
         xbee_uart( dev, "start status5\r");
-        write_control_sd("status5 start");
+        write_control_sd(F("status5 start"));
 
 
         write_timelog_sd(&rover);
@@ -235,7 +235,7 @@ void loop() {
 
       case 6:
         xbee_uart( dev, "start status6\r");
-        write_control_sd("status6 start");
+        write_control_sd(F("status6 start"));
 
         write_timelog_sd(&rover);
         if (status6(&rover) == 1) {
@@ -254,7 +254,7 @@ void loop() {
   } while (0 < rover.status_number && rover.status_number < 7);
 
   xbee_uart( dev, "reach status7\rEND CONTROL\r");
-  write_control_sd("all end");
+  write_control_sd(F("all end"));
 
 
   while (1) {

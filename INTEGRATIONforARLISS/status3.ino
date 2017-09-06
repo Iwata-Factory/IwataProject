@@ -9,21 +9,40 @@ int status3(ROVER *rover) {  // Status3 降下の関数(着陸判定を行う)
 
   GPS fall_gps;
 
+  if (time_out == 0) {
+    xbee_uart( dev, "time_out is 0\r");
+    write_control_sd(F("time_out is 0\r"));
+    xbee_uart( dev, "delay 1.5hr");
+    write_control_sd(F("delay 1.5h\r"));
+
+    unsigned long reset_count_start = millis();  // 開始時刻
+
+    while (millis() - reset_count_start < 5400000) {  // 一時間半待つ
+
+      write_control_sd("1.5h waiting");
+
+      gps_get(&fall_gps);  // GPS送信
+      delay(10000);
+    }
+
+    return 1;
+  }
+
 
   if (time_out_flag == 0) {
     xbee_uart( dev, "failed　release decision\r");
-    write_control_sd("failed　release decision");
+    write_control_sd(F("failed　release decision"));
 
     while (1) {
       xbee_uart( dev, "2hours time-out mode\r");
-      write_control_sd("2hours time-out mode");
+      write_control_sd(F("2hours time-out mode"));
 
       gps_get(&fall_gps);  // GPS送信
 
       delay(10000);
       if (millis() - time_out > 7200000) {
         xbee_uart( dev, "Clear\r");
-        write_control_sd("Clear");
+        write_control_sd(F("Clear"));
         return 1;
       }
     }
@@ -68,12 +87,12 @@ int status3(ROVER *rover) {  // Status3 降下の関数(着陸判定を行う)
 
     if (get_alt_flag == 0) {
       xbee_uart( dev, "failed get alt\r");
-      write_control_sd("failed get alt");
+      write_control_sd(F("failed get alt"));
       while (1) {
 
         xbee_uart( dev, "2hours time-out mode\r");
-        write_control_sd("2hours time-out mode");
 
+        write_control_sd(F("2hours time-out mode"));
         gps_get(&fall_gps);  // GPS送信
 
         delay(10000);
@@ -85,7 +104,7 @@ int status3(ROVER *rover) {  // Status3 降下の関数(着陸判定を行う)
         }
         if (millis() - time_out > time_waiting) {
           xbee_uart( dev, "Clear\r");
-          write_control_sd("Clear");
+          write_control_sd(F("Clear"));
           return 1;
         }
       }
@@ -96,7 +115,7 @@ int status3(ROVER *rover) {  // Status3 降下の関数(着陸判定を行う)
       //alt_arrayの最大値を出す
       alt = value_max(5, alt_array);
       xbee_uart( dev, "wait start\r");
-      write_control_sd("wait start");
+      write_control_sd(F("wait start"));
       // 秒速5m/sで落下するとし1.25のマージンを取る
       int wait_time = (alt * 1.5 * 1000) / 5;   //単位ミリ秒
       unsigned long fall_count_start = millis();  // 開始時刻

@@ -103,9 +103,9 @@ void go_straight(int go_time) {
     wait_time = 100;
   }
 
-  write_control_sd("motor(0, 1, 0, 1) to motor(0, 255, 0, 255) (increase one by one for every additinal 7 millisecond)");
+  write_control_sd(F("motor(0, 1, 0, 1) to motor(0, 255, 0, 255) (increase one by one for every additinal 7 millisecond)"));
   write_control_sd("motor(0, 255, 0, 255) time is " + String(go_time, DEC) + " milliseconds");
-  write_control_sd("motor(0, 255, 0, 255) to motor(255, 0, 255, 0) (decrease one by one for every additinal 7 millisecond)");
+  write_control_sd(F("motor(0, 255, 0, 255) to motor(255, 0, 255, 0) (decrease one by one for every additinal 7 millisecond)"));
 
   go.right1 = 1;
   go.right2 = 1;
@@ -353,7 +353,7 @@ void go_back(int go_time) {
     go_time = 100;
   }
 
-  write_control_sd("motor(1, 1, 1, 1) to motor(100, 0, 100, 0) (increase one by one for every additinal 8 millisecond)");
+  write_control_sd(F("motor(1, 1, 1, 1) to motor(100, 0, 100, 0) (increase one by one for every additinal 8 millisecond)"));
 
   go.right1 = 1;
   go.right2 = 1;
@@ -376,7 +376,7 @@ void go_back(int go_time) {
   go.leght2 = 0;
   rover_analog(go);
   delay(go_time);
-  write_control_sd("motor(1, 1, 1, 1)");
+  write_control_sd(F("motor(1, 1, 1, 1)"));
 
   go.right1 = 1;  // バック時は急停止
   go.right2 = 1;
@@ -447,7 +447,7 @@ void brake() {
 /*-----------急発進→ブレーキをかける--------------------
   ------------------------------------------*/
 void go_suddenly_brake(int times) {
-  write_control_sd("motor(0, 1, 0, 1) to motor(0, 255, 0, 255) (increase one by one for every additinal 4 millisecond)");
+  write_control_sd(F("motor(0, 1, 0, 1) to motor(0, 255, 0, 255) (increase one by one for every additinal 4 millisecond)"));
   write_control_sd("motor(0, 255, 0, 255) time is " + String(times, DEC) + " milliseconds");
   DRIVE go; //DRIVE型の宣言
   // 初期化
@@ -465,7 +465,7 @@ void go_suddenly_brake(int times) {
     rover_analog(go);
     delay(4);
   }
-  write_control_sd("motor(0, 255, 0, 255) ---> motor(1, 1, 1, 1)");
+  write_control_sd(F("motor(0, 255, 0, 255) ---> motor(1, 1, 1, 1)"));
   go.right1 = 1;
   go.right2 = 1;
   go.leght1 = 1;
