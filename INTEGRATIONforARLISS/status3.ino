@@ -101,7 +101,7 @@ int status3(ROVER *rover) {  // Status3 降下の関数(着陸判定を行う)
       int wait_time = (alt * 1.5 * 1000) / 5;   //単位ミリ秒
       unsigned long fall_count_start = millis();  // 開始時刻
 
-      while (millis() - fall_count_start < wait_time); {
+      while (millis() - fall_count_start < wait_time) {
 
         write_control_sd("waiting");
 
