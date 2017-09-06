@@ -7,6 +7,9 @@ int status3(ROVER *rover) {  // Status3 降下の関数(着陸判定を行う)
     return 1;
   }
 
+  GPS fall_gps;
+
+
   if (time_out_flag == 0) {
     xbee_uart( dev, "failed　release decision\r");
     write_control_sd("failed　release decision");
@@ -15,7 +18,9 @@ int status3(ROVER *rover) {  // Status3 降下の関数(着陸判定を行う)
       xbee_uart( dev, "2hours time-out mode\r");
       write_control_sd("2hours time-out mode");
 
-      delay(60000);
+      gps_get(&fall_gps);  // GPS送信
+
+      delay(10000);
       if (millis() - time_out > 7200000) {
         xbee_uart( dev, "Clear\r");
         write_control_sd("Clear");
@@ -24,6 +29,8 @@ int status3(ROVER *rover) {  // Status3 降下の関数(着陸判定を行う)
     }
 
   } else {  // 高度を用いてタイムアウトを計算
+
+    write_control_sd("get alt");
 
     double alt = 0;
     double alt_array[5];
@@ -63,9 +70,13 @@ int status3(ROVER *rover) {  // Status3 降下の関数(着陸判定を行う)
       xbee_uart( dev, "failed get alt\r");
       write_control_sd("failed get alt");
       while (1) {
+
         xbee_uart( dev, "2hours time-out mode\r");
         write_control_sd("2hours time-out mode");
-        delay(60000);
+
+        gps_get(&fall_gps);  // GPS送信
+
+        delay(10000);
         unsigned long time_waiting = 0;
         if (LAND_ALT == 1) {
           time_waiting = 7200000;
@@ -79,13 +90,26 @@ int status3(ROVER *rover) {  // Status3 降下の関数(着陸判定を行う)
         }
       }
     } else {
+
+      write_control_sd("get max alt");
+
       //alt_arrayの最大値を出す
       alt = value_max(5, alt_array);
       xbee_uart( dev, "wait start\r");
       write_control_sd("wait start");
       // 秒速5m/sで落下するとし1.25のマージンを取る
       int wait_time = (alt * 1.5 * 1000) / 5;   //単位ミリ秒
-      delay(wait_time);
+      unsigned long fall_count_start = millis();  // 開始時刻
+
+      while (millis() - fall_count_start < wait_time); {
+
+        write_control_sd("waiting");
+
+        gps_get(&fall_gps);  // GPS送信
+        delay(10000);
+
+      }
+
       return 1;
     }
   }
