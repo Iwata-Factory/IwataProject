@@ -138,6 +138,20 @@ POINT gps_get_by_two_module() {
   xbee_uart( dev, "success gps_get_by_two_module\r");
 
 
+  char latlat[16];
+  char lnglng[16];
+  dtostrf(success_point.latitude, 10, 6, latlat);
+  dtostrf(success_point.longitude, 10, 6, lnglng);
+
+  xbee_uart(dev, "latitude:");
+  xbee_uart(dev, latlat);
+  xbee_uart(dev, "   longitude:");
+  xbee_uart(dev, lnglng);
+  xbee_uart(dev, "\r");
+
+  xbee_uart( dev, "success gps_get_by_two_module\r");
+
+
   write_control_sd("rover`s point by double gps is (" + String(success_point.latitude, DEC) + ", " + String(success_point.longitude, DEC) + ")");
 
   return success_point;

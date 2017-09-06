@@ -276,19 +276,19 @@ int time_out_flag = 1;
 #define pi 3.14159265359
 
 //camera関連
-#define PIN_CAM_Rx 24
-#define PIN_CAM_Tx 26
-#define CAMBAUDRATE 115200
-#define PIC_PKT_LEN    128                  //data length of each read, dont set this too big because ram is limited 
-#define PIC_FMT_VGA    7
-#define PIC_FMT_CIF    5
-#define PIC_FMT_OCIF   3
-#define CAM_ADDR       0
-#define CAM_SERIAL     Serial3
-#define CAM_BUTTON     24
-#define PIC_FMT        PIC_FMT_VGA
+//#define PIN_CAM_Rx 24
+//#define PIN_CAM_Tx 26
+//#define CAMBAUDRATE 115200
+//#define PIC_PKT_LEN    128                  //data length of each read, dont set this too big because ram is limited 
+//#define PIC_FMT_VGA    7
+//#define PIC_FMT_CIF    5
+//#define PIC_FMT_OCIF   3
+//#define CAM_ADDR       0
+//#define CAM_SERIAL     Serial3
+//#define CAM_BUTTON     24
+//#define PIC_FMT        PIC_FMT_VGA
 
-File cam_pic;
+//File cam_pic;
 
 //const byte cameraAddr = (CAM_ADDR << 5);  // addr
 //unsigned long picTotalLen = 0;            // picture length
