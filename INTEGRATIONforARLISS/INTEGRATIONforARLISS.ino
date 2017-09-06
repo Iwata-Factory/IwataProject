@@ -113,7 +113,7 @@ void setup() {
 
 void loop() {
 
-  speaker(C_TONE);
+  //speaker(C_TONE);
   delay(2000);
 
   // 自身の情報を初期化
@@ -259,12 +259,12 @@ void loop() {
 
   while (1) {
     write_timelog_sd(&rover);
-    speaker(HIGH_C);
-    speaker(HIGH_C);
-    speaker(HIGH_C);
-    speaker(HIGH_C);
-    speaker(HIGH_C);
-    speaker(HIGH_C);
+    //speaker(HIGH_C);
+    //speaker(HIGH_C);
+    //speaker(HIGH_C);
+    //speaker(HIGH_C);
+    //speaker(HIGH_C);
+    //speaker(HIGH_C);
     delay(100000);
     delay(100000);
     delay(100000);

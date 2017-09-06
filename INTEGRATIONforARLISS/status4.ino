@@ -70,15 +70,15 @@ int cut_nicrom(int cut_time) {
   write_control_sd("try to cut nicrom");
   xbee_uart(dev, "call cut_nicrom\n");
   //ニクロム線溶断する
-  speaker(C_TONE);
-  speaker(E_TONE);
+  //speaker(C_TONE);
+  //speaker(E_TONE);
   digitalWrite(NICROM_1, HIGH);
   digitalWrite(NICROM_2, HIGH);
   delay(cut_time);
   digitalWrite(NICROM_2, LOW);
   digitalWrite(NICROM_1, LOW);
   xbee_uart(dev, "end cut_nicrom\n");
-  speaker(G_TONE);
+  //speaker(G_TONE);
   return 1;
 
 }

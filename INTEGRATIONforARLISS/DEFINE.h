@@ -219,16 +219,16 @@ int time_out_flag = 1;
 #define PI_MIN 80
 #define PI_MAX 250
 //スピーカー関連
-#define BEAT_LONG 300   // 音の長さを指定
-#define TONE_PINNO 33   // 圧電スピーカを接続したピン番号
-#define C_TONE  262    //ド
-#define D_TONE  294    //レ
-#define E_TONE  330    //ミ
-#define F_TONE  349
-#define G_TONE  392
-#define A_TONE  440
-#define B_TONE  494
-#define HIGH_C  523
+//#define BEAT_LONG 300   // 音の長さを指定
+//#define TONE_PINNO 33   // 圧電スピーカを接続したピン番号
+//#define C_TONE  262    //ド
+//#define D_TONE  294    //レ
+//#define E_TONE  330    //ミ
+//#define F_TONE  349
+//#define G_TONE  392
+//#define A_TONE  440
+//#define B_TONE  494
+//#define HIGH_C  523
 // 照度センサ関連
 #define LIGHT_PIN 2  //照度センサピン
 // 距離センサ関連

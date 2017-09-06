@@ -253,9 +253,9 @@ int gps_get(GPS* gps) {
     }
     if (gps_flag == 4) {
       ;
-      speaker(E_TONE);
-      speaker(F_TONE);
-      speaker(E_TONE);
+      //speaker(E_TONE);
+      //speaker(F_TONE);
+      //speaker(E_TONE);
 
       //通信ができて値も解析されたが緯度経度の値がバグってる
       //      xbee_uart( dev, "wrong Lat or Long\r");
@@ -419,7 +419,7 @@ int gps_get_al(double* altitude) {
     }
     if (gps_flag == 4) {
       ;
-      speaker(E_TONE);
+      //speaker(E_TONE);
 
       //通信ができて値も解析されたが緯度経度の値がバグってる
       //xbee_uart( dev, "wrong Lat or Long\r");
@@ -714,8 +714,8 @@ int tm_calibration() {
     write_control_sd("counter is " + String(count_calib, DEC));
 
     if ((fabs(ac_calib.x) < 100 && fabs(ac_calib.y) < 100 && 150 < ac_calib.z) || count_calib == 5) {  // 水平な感じの場所にいるならキャリブレーション。試行回数過多でもキャリブレーション
-      speaker(C_TONE);
-      speaker(D_TONE);
+      //speaker(C_TONE);
+      //speaker(D_TONE);
       write_control_sd("Conditions are met");
 
       delay(500);
@@ -1165,9 +1165,9 @@ int no_x_bee(byte a, char b) { // xbeeを潰す関数
 /*
    スピーカーになります.tone_(ピン番号, 音の周波数, 音の長さ)
 */
-void speaker(int TONE) {
-  tone(TONE_PINNO, TONE, BEAT_LONG);
-  delay(BEAT_LONG);
-}
+//void speaker(int TONE) {
+//  tone(TONE_PINNO, TONE, BEAT_LONG);
+//  delay(BEAT_LONG);
+//}
 
 
