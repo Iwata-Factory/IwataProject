@@ -116,9 +116,20 @@ int status3(ROVER *rover) {  // Status3 降下の関数(着陸判定を行う)
       alt = value_max(5, alt_array);
       xbee_uart( dev, "wait start\r");
       write_control_sd(F("wait start"));
-      // 秒速5m/sで落下するとし1.25のマージンを取る
-      int wait_time = (alt * 1.5 * 1000) / 5;   //単位ミリ秒
+
+      // 秒速5m/sで落下するとし1.2のマージンを取る
+
+      if (1000 < alt) {
+        alt = alt - 1000;
+      } else {
+        ;
+      }
+
+      unsigned long wait_time = (alt * 1.2 * 1000) / 5;
       unsigned long fall_count_start = millis();  // 開始時刻
+      dtostrf(wait_time, 10, 6, xbee_send);
+      xbprintf("wait time");
+      xbprintf(xbee_send);
 
       while (millis() - fall_count_start < wait_time) {
 

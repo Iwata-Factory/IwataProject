@@ -31,9 +31,9 @@ int status5(ROVER *rover) {
       tm_calibration();  // 条件が揃ったらキャリブレーション
     }
 
-    if (i % 10 == 0) {  // 定期的に反転修正
+    if ((i + 9) % 10 == 0) {  // 定期的に反転修正
       go_suddenly_brake(2500);
-    }  
+    }
 
     if (5 <= i) {  // 5回目からは危険エリアチェック
       check_danger_area();
@@ -113,7 +113,9 @@ int status5(ROVER *rover) {
 
 // 直進関数の引数を決める
 int get_go_argument (double last_distance) {
-  if (last_distance < 0 || 50 < last_distance) {
+  if (last_distance < 0 || 300 < last_distance) {
+    return 3000;
+  } else if (50 < last_distance && last_distance <= 300) {
     return 1000;
   } else if (25 < last_distance && last_distance <= 50) {
     return 600;

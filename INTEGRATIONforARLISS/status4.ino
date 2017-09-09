@@ -38,6 +38,7 @@ int status4(ROVER *rover) {  // Status4 着陸の関数
   if (escape_counter == 7) {
     write_control_sd(F("count out(7 times)"));
     cut_nicrom(10000);  // ニクロム線を切る
+    go_straight(5000);   //直進
   } else {
     write_control_sd(F("get sufficient distance"));
 

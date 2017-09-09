@@ -177,6 +177,7 @@ int gps_data_get(GPS* gps) {
   gps_gps.latitude = gps->latitude;
   gps_gps.longitude = gps->longitude;
   distance = distance_get(&gps_gps, &point_gps);
+  
   direct = direction_get(&gps_gps, &point_gps);
 
   char sz_dis[16];

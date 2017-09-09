@@ -5,8 +5,8 @@
 
 // 定数の定義
 // ゴール位置(能代)
-#define GOAL_LATITUDE 35.71484
-#define GOAL_LONGITUDE 139.75908
+#define GOAL_LATITUDE 40.6524687
+#define GOAL_LONGITUDE 119.3543848
 
 
 #define GOAL_CIRCLE 3
@@ -26,8 +26,8 @@
 #define PIN_GPS_TX_DUMMY 13 // GPSのTXピンのダミー
 #define LATITUDE_MINIMUM 35  //緯度の最小値
 #define LATITUDE_MAXIMUM 45  //緯度の最大値
-#define LONGITUDE_MINIMUM 133  //経度の最小値
-#define LONGITUDE_MAXIMUM 143  //経度の最大値
+#define LONGITUDE_MINIMUM 115  //経度の最小値
+#define LONGITUDE_MAXIMUM 125  //経度の最大値
 #define GPSBAUDRATE 9600 //シリアル通信のデータ送信レートを9600bpsに定義するための定数(GPSとArduino)
 #define READBUFFERSIZE  (256)
 #define DELIMITER   (",")  // 区切り文字定数
@@ -136,7 +136,9 @@ int picNameNum = 0;
 
 // グローバル変数の定義(ごちゃごちゃしているためいずれ整理したい)
 static unsigned long time; //タイマー起動
-byte dev[] = {0x00, 0x13, 0xA2, 0x00, 0x40, 0xE7, 0xED, 0x61};  // XBEE親機アドレス（６月３０日改造版）
+byte dev[] = {0x00, 0x13, 0xA2, 0x00, 0x40, 0xE7, 0xEB, 0xBA};  // XBEE親機アドレス（６月３０日改造版）
+
+//byte dev[] = {0x00, 0x13, 0xA2, 0x00, 0x40, 0xE7, 0xED, 0x61};  // XBEE親機アドレス（６月３０日改造版）
 //byte dev[] = {0x00, 0x13, 0xA2, 0x00, 0x40, 0xB9, 0x3D, 0xCD};  // XBEE親機アドレス
 
 static const uint8_t length = 6;   //読み出しデータの個数
@@ -152,10 +154,10 @@ byte flag_phase[8] = {
 };
 const int chipSelect = 4;
 // 地磁気のキャリブレーションに関するやつ
-double tm_x_offset = -94.5;
-double tm_y_offset = 33.0;
-double x_def = 711.0;
-double y_def = 646.0;
+double tm_x_offset = -204.5;
+double tm_y_offset = 102.0;
+double x_def = 513.0;
+double y_def = 422.0;
 // 立ち入り禁止エリア(10個まで生成可能)
 POINT danger_area_points[10];
 char xbee_send[XBEE_BUFFERSIZE];  //とりあえずのxbee送信用配列
@@ -190,8 +192,8 @@ int time_out_flag = 1;
 #define PIN_GPS_TX_DUMMY 13 // GPSのTXピンのダミー
 #define LATITUDE_MINIMUM 35  //緯度の最小値
 #define LATITUDE_MAXIMUM 45  //緯度の最大値
-#define LONGITUDE_MINIMUM 133  //経度の最小値
-#define LONGITUDE_MAXIMUM 143  //経度の最大値
+#define LONGITUDE_MINIMUM 115  //経度の最小値
+#define LONGITUDE_MAXIMUM 125  //経度の最大値
 #define GPSBAUDRATE 9600 //シリアル通信のデータ送信レートを9600bpsに定義するための定数(GPSとArduino)
 #define READBUFFERSIZE  (256)
 #define DELIMITER   (",")  // 区切り文字定数

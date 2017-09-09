@@ -8,7 +8,7 @@
    3号機　製作1中
 */
 
-#define MACHINE 2  // 1 or 2を指定(1は3号機)
+#define MACHINE 1  // 1 or 2を指定(1は3号機)
 #define XB_LIB 1  // 1(new) or 0(old) を指定
 
 #include "INCLUDE.h"
@@ -45,8 +45,14 @@ void setup() {
   //eeprom関連
   //eep_clear();   //EEPROMのリセット。４KB全てに書き込むので時間かかる。
   //
+
+
+  //本番ではstatusをクリアするのをやめる
   EEPROM.write( EEP_STATUS, flag_phase[0] ); // status1で初期化
   EEPROM.write( EEP_CENSOR_STATUS, 0xff);  //eepのflag類の初期化
+
+
+  
   //SD関連
   if (SD_LOG_FLAG == 1) {
     pinMode(SS, OUTPUT);

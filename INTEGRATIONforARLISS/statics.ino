@@ -294,6 +294,9 @@ double direction_get(GPS* gps, POINT* point) {
   } else {
     dire = get_direction_by_sphere(gps, point);
   }
+  
+  dire = 360 - dire; // アメリカ用
+  
   char sz_dire[16];
   dtostrf(dire, 10, 6, sz_dire);
   xbee_uart(dev, "between_direction:");
