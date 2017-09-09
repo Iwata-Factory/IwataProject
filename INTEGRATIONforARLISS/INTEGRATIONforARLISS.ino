@@ -45,8 +45,14 @@ void setup() {
   //eeprom関連
   //eep_clear();   //EEPROMのリセット。４KB全てに書き込むので時間かかる。
   //
+
+
+  //本番ではstatusをクリアするのをやめる
   EEPROM.write( EEP_STATUS, flag_phase[0] ); // status1で初期化
   EEPROM.write( EEP_CENSOR_STATUS, 0xff);  //eepのflag類の初期化
+
+
+  
   //SD関連
   if (SD_LOG_FLAG == 1) {
     pinMode(SS, OUTPUT);

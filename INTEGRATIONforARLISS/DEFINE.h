@@ -26,8 +26,8 @@
 #define PIN_GPS_TX_DUMMY 13 // GPSのTXピンのダミー
 #define LATITUDE_MINIMUM 35  //緯度の最小値
 #define LATITUDE_MAXIMUM 45  //緯度の最大値
-#define LONGITUDE_MINIMUM 133  //経度の最小値
-#define LONGITUDE_MAXIMUM 143  //経度の最大値
+#define LONGITUDE_MINIMUM 115  //経度の最小値
+#define LONGITUDE_MAXIMUM 125  //経度の最大値
 #define GPSBAUDRATE 9600 //シリアル通信のデータ送信レートを9600bpsに定義するための定数(GPSとArduino)
 #define READBUFFERSIZE  (256)
 #define DELIMITER   (",")  // 区切り文字定数
@@ -190,8 +190,8 @@ int time_out_flag = 1;
 #define PIN_GPS_TX_DUMMY 13 // GPSのTXピンのダミー
 #define LATITUDE_MINIMUM 35  //緯度の最小値
 #define LATITUDE_MAXIMUM 45  //緯度の最大値
-#define LONGITUDE_MINIMUM 133  //経度の最小値
-#define LONGITUDE_MAXIMUM 143  //経度の最大値
+#define LONGITUDE_MINIMUM 115  //経度の最小値
+#define LONGITUDE_MAXIMUM 125  //経度の最大値
 #define GPSBAUDRATE 9600 //シリアル通信のデータ送信レートを9600bpsに定義するための定数(GPSとArduino)
 #define READBUFFERSIZE  (256)
 #define DELIMITER   (",")  // 区切り文字定数
