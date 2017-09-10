@@ -140,7 +140,9 @@ void go_straight(int go_time) {
 
 // pi制御による直進
 // go_time:実際の時間と一致しないので注意
-void go_straight_control(int go_time, double target_direction) {
+int go_straight_control(int go_time, double target_direction) {
+
+  int a = 0;
 
   write_control_sd("go_straight_control (argument is" + String(go_time, DEC)  + ")");
 
@@ -170,7 +172,33 @@ void go_straight_control(int go_time, double target_direction) {
   double integral = 0;  // 積分の足し合わせ
   int error_count = 0;
 
+  GPS gps;
+  POINT point;
+  double dis;
+
   for (int i = 0; i < get_control_counter + 1 ; i++) {
+
+
+    if (i == 0) {  // 初期位置を生成
+      gps_get(&gps);
+      point.latitude = gps.latitude;
+      point.longitude = gps.longitude;
+    }
+
+    a += 1;
+
+    if ((5 < a) && (a % 5 == 0)) {
+      gps_get(&gps);
+      dis = distance_get(&gps, &point);
+      if ((0 < dis) && (dis < 1.5)) {
+        return 0;
+      } else {
+        point.latitude = gps.latitude;
+        point.longitude = gps.longitude;
+      }
+    }
+
+
     go.right1 = 0;
     go.right2 = PI_RIGHT_DEFAULT;
     go.leght1 = 0;
@@ -220,9 +248,7 @@ void go_straight_control(int go_time, double target_direction) {
 
   write_control_sd("input analog motor(" + String(go.right1) + " " + String(go.right2) + " " + String(go.leght1) + " " + String(go.leght2) + " " ")");
 
-
-
-
+  return 1;
 }
 
 

@@ -1,12 +1,12 @@
 #ifndef __DEFINE_H__
 #define __DEFINE_H__
 
-#if MACHINE == 1  // FM1の場合
+#if MACHINE == 1  // FM3の場合
 
 // 定数の定義
-// ゴール位置(能代)
-#define GOAL_LATITUDE 40.6524687
-#define GOAL_LONGITUDE 119.3543848
+// ゴール位置
+#define GOAL_LATITUDE 40.7720538
+#define GOAL_LONGITUDE 119.2594597
 
 
 #define GOAL_CIRCLE 3
@@ -36,7 +36,9 @@
 #define HMC5883L 0x1E   //HMC5883L(地磁気センサ)のスレーブアドレス
 #define SINGLE_MODE 0x01   //single mode
 #define CONTINUOUS_MODE 0x00  //continuous mode
-#define TM_DIFFERENCE -7.2
+//#define TM_DIFFERENCE -7.2
+#define TM_DIFFERENCE 15.7
+
 //加速度センサ関連
 #define ADXL345 0x53  //ADXL345(加速度センサ)のスレーブアドレス
 //モーター関連
@@ -171,9 +173,9 @@ int time_out_flag = 1;
 
 #elif MACHINE == 2
 
-// 定数の定義
-#define GOAL_LATITUDE 35.760275
-#define GOAL_LONGITUDE 139.765946
+// ゴール位置
+#define GOAL_LATITUDE 40.7720538
+#define GOAL_LONGITUDE 119.2594597
 
 #define GOAL_CIRCLE 3
 #define LAST_GOAL_CIRCLE 1.0
@@ -197,12 +199,12 @@ int time_out_flag = 1;
 #define GPSBAUDRATE 9600 //シリアル通信のデータ送信レートを9600bpsに定義するための定数(GPSとArduino)
 #define READBUFFERSIZE  (256)
 #define DELIMITER   (",")  // 区切り文字定数
-#define GPS_JUMP_DISTANCE 30 // GPSのジャンプ許容距離
+#define GPS_JUMP_DISTANCE 200 // GPSのジャンプ許容距離
 //地磁気センサ関連
 #define HMC5883L 0x1E   //HMC5883L(地磁気センサ)のスレーブアドレス
 #define SINGLE_MODE 0x01   //single mode
 #define CONTINUOUS_MODE 0x00  //continuous mode
-#define TM_DIFFERENCE -7.2
+#define TM_DIFFERENCE 15.7
 //加速度センサ関連
 #define ADXL345 0x53  //ADXL345(加速度センサ)のスレーブアドレス
 //モーター関連
@@ -297,9 +299,9 @@ int time_out_flag = 1;
 //int picNameNum = 0;
 // グローバル変数の定義(ごちゃごちゃしているためいずれ整理したい)
 static unsigned long time; //タイマー起動
-byte dev[] = {0x00, 0x13, 0xA2, 0x00, 0x40, 0xE7, 0xEB, 0xBA}; 
+//byte dev[] = {0x00, 0x13, 0xA2, 0x00, 0x40, 0xE7, 0xEB, 0xBA}; 
 
-//byte dev[] = {0x00, 0x13, 0xA2, 0x00, 0x40, 0xE7, 0xED, 0x61};  // XBEE親機アドレス（６月３０日改造版）
+byte dev[] = {0x00, 0x13, 0xA2, 0x00, 0x40, 0xE7, 0xED, 0x61};  // XBEE親機アドレス（６月３０日改造版）
 //byte dev[] = {0x00, 0x13, 0xA2, 0x00, 0x40, 0xB9, 0x3D, 0xCD};  // XBEE親機アドレス
 
 static const uint8_t length = 6;   //読み出しデータの個数

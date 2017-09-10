@@ -89,7 +89,15 @@ int status5(ROVER *rover) {
     int arg = get_go_argument(rover->distance);
 
     if (PI_FLAG == 1) {
-      go_straight_control(arg, rover->Target_Direction);
+      if (go_straight_control(arg, rover->Target_Direction) == 0) {
+        xbee_uart( dev, "pi stop ---> stack\r");
+        write_control_sd(F("pi stop ---> stack"));
+
+        int scs_result2 = stack_check_state(rover);
+        if (scs_result2 != 1) {
+          continue;
+        }
+      }
     } else {
       if (500 < arg) {  // 出力調整
         arg = 10000;
