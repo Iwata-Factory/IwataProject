@@ -333,7 +333,12 @@ unsigned long time_out = 0;
 int time_out_flag = 1;
 
 
+
+
 #endif
+
+double d_lat = 0;
+double d_lng = 0;
 
 #endif
 

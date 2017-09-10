@@ -1,6 +1,15 @@
 // ターゲットに近いところを目指す
 int status5(ROVER *rover) {
 
+  GPS d_gps;
+  gps_get(&d_gps);
+  double a = GOAL_LATITUDE - d_gps.latitude;
+  double b = d_gps.longitude - GOAL_LONGITUDE;
+  double c = d_gps.longitude * (d_gps.latitude - GOAL_LATITUDE) + d_gps.longitude * (GOAL_LONGITUDE - d_gps.longitude);
+  double n_long = (abs(a * d_lng + b * d_lat + c) / (sqrt(pow(a, 2) + pow(b, 2)))) * 111120;  // 危険エリアとゴールとの距離メートル表示
+
+  // nメートル以下だったら反対側に中継地点を用意
+
   if (_S5_ == 0) {
     xbee_uart( dev, "skip status5\r");
     delay(1000);
