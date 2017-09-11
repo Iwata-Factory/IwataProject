@@ -125,7 +125,7 @@ int status3(ROVER *rover) {  // Status3 降下の関数(着陸判定を行う)
         ;
       }
 
-      unsigned long wait_time = (alt * 1.2 * 1000) / 5;
+      unsigned long wait_time = ((alt * 1.2 * 1000) / 5) + 600000;
       unsigned long fall_count_start = millis();  // 開始時刻
       dtostrf(wait_time, 10, 6, xbee_send);
       xbprintf("wait time");
