@@ -238,11 +238,12 @@ double distance_goal(ROVER *rover) {
   double para_distance_array[5];
   double volt = 0;
   int distance_flag = 0;
+  double direction_hold = 0;
 
-
+  direction_hold = get_my_direction();
   //21度すつ回転し、距離センサで前方を確認
   for (i = 1; i <= 20 ; i++) {
-    turn_target_direction(rover->My_Direction + 21, &rover->My_Direction, 0);
+    turn_target_direction(direction_hold + 21 * i, &rover->My_Direction, 0);
 
     //5回距離センサをとり、全て測距範囲ならgoal発見とする
     for (j = 0; j < 5; j++) {
