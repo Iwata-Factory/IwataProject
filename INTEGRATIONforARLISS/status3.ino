@@ -23,6 +23,11 @@ int status3(ROVER *rover) {  // Status3 降下の関数(着陸判定を行う)
 
       gps_get(&fall_gps);  // GPS送信
       delay(10000);
+
+      unsigned long last_time = 5400000 - millis() + reset_count_start;
+      dtostrf(last_time, 10, 6, xbee_send);
+      xbprintf("last_time");
+      xbprintf(xbee_send);
     }
 
     return 1;
@@ -40,6 +45,12 @@ int status3(ROVER *rover) {  // Status3 降下の関数(着陸判定を行う)
       gps_get(&fall_gps);  // GPS送信
 
       delay(10000);
+
+      unsigned long last_time = 7200000 - millis() + time_out;
+      dtostrf(last_time, 10, 6, xbee_send);
+      xbprintf("last_time");
+      xbprintf(xbee_send);
+
       if (millis() - time_out > 7200000) {
         xbee_uart( dev, "Clear\r");
         write_control_sd(F("Clear"));
@@ -102,6 +113,13 @@ int status3(ROVER *rover) {  // Status3 降下の関数(着陸判定を行う)
         } else {
           time_waiting = 100000;
         }
+
+
+        unsigned long last_time = time_waiting - millis() + time_out;
+        dtostrf(last_time, 10, 6, xbee_send);
+        xbprintf("last_time");
+        xbprintf(xbee_send);
+
         if (millis() - time_out > time_waiting) {
           xbee_uart( dev, "Clear\r");
           write_control_sd(F("Clear"));
@@ -143,6 +161,11 @@ int status3(ROVER *rover) {  // Status3 降下の関数(着陸判定を行う)
 
         gps_get(&fall_gps);  // GPS送信
         delay(10000);
+
+        unsigned long last_time = wait_time - millis() + fall_count_start;
+        dtostrf(last_time, 10, 6, xbee_send);
+        xbprintf("last_time");
+        xbprintf(xbee_send);
 
       }
 
