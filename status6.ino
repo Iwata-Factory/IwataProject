@@ -231,7 +231,7 @@ double get_goal(ROVER *rover) {
    goalを見つけるとgoalまでの距離を返し
    ないと0cmとして返す
 */
-int distance_goal(ROVER *rover) {
+double distance_goal(ROVER *rover) {
   int i = 0;
   int j = 0;
   double para_distance = 0;
