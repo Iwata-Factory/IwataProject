@@ -22,7 +22,6 @@ void setup() {
   // 各種初期化処理
   Wire.begin();           //I2C通信の初期化
   Serial.begin(SERIAL_BAUDRATE); //シリアル通信の初期化
-//  Serial2.begin(CAMBAUDRATE); //シリアル通信の初期化
   g_gps1.begin(GPSBAUDRATE); //シリアル通信の初期化
   g_gps2.begin(GPSBAUDRATE); //シリアル通信の初期化
 
@@ -48,11 +47,13 @@ void setup() {
 
 
   //本番ではstatusをクリアするのをやめる
-  EEPROM.write( EEP_STATUS, flag_phase[0] ); // status1で初期化
-  EEPROM.write( EEP_CENSOR_STATUS, 0xff);  //eepのflag類の初期化
+  if (ARLISS == 0) {
+    EEPROM.write( EEP_STATUS, flag_phase[0] ); // status1で初期化
+    EEPROM.write( EEP_CENSOR_STATUS, 0xff);  //eepのflag類の初期化
+  }
 
 
-  
+
   //SD関連
   if (SD_LOG_FLAG == 1) {
     pinMode(SS, OUTPUT);
@@ -88,7 +89,7 @@ void setup() {
   pinMode(M2_1, OUTPUT);
   pinMode(M2_2, OUTPUT);
   //camera
-//  pinMode(CAM_BUTTON, INPUT);    // initialize the pushbutton pin as an input
+  //  pinMode(CAM_BUTTON, INPUT);    // initialize the pushbutton pin as an input
 
   // 明示的なモーターのオフ
   DRIVE set;
@@ -109,10 +110,8 @@ void setup() {
   //
   //  take_picture();
 
-
   xbee_uart( dev, "setup done\rchange to main phase\r");
   write_control_sd(F("setup end"));
-
 }
 
 

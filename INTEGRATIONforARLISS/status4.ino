@@ -41,7 +41,6 @@ int status4(ROVER *rover) {  // Status4 着陸の関数
     go_straight(5000);   //直進
   } else {
     write_control_sd(F("get sufficient distance"));
-
   }
   xbee_uart( dev, "escape complete\r");
 

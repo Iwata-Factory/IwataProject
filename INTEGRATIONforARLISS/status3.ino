@@ -61,7 +61,7 @@ int status3(ROVER *rover) {  // Status3 降下の関数(着陸判定を行う)
       while (1) {
         gps_get_al(&alt);  // 高度を取得
         if (ALT_VAL == 1) {
-          if (2000 < alt && alt < 6000) {
+          if (2000 < alt && alt < 8000) {
             alt_array[j] = alt;
             break;
           }
@@ -130,6 +130,12 @@ int status3(ROVER *rover) {  // Status3 降下の関数(着陸判定を行う)
       dtostrf(wait_time, 10, 6, xbee_send);
       xbprintf("wait time");
       xbprintf(xbee_send);
+
+      if (ALT_VAL == 1) {  // 本番は必ずこの時間は待つ
+        if (wait_time < 1440000) {
+          wait_time = 1440000;
+        }
+      }
 
       while (millis() - fall_count_start < wait_time) {
 

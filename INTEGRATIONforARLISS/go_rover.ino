@@ -178,7 +178,6 @@ int go_straight_control(int go_time, double target_direction) {
 
   for (int i = 0; i < get_control_counter + 1 ; i++) {
 
-
     if (i == 0) {  // 初期位置を生成
       gps_get(&gps);
       point.latitude = gps.latitude;
