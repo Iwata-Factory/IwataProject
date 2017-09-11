@@ -18,7 +18,7 @@
 #define VIA_L_LONGITUDE 119.111588
 
 #define GOAL_CIRCLE 3
-#define VIA_CIRCLE 50
+#define VIA_CIRCLE 25
 #define LAST_GOAL_CIRCLE 1.0
 // 海抜制限
 #define ALT_REGULATION 100
@@ -198,7 +198,7 @@ int time_out_flag = 1;
 
 
 #define GOAL_CIRCLE 3
-#define VIA_CIRCLE 50
+#define VIA_CIRCLE 25
 
 #define LAST_GOAL_CIRCLE 1.0
 // 海抜制限

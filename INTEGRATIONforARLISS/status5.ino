@@ -52,11 +52,16 @@ int status5(ROVER *rover) {
 
     // GPS情報を取得
     if (c_r == 1) {
+      xbee_uart( dev, "target GOAL\r");
       gps_get(&gps);
     } else if (c_r == 2) {
+      xbee_uart( dev, "target L\r");
+      delay(1000);
       gps_get(&gps);
       gps_get_l(&gps);
     } else {
+      xbee_uart( dev, "target R\r");
+      delay(1000);
       gps_get(&gps);
       gps_get_r(&gps);
 
@@ -206,30 +211,23 @@ int check_danger_area2() {
 
   double c_lat = cda_gps.latitude;
   double c_lng = cda_gps.longitude;
+  //
+  //  -0.497465x + y + 18.3793 = 0
+  //
+  //
+  //                            
+  // 　2.01019 + y - 280.288 = 0
+  
+  double c1 = -0.497465 * c_lng + c_lat + 18.3793;
+  double c2 = 2.01019 * c_lng + c_lat - 280.288;
 
-  //2.00969x - y + 36.9663169 = 0
-  //0.49758918x + y - 139.438782 = 0
-
-  double c1 = 2.00969 * c_lat - c_lng + 36.9663169;
-  double c2 = 0.49758918 * c_lat + c_lng - 139.438782;
-
-  //A 負正
-  //B 正正
-  //C 正負
-  //D 負負
+  //A 正正 右上　エリア１
+  //B 負正　左上　エリア2
+  //C 負負 // 左下　エリア3
+  //D 正負 右下 エリア４
 
   int area = 0; //1~4
   if (c1 < 0) {
-    if (c2 < 0) {
-      area = 4;
-      xbee_uart( dev, "my area is 4\r");
-      write_control_sd(F("my area is 4"));
-    } else {
-      area = 1;
-      xbee_uart( dev, "my area is 1\r");
-      write_control_sd(F("my area is 1"));
-    }
-  } else {
     if (c2 < 0) {
       area = 3;
       xbee_uart( dev, "my area is 3\r");
@@ -238,6 +236,16 @@ int check_danger_area2() {
       area = 2;
       xbee_uart( dev, "my area is 2\r");
       write_control_sd(F("my area is 2"));
+    }
+  } else {
+    if (c2 < 0) {
+      area = 4;
+      xbee_uart( dev, "my area is 4\r");
+      write_control_sd(F("my area is 4"));
+    } else {
+      area = 1;
+      xbee_uart( dev, "my area is 1\r");
+      write_control_sd(F("my area is 1"));
     }
   }
 
