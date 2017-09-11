@@ -1138,7 +1138,7 @@ int escape_from_wadachi(ROVER *rover) {
     write_control_sd("random num: " + String(r_number, DEC));
     go_rotate(rotate_random);
 
-    go_straight(6000);
+    go_straight(15000);
 
     point_last.latitude = gps_efw.latitude;  // 前回の情報を記述
     point_last.longitude = gps_efw.longitude;

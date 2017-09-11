@@ -5,8 +5,11 @@
 
 // 定数の定義
 // ゴール位置
-#define GOAL_LATITUDE 40.8796631
-#define GOAL_LONGITUDE 119.1217679
+//#define GOAL_LATITUDE 40.8796631
+//#define GOAL_LONGITUDE 119.1217679
+
+#define GOAL_LATITUDE 40.869986
+#define GOAL_LONGITUDE 119.106831
 
 #define GOAL_CIRCLE 3
 #define LAST_GOAL_CIRCLE 1.0
@@ -46,7 +49,7 @@
 #define M2_1 5
 #define M2_2 6
 // PID制御関連
-#define PI_RIGHT_DEFAULT 240
+#define PI_RIGHT_DEFAULT 200
 #define PI_LEGHT_DEFAULT 250
 #define PI_INTEGRAL_RISET 10
 #define PID_STREIGHT_BETWEEN 100
@@ -137,7 +140,7 @@ int picNameNum = 0;
 
 // グローバル変数の定義(ごちゃごちゃしているためいずれ整理したい)
 static unsigned long time; //タイマー起動
-byte dev[] = {0x00, 0x13, 0xA2, 0x00, 0x40, 0xE7, 0xEB, 0xBA};  // XBEE親機アドレス（６月３０日改造版）
+byte dev[] = {0x00, 0x13, 0xA2, 0x00, 0x40, 0xE7, 0xED, 0x61};  // XBEE親機アドレス（６月３０日改造版）
 
 //byte dev[] = {0x00, 0x13, 0xA2, 0x00, 0x40, 0xE7, 0xED, 0x61};  // XBEE親機アドレス（６月３０日改造版）
 //byte dev[] = {0x00, 0x13, 0xA2, 0x00, 0x40, 0xB9, 0x3D, 0xCD};  // XBEE親機アドレス
@@ -164,7 +167,7 @@ POINT danger_area_points[10];
 char xbee_send[XBEE_BUFFERSIZE];  //とりあえずのxbee送信用配列
 SoftwareSerial g_gps1( PIN_GPS1_Rx, PIN_GPS_TX_DUMMY); // ArduinoとGPS間のシリアル通信用に
 SoftwareSerial g_gps2( PIN_GPS2_Rx, PIN_GPS_TX_DUMMY); // ArduinoとGPS間のシリアル通信用に
-int use_which_gps = 2;  // 1か2どちらのGPSを使用するか
+int use_which_gps = 1;  // 1か2どちらのGPSを使用するか
 int gps_timeout_counter_global = 0;
 int sd_count = 0;
 unsigned long time_out = 0;
