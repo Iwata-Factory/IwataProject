@@ -173,8 +173,8 @@ int time_out_flag = 1;
 #elif MACHINE == 2
 
 // ゴール位置
-#define GOAL_LATITUDE 40.7720538
-#define GOAL_LONGITUDE 119.2594597
+#define GOAL_LATITUDE 40.8796631
+#define GOAL_LONGITUDE 119.1217679
 
 #define GOAL_CIRCLE 3
 #define LAST_GOAL_CIRCLE 1.0
@@ -298,8 +298,8 @@ int time_out_flag = 1;
 //int picNameNum = 0;
 // グローバル変数の定義(ごちゃごちゃしているためいずれ整理したい)
 static unsigned long time; //タイマー起動
-//byte dev[] = {0x00, 0x13, 0xA2, 0x00, 0x40, 0xE7, 0xEB, 0xBA}; 
 
+//byte dev[] = {0x00, 0x13, 0xA2, 0x00, 0x40, 0xE7, 0xEB, 0xBA}; 
 byte dev[] = {0x00, 0x13, 0xA2, 0x00, 0x40, 0xE7, 0xED, 0x61};  // XBEE親機アドレス（６月３０日改造版）
 //byte dev[] = {0x00, 0x13, 0xA2, 0x00, 0x40, 0xB9, 0x3D, 0xCD};  // XBEE親機アドレス
 

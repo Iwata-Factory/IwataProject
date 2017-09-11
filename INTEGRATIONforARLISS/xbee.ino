@@ -78,9 +78,12 @@ void xbprintf(char *fmt, ...) {
   xbee_uart(dev, "\r");
 }
 
+
 int xbee_standby() {
   xbee_uart( dev, "waiting for your command...\r");
-  int xb_rxcnt = 0;
+  unsigned long time_out = millis();  // 開始時刻
+  dtostrf(time_out, 10, 6, xbee_send);
+  xbprintf("time_out: %s", xbee_send);
 
   while (1) {  // コマンド受信待機
 
@@ -91,20 +94,16 @@ int xbee_standby() {
           xbprintf("your command finally accepted!");
           return 1;
         }
-        xb_rxcnt++;
         xbee_uart(dev, " ");  // これを回さないとxbeeが動かない。。。
-        if (xb_rxcnt > 100000 ) { 
+        if (millis() - time_out > 3600000) {
           xbprintf("can't receive command...");
           return 0;
         }
         delay(10);
       }
     }
-
-    xb_rxcnt++;
     xbee_uart(dev, " ");  // これを回さないとxbeeが動かない。。。
-    if (xb_rxcnt > 100000 ) {  //TIMEOUTXB＿RXCNTエンターおしても時間は伸びません！！
-
+    if (millis() - time_out > 3600000) {
       xbprintf("can't receive command...");
       return 0;
     }
