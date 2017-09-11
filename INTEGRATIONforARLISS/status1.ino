@@ -47,7 +47,7 @@ int status1(ROVER *rover) {
     xbee_uart( dev, "set rover reverse\r");
     xbee_standby();  // 現状enter押下したのちに大文字のOを入力することによって脱出します。
     delay(1000);
-    if (judge_invered == 0) {
+    if (judge_invered() == 0) {
       xbee_uart( dev, "ac ok\r");
       write_control_sd(F("ac ok"));
     } else {

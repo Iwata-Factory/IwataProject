@@ -43,6 +43,7 @@ int judge_release() {
     }
 
   }
+  go_rotate(300);
   return 1;
 }
 

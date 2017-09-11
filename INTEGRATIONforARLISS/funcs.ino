@@ -1087,7 +1087,7 @@ int stack_check_state(ROVER *rover) {
 
 }
 
-/*choose_behavior()
+/* choose_behavior()
    現状を受けて行動を選択
 */
 

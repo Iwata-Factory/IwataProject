@@ -8,7 +8,7 @@
    3号機　製作1中
 */
 
-#define MACHINE 1  // 1 or 2を指定(1は3号機)
+#define MACHINE 2  // 1 or 2を指定(1は3号機)
 #define XB_LIB 1  // 1(new) or 0(old) を指定
 
 #include "INCLUDE.h"
