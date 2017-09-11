@@ -112,7 +112,7 @@ int ReadLineString( SoftwareSerial& serial,
   return 0;
 }
 
-int gps_data_get(GPS* gps) {
+int gps_data_get(GPS* gps, int p) {
 
   //  char g_szReadBuffer[READBUFFERSIZE] = "";
   //  int  g_iIndexChar = 0;
@@ -136,7 +136,7 @@ int gps_data_get(GPS* gps) {
   }
   // 読み取り完了
 
-  if ( !AnalyzeLineString( szLineString, gps ) )
+  if ( !AnalyzeLineString( szLineString, gps) )
   {
     return 3;
   }
@@ -160,7 +160,19 @@ int gps_data_get(GPS* gps) {
   dtostrf(gps->latitude, 10, 6, sz_lat);
   dtostrf(gps->longitude, 10, 6, sz_long);
 
-  float LatA = GOAL_LATITUDE, LongA = GOAL_LONGITUDE;      //目的地
+  float LatA = 0;
+  float LongA = 0;
+
+  if (p == 1) {
+    LatA = GOAL_LATITUDE;
+    LongA = GOAL_LONGITUDE;      //目的地
+  } else if (p == 2) {
+    LatA = VIA_R_LATITUDE;
+    LongA = VIA_R_LONGITUDE;      //目的地
+  } else {
+    LatA = VIA_L_LATITUDE;
+    LongA = VIA_L_LONGITUDE;      //目的地
+  }
 
   //  float LatA = 35.710039, LongA = 139.810726;      //目的地
   float LatB = gps->latitude;       //現在地の緯度経度
@@ -177,7 +189,7 @@ int gps_data_get(GPS* gps) {
   gps_gps.latitude = gps->latitude;
   gps_gps.longitude = gps->longitude;
   distance = distance_get(&gps_gps, &point_gps);
-  
+
   direct = direction_get(&gps_gps, &point_gps);
 
   char sz_dis[16];
@@ -207,8 +219,157 @@ int gps_data_get(GPS* gps) {
   return 1;
 }
 
+int gps_get_r(GPS* gps) {
+  write_control_sd(F("call gps_get_r"));
+
+  if (GPS_GET_FLAG == 0) {
+    xbee_uart(dev, "GPS SKIP\r");
+    return 1;
+  }
+
+  // 受信するシリアルの切り替え
+  if (use_which_gps == 1) {
+    write_control_sd(F("use gps 1"));
+    g_gps1.listen();
+  } else if (use_which_gps == 2) {
+    write_control_sd(F("use gps 2"));
+    g_gps2.listen();
+  }
+
+
+  xbee_uart(dev, "call gps_get_r\r");
+  int t = 0;
+  while (1) { //gpsの値が正常になるまで取り続ける
+    int gps_flag = 0;   //gps_getの返り値保存
+    gps_flag = gps_data_get(gps, 2);
+    delay(10);
+    t++;
+    //gpsの値が取れない間どこで引っかかっているのか識別できるようになりました
+    if (gps_flag == 1) { //値が取れたら抜ける
+
+      gps_timeout_counter_global = 0;  // タイムアウト回数の初期化
+
+      break;
+    }
+    if (gps_flag == 2) {
+      ;
+
+      //      xbee_uart( dev, "cant communicate with gps\r");
+
+    }
+    if (gps_flag == 3) {
+      ;
+      //gpsとの通信はできているが値が変or GPRMCでない
+
+      //      xbee_uart( dev, "gps wrong or not GPRMC\r");
+
+    }
+    if (gps_flag == 4) {
+      ;
+      //speaker(E_TONE);
+      //speaker(F_TONE);
+      //speaker(E_TONE);
+
+      //通信ができて値も解析されたが緯度経度の値がバグってる
+      //      xbee_uart( dev, "wrong Lat or Long\r");
+
+    }
+    if (t >= 2000) {
+
+      //およそ50秒間取れなければ一旦抜ける
+
+      gps_timeout_counter_global += 1;
+
+      if (gps_timeout_counter_global == 2) {  // 使用するGPSの切り替え
+        gps_timeout_counter_global = 0;
+        gps_switch();
+
+      }
+
+      xbprintf("forced to break gps_get");
+      break;
+    }
+  }
+  return 1;
+}
+
+int gps_get_l(GPS* gps) {
+  write_control_sd(F("call gps_get_l"));
+
+  if (GPS_GET_FLAG == 0) {
+    xbee_uart(dev, "GPS SKIP\r");
+    return 1;
+  }
+
+  // 受信するシリアルの切り替え
+  if (use_which_gps == 1) {
+    write_control_sd(F("use gps 1"));
+    g_gps1.listen();
+  } else if (use_which_gps == 2) {
+    write_control_sd(F("use gps 2"));
+    g_gps2.listen();
+  }
+
+
+  xbee_uart(dev, "call gps_get_l\r");
+  int t = 0;
+  while (1) { //gpsの値が正常になるまで取り続ける
+    int gps_flag = 0;   //gps_getの返り値保存
+    gps_flag = gps_data_get(gps, 3);
+    delay(10);
+    t++;
+    //gpsの値が取れない間どこで引っかかっているのか識別できるようになりました
+    if (gps_flag == 1) { //値が取れたら抜ける
+
+      gps_timeout_counter_global = 0;  // タイムアウト回数の初期化
+
+      break;
+    }
+    if (gps_flag == 2) {
+      ;
+
+      //      xbee_uart( dev, "cant communicate with gps\r");
+
+    }
+    if (gps_flag == 3) {
+      ;
+      //gpsとの通信はできているが値が変or GPRMCでない
+
+      //      xbee_uart( dev, "gps wrong or not GPRMC\r");
+
+    }
+    if (gps_flag == 4) {
+      ;
+      //speaker(E_TONE);
+      //speaker(F_TONE);
+      //speaker(E_TONE);
+
+      //通信ができて値も解析されたが緯度経度の値がバグってる
+      //      xbee_uart( dev, "wrong Lat or Long\r");
+
+    }
+    if (t >= 2000) {
+
+      //およそ50秒間取れなければ一旦抜ける
+
+      gps_timeout_counter_global += 1;
+
+      if (gps_timeout_counter_global == 2) {  // 使用するGPSの切り替え
+        gps_timeout_counter_global = 0;
+        gps_switch();
+
+      }
+
+      xbprintf("forced to break gps_get");
+      break;
+    }
+  }
+  return 1;
+}
+
+
 int gps_get(GPS* gps) {
-  write_control_sd(F("call gps_gett"));
+  write_control_sd(F("call gps_get"));
 
   if (GPS_GET_FLAG == 0) {
     xbee_uart(dev, "GPS SKIP\r");
@@ -229,7 +390,7 @@ int gps_get(GPS* gps) {
   int t = 0;
   while (1) { //gpsの値が正常になるまで取り続ける
     int gps_flag = 0;   //gps_getの返り値保存
-    gps_flag = gps_data_get(gps);
+    gps_flag = gps_data_get(gps, 1);
     delay(10);
     t++;
     //gpsの値が取れない間どこで引っかかっているのか識別できるようになりました
@@ -656,7 +817,7 @@ int turn_target_direction(double target_direction, double *my_Direction, int bra
       } else if (MACHINE == 2) {
         rotate_angle = rotate_angle;
       }
-      
+
       go_rotate(rotate_angle);  // 回転を行う
     } else { //発散ver
       rotate_angle = rotate_angle * (i + 1);
