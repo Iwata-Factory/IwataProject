@@ -189,7 +189,7 @@ int go_straight_control(int go_time, double target_direction) {
     if ((5 < a) && (a % 5 == 0)) {
       gps_get(&gps);
       dis = distance_get(&gps, &point);
-      if ((0 < dis) && (dis < 1.5)) {
+      if ((0 < dis) && (dis < 1)) {
         return 0;
       } else {
         point.latitude = gps.latitude;

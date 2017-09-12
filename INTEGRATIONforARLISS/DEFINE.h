@@ -5,11 +5,11 @@
 
 // 定数の定義
 // ゴール位置
-//#define GOAL_LATITUDE 40.8796631
-//#define GOAL_LONGITUDE 119.1217679
+#define GOAL_LATITUDE 40.8796631
+#define GOAL_LONGITUDE 119.1217679
 
-#define GOAL_LATITUDE 40.869986
-#define GOAL_LONGITUDE 119.106831
+//#define GOAL_LATITUDE 40.869986
+//#define GOAL_LONGITUDE 119.106831
 
 #define GOAL_CIRCLE 3
 #define LAST_GOAL_CIRCLE 1.0
@@ -33,7 +33,7 @@
 #define GPSBAUDRATE 9600 //シリアル通信のデータ送信レートを9600bpsに定義するための定数(GPSとArduino)
 #define READBUFFERSIZE  (256)
 #define DELIMITER   (",")  // 区切り文字定数
-#define GPS_JUMP_DISTANCE 30 // GPSのジャンプ許容距離
+#define GPS_JUMP_DISTANCE 100 // GPSのジャンプ許容距離
 //地磁気センサ関連
 #define HMC5883L 0x1E   //HMC5883L(地磁気センサ)のスレーブアドレス
 #define SINGLE_MODE 0x01   //single mode
@@ -115,27 +115,27 @@
 #define SERIAL_BAUDRATE 9600 //シリアル通信のデータ送信レートを9600bpsに定義するための定数(ArduinoとPC)
 #define pi 3.14159265359
 
-//camera関連
-#define PIN_CAM_Rx 24
-#define PIN_CAM_Tx 26
-#define CAMBAUDRATE 115200
+////camera関連
+//#define PIN_CAM_Rx 24
+//#define PIN_CAM_Tx 26
+//#define CAMBAUDRATE 115200
+//
+////SoftwareSerial g_cam( PIN_CAM_Rx, PIN_CAM_Tx );  //arduino-camera間のSerial通信用これだと空撮中のgpsが取れない
+//
+//#define PIC_PKT_LEN    128                  //data length of each read, dont set this too big because ram is limited 
+//#define PIC_FMT_VGA    7
+//#define PIC_FMT_CIF    5
+//#define PIC_FMT_OCIF   3
+//#define CAM_ADDR       0
+//#define CAM_SERIAL     Serial3
+//#define CAM_BUTTON     24
+//#define PIC_FMT        PIC_FMT_VGA
 
-//SoftwareSerial g_cam( PIN_CAM_Rx, PIN_CAM_Tx );  //arduino-camera間のSerial通信用これだと空撮中のgpsが取れない
-
-#define PIC_PKT_LEN    128                  //data length of each read, dont set this too big because ram is limited 
-#define PIC_FMT_VGA    7
-#define PIC_FMT_CIF    5
-#define PIC_FMT_OCIF   3
-#define CAM_ADDR       0
-#define CAM_SERIAL     Serial3
-#define CAM_BUTTON     24
-#define PIC_FMT        PIC_FMT_VGA
-
-File cam_pic;
-
-const byte cameraAddr = (CAM_ADDR << 5);  // addr
-unsigned long picTotalLen = 0;            // picture length
-int picNameNum = 0;
+//File cam_pic;
+//
+//const byte cameraAddr = (CAM_ADDR << 5);  // addr
+//unsigned long picTotalLen = 0;            // picture length
+//int picNameNum = 0;
 
 
 // グローバル変数の定義(ごちゃごちゃしているためいずれ整理したい)
@@ -201,7 +201,7 @@ int time_out_flag = 1;
 #define GPSBAUDRATE 9600 //シリアル通信のデータ送信レートを9600bpsに定義するための定数(GPSとArduino)
 #define READBUFFERSIZE  (256)
 #define DELIMITER   (",")  // 区切り文字定数
-#define GPS_JUMP_DISTANCE 200 // GPSのジャンプ許容距離
+#define GPS_JUMP_DISTANCE 100 // GPSのジャンプ許容距離
 //地磁気センサ関連
 #define HMC5883L 0x1E   //HMC5883L(地磁気センサ)のスレーブアドレス
 #define SINGLE_MODE 0x01   //single mode
