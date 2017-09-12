@@ -172,11 +172,12 @@ int go_straight_control(int go_time, double target_direction) {
   double integral = 0;  // 積分の足し合わせ
   int error_count = 0;
 
-  GPS gps;
   POINT point;
   double dis;
 
   for (int i = 0; i < get_control_counter + 1 ; i++) {
+
+    GPS gps;
 
     if (i == 0) {  // 初期位置を生成
       gps_get(&gps);
