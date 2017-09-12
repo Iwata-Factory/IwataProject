@@ -27,11 +27,22 @@ int status5(ROVER *rover) {
       delay(10);
     }
 
+    if ((i + 1) % 15 == 0) {
+      xbee_uart( dev, "regular gps change\r");
+      write_control_sd(F("regular gps change"));
+      gps_switch();
+    }
+
+
     if ((i + 6) % 10 == 0) { // たまにキャリブレーションする
+      xbee_uart( dev, "regular calibration\r");
+      write_control_sd(F("regular calibration"));
       tm_calibration();  // 条件が揃ったらキャリブレーション
     }
 
     if ((i + 9) % 10 == 0) {  // 定期的に反転修正
+      xbee_uart( dev, "regular correct posture\r");
+      write_control_sd(F("regular correct posture"));
       go_suddenly_brake(2500);
     }
 
@@ -41,7 +52,6 @@ int status5(ROVER *rover) {
 
     // GPS情報を取得
     gps_get(&gps);
-
 
     // GPSが取得した値を自身のステータスに反映する。
     rover->latitude = gps.latitude;  // 緯度

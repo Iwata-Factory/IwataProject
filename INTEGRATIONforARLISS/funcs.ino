@@ -177,7 +177,7 @@ int gps_data_get(GPS* gps) {
   gps_gps.latitude = gps->latitude;
   gps_gps.longitude = gps->longitude;
   distance = distance_get(&gps_gps, &point_gps);
-  
+
   direct = direction_get(&gps_gps, &point_gps);
 
   char sz_dis[16];
@@ -656,7 +656,7 @@ int turn_target_direction(double target_direction, double *my_Direction, int bra
       } else if (MACHINE == 2) {
         rotate_angle = rotate_angle;
       }
-      
+
       go_rotate(rotate_angle);  // 回転を行う
     } else { //発散ver
       rotate_angle = rotate_angle * (i + 1);
@@ -1125,13 +1125,11 @@ int escape_from_wadachi(ROVER *rover) {
 
   do {
 
-    gps_get(&gps_efw);  // GPSを取得
-
     go_back(1000);  // 少し下がる
 
     rover->My_Direction = get_my_direction();
 
-    double d_distance = distance_get(&gps_efw, &point_last);
+    //    double d_distance = distance_get(&gps_efw, &point_last);
 
     double r_number = random(0, 11); // 0から10の乱数を生成
     double rotate_random = 40 + 150 * (r_number + 1 / 10);
@@ -1139,6 +1137,8 @@ int escape_from_wadachi(ROVER *rover) {
     go_rotate(rotate_random);
 
     go_straight(15000);
+
+    gps_get(&gps_efw);  // GPSを取得
 
     point_last.latitude = gps_efw.latitude;  // 前回の情報を記述
     point_last.longitude = gps_efw.longitude;
