@@ -27,12 +27,6 @@ int status5(ROVER *rover) {
       delay(10);
     }
 
-    if ((i + 1) % 15 == 0) {
-      xbee_uart( dev, "regular gps change\r");
-      write_control_sd(F("regular gps change"));
-      gps_switch();
-    }
-
 
     if ((i + 6) % 10 == 0) { // たまにキャリブレーションする
       xbee_uart( dev, "regular calibration\r");
@@ -122,6 +116,12 @@ int status5(ROVER *rover) {
     i += 1;
 
     do_stack_check = 1;  // スタック判定をon
+
+    if (((i + 1) % 15 == 0) && (300 < rover->distance)) {
+      xbee_uart( dev, "regular gps change\r");
+      write_control_sd(F("regular gps change"));
+      gps_switch();
+    }
 
   } while (1);
 
