@@ -12,8 +12,8 @@ int status3(ROVER *rover) {  // Status3 降下の関数(着陸判定を行う)
   if (time_out == 0) {
     xbee_uart( dev, "time_out is 0\r");
     write_control_sd(F("time_out is 0\r"));
-    xbee_uart( dev, "delay 1.5hr");
-    write_control_sd(F("delay 1.5h\r"));
+    xbee_uart( dev, "wait 1.5hr");
+    write_control_sd(F("wait 1.5h\r"));
 
     unsigned long reset_count_start = millis();  // 開始時刻
 
@@ -38,7 +38,7 @@ int status3(ROVER *rover) {  // Status3 降下の関数(着陸判定を行う)
 
     int land_count = 0;
     double last_dis = 0;
-    
+
     xbee_uart( dev, "failed　release decision\r");
     write_control_sd(F("failed　release decision"));
 
@@ -55,7 +55,28 @@ int status3(ROVER *rover) {  // Status3 降下の関数(着陸判定を行う)
       xbprintf("last_time");
       xbprintf(xbee_send);
 
-      if ((last_time < 3600000) && abs(last_dis - fall_gps.distance) < 1.0)
+      if ((last_time < 3600000) && abs(last_dis - fall_gps.distance) < 1.0) { // 残り１時間切るかつ座標の変化なし50秒
+        
+        land_count += 1;
+
+        if (land_count == 5) {
+          dtostrf(land_count, 10, 6, xbee_send);
+          xbprintf("land count");
+          xbprintf(xbee_send);
+          write_control_sd("land count is (" + String(land_count, DEC));
+          xbee_uart( dev, "landing ok\r");
+          write_control_sd(F("landing ok"));
+          return 1;
+        }
+      } else {
+        land_count = 0;
+      }
+
+      last_dis = fall_gps.distance;
+      dtostrf(land_count, 10, 6, xbee_send);
+      xbprintf("land count");
+      xbprintf(xbee_send);
+      write_control_sd("land count is (" + String(land_count, DEC));
 
       if (millis() - time_out > 7200000) {
         xbee_uart( dev, "Clear\r");
