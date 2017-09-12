@@ -35,12 +35,16 @@ int status3(ROVER *rover) {  // Status3 降下の関数(着陸判定を行う)
 
 
   if (time_out_flag == 0) {
+
+    int land_count = 0;
+    double last_dis = 0;
+    
     xbee_uart( dev, "failed　release decision\r");
     write_control_sd(F("failed　release decision"));
 
     while (1) {
-      xbee_uart( dev, "2hours time-out mode\r");
-      write_control_sd(F("2hours time-out mode"));
+      xbee_uart( dev, "2hours time-out mode by fail release decision\r");
+      write_control_sd(F("2hours time-out mode by fail release decisition"));
 
       gps_get(&fall_gps);  // GPS送信
 
@@ -51,6 +55,8 @@ int status3(ROVER *rover) {  // Status3 降下の関数(着陸判定を行う)
       xbprintf("last_time");
       xbprintf(xbee_send);
 
+      if ((last_time < 3600000) && abs(last_dis - fall_gps.distance) < 1.0)
+
       if (millis() - time_out > 7200000) {
         xbee_uart( dev, "Clear\r");
         write_control_sd(F("Clear"));
@@ -60,130 +66,27 @@ int status3(ROVER *rover) {  // Status3 降下の関数(着陸判定を行う)
 
   } else {  // 高度を用いてタイムアウトを計算
 
-    write_control_sd("get alt");
+    xbee_uart( dev, "start waiting for 30 minutes\r");
+    write_control_sd(F("start waiting for 30 minutes"));
 
-    double alt = 0;
-    double alt_array[5];
-    int i = 0;
-    int get_alt_flag = 0;
+    while (1) {
 
-    for (int j = 0; j < 5; j++) {
-      i = 0;
-      while (1) {
-        gps_get_al(&alt);  // 高度を取得
-        if (ALT_VAL == 1) {
-          if (2000 < alt && alt < 8000) {
-            alt_array[j] = alt;
-            break;
-          }
-        } else {
-          if (0 < alt) {
-            alt_array[j] = alt;
-            break;
-          }
-        }
-        i += 1;
-        if (i == 3) {
-          alt_array[j] = 0;
-          break;
-        }
+      gps_get(&fall_gps);  // GPS送信
+
+      delay(10000);
+
+      unsigned long last_time_thirty = 1800000 - millis() + release_time;
+      dtostrf(last_time_thirty, 10, 6, xbee_send);
+      xbprintf("last_time");
+      xbprintf(last_time_thirty);
+
+      if (millis() - release_time > 1800000) {
+        xbee_uart( dev, "Clear\r");
+        write_control_sd(F("Clear"));
+        return 1;
       }
     }
 
-    for (int j = 0; j < 5; j++) {
-      if (0 < alt_array[j]) {
-        get_alt_flag = 1;
-      }
-    }
-
-    if (get_alt_flag == 0) {
-      xbee_uart( dev, "failed get alt\r");
-      write_control_sd(F("failed get alt"));
-      while (1) {
-
-        xbee_uart( dev, "2hours time-out mode\r");
-
-        write_control_sd(F("2hours time-out mode"));
-        gps_get(&fall_gps);  // GPS送信
-        delay(10000);
-        
-        unsigned long time_waiting = 0;
-        if (LAND_ALT == 1) {
-          time_waiting = 7200000;
-        } else {
-          time_waiting = 100000;
-        }
-
-        unsigned long last_time = time_waiting - millis() + time_out;
-        dtostrf(last_time, 10, 6, xbee_send);
-        xbprintf("last_time");
-        xbprintf(xbee_send);
-
-        if (millis() - time_out > time_waiting) {
-          xbee_uart( dev, "Clear\r");
-          write_control_sd(F("Clear"));
-          return 1;
-        }
-      }
-    } else {
-
-      write_control_sd("get max alt");
-
-
-      //alt_arrayの最大値を出す
-      alt = value_max(5, alt_array);
-
-      write_control_sd("altitude max is " + String(alt, DEC));
-
-      xbee_uart( dev, "wait start\r");
-      write_control_sd(F("wait start"));
-
-
-      // 秒速5m/sで落下するとし1.2のマージンを取る
-
-      if (1000 < alt) {
-        alt = alt - 1000;
-      } else {
-        ;
-      }
-
-
-
-      unsigned long wait_time = ((alt * 1.2 * 1000) / 3) + 600000;
-      unsigned long fall_count_start = millis();  // 開始時刻
-      dtostrf(wait_time, 10, 6, xbee_send);
-      xbprintf("wait time");
-      xbprintf(xbee_send);
-
-      if (ALT_VAL == 1) {  // 本番は必ずこの時間は待つ
-        if (wait_time < 1440000) {
-          
-          xbee_uart( dev, "wait_time < 1440000\r");
-          xbee_uart( dev, "wait_time ===> 1440000\r");
-
-          write_control_sd(F("wait_time < 1440000"));
-          write_control_sd(F("wait_time ===> 1440000"));
-
-          wait_time = 1440000;
-        }
-      }
-
-      while (millis() - fall_count_start < wait_time) {
-
-        write_control_sd("waiting");
-
-        gps_get(&fall_gps);  // GPS送信
-        delay(10000);
-
-        unsigned long last_time = wait_time - millis() + fall_count_start;
-        dtostrf(last_time, 10, 6, xbee_send);
-        xbprintf("last_time");
-        xbprintf(xbee_send);
-
-      }
-
-      return 1;
-    }
   }
 }
 //

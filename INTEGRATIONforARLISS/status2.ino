@@ -31,6 +31,7 @@ int judge_release() {
     }
 
     if (light == 5) {
+      release_time = millis();
       break;
     }
     i = 0;
