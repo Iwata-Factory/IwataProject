@@ -27,7 +27,6 @@ int status5(ROVER *rover) {
       delay(10);
     }
 
-
     if ((i + 6) % 10 == 0) { // たまにキャリブレーションする
       xbee_uart( dev, "regular calibration\r");
       write_control_sd(F("regular calibration"));
