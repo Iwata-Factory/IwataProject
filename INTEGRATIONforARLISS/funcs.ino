@@ -639,16 +639,21 @@ int turn_target_direction(double target_direction, double *my_Direction, int bra
 
     double rotate_angle = get_angle_devision(*my_Direction, target_direction);
 
-    if ((-20 < rotate_angle) && (rotate_angle < 20)) {
+    if ((-20 < rotate_angle) && (rotate_angle < 20) && (branch == 0)) {
       rotate_angle = 0;
       write_control_sd(F("direction difference < 20 ---> success"));
+      xbee_uart( dev, " success turn_target_direction() \r");
+      return 1;
+    } else if ((-10 < rotate_angle) && (rotate_angle < 10) && (branch == 9)) {
+      rotate_angle = 0;
+      write_control_sd(F("direction difference < 10 ---> success"));
       xbee_uart( dev, " success turn_target_direction() \r");
       return 1;
     }
 
     xbee_uart(dev, "needed rotation is ");
     xbee_send_1double(rotate_angle);
-    if (branch == 0) {
+    if ((branch == 0) || (branch == 9)) {
       rotate_angle = rotate_angle * (12 - i) / 10;  // 回転角度を収束させる
 
       if (MACHINE == 1) {

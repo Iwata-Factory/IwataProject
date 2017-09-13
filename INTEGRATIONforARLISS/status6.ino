@@ -176,73 +176,178 @@ POINT gps_get_by_two_module() {
   return success_point;
 }
 
-double get_goal(ROVER *rover) {
-  int i = 0;
-  int t = 0;
-  double para_distance = 0;
-  double volt = 0;
-  int goal_flag = 0;
+int last_sequence() {
 
-  xbee_uart(dev, "get_goal\n");
-  DRIVE turn; // DRIVE型の宣言
-  //右向き回転
-  turn.right1 = 0;
-  turn.right2 = 50;
-  turn.leght1 = 50;
-  turn.leght2 = 0;
-  rover_analog(turn);
-  while (t <= 10000) {
-    volt = analogRead( DISTANCE ) * 5 / 1023.0;
-    if ( 1.35 < volt & volt < 2.7 ) {            //有効測距範囲内
-      para_distance = 140.0 / ( volt - 1.10 ) ;
-      turn.right1 = 1;
-      turn.right2 = 1;
-      turn.leght1 = 1;
-      turn.leght2 = 1;
-      rover_degital(turn);
-      rover->My_Direction = get_my_direction();
-      delay(1000);
-      //とりあえず取得した方向に進む
-      if (para_distance >= 3) {
-        go_straight(500);
-        //右向き回転
-        turn.right1 = 0;
-        turn.right2 = 50;
-        turn.leght1 = 50;
-        turn.leght2 = 0;
-      } else {
-        if (para_distance > 1 && para_distance <= 3) {
-          go_straight(500);
-          //右向き回転
-          turn.right1 = 0;
-          turn.right2 = 50;
-          turn.leght1 = 50;
-          turn.leght2 = 0;
-          goal_flag = 1;
-        }
-        if (goal_flag = 1) {
-          go_straight(500);
-          return 1;
-        } else {
-          return 0;
-        }
+  xbee_uart( dev, "start last equence \r");
+
+
+  //回転→検知→あれば方向記録
+
+  double directions[10] = { -1.0};
+  double volt;
+  double d_dummy;
+
+  xbee_uart( dev, "rotate time\r");
+
+  for (int i = 0; i < 30; i++) {
+
+    dtostrf(i, 10, 6, xbee_send);
+    xbprintf("time");
+    xbprintf(xbee_send);
+
+    go_rotate(500);
+    int j = 0;
+
+    for (int k = 0; k < 5; k++) {
+      volt = analogRead( DISTANCE ) * 5 / 1023.0;
+      if ( 1.35 < volt && volt < 2.7 ) {            //有効測距範囲内
+        j += 1;
+
+        dtostrf(j, 10, 6, xbee_send);
+        xbprintf("count");
+        xbprintf(xbee_send);
       }
 
+      if (j == 5) {
+        for (int v = 0; v < 10; v++) {
+          if (directions[v] == -1.0) {
+            directions[v] = get_my_direction();
+            dtostrf(v, 10, 6, xbee_send);
+            xbprintf("set directions ");
+            xbprintf(xbee_send);
+            break;
+          }
+        }
+      } else {
+        xbee_uart( dev, "no set\r");
+      }
+      delay(500);
     }
-    delay(1);
-    t++;
   }
-  //停止
-  turn.right1 = 1;
-  turn.right2 = 1;
-  turn.leght1 = 1;
-  turn.leght2 = 1;
-  rover_degital(turn);
-  delay(1000);
+
+  xbee_uart( dev, "check time\r");
+
+
+  for (int v = 0; v < 10; v++) {
+    if (directions[v] != -1.0) {
+
+
+      dtostrf(v, 10, 6, xbee_send);
+      xbprintf("part of  ");
+      xbprintf(xbee_send);
+
+      for (int s = 0; s < 3; s++) {
+        if (turn_target_direction(directions[v], &d_dummy, 9) == 1) {
+          break;
+        }
+      }
+      int l = 0;
+
+      for (int k = 0; k < 5; k++) {
+        volt = analogRead( DISTANCE ) * 5 / 1023.0;
+        if ( 1.35 < volt && volt < 2.7 ) {            //有効測距範囲内
+          l += 1;
+
+          dtostrf(l, 10, 6, xbee_send);
+          xbprintf("count ");
+          xbprintf(xbee_send);
+        }
+        delay(500);
+      }
+      if (l != 5) {
+        directions[v] = -1.0;
+        xbee_uart( dev, "count is not 5 ===> 0\r");
+      }
+    }
+  }
+
+  xbee_uart( dev, "set direction time\r");
+
+
+  for (int v = 0; v < 9; v ++) {
+    if (0 < directions[v]) {
+
+      xbee_uart( dev, "set start\r");
+
+      turn_target_direction(directions[v], &d_dummy, 9);
+      go_straight(1000);
+      xbee_uart( dev, "finish\r");
+
+      return 1;
+    }
+  }
+  
+  xbee_uart( dev, "no target\r");
 
   return 0;
-
 }
-
-
+//double get_goal(ROVER *rover) {
+//  int i = 0;
+//  int t = 0;
+//  double para_distance = 0;
+//  double volt = 0;
+//  int goal_flag = 0;
+//
+//  xbee_uart(dev, "get_goal\n");
+//  DRIVE turn; // DRIVE型の宣言
+//  //右向き回転
+//  turn.right1 = 0;
+//  turn.right2 = 50;
+//  turn.leght1 = 50;
+//  turn.leght2 = 0;
+//  rover_analog(turn);
+//  while (t <= 10000) {
+//    volt = analogRead( DISTANCE ) * 5 / 1023.0;
+//    if ( 1.35 < volt & volt < 2.7 ) {            //有効測距範囲内
+//      para_distance = 140.0 / ( volt - 1.10 ) ;
+//      turn.right1 = 1;
+//      turn.right2 = 1;
+//      turn.leght1 = 1;
+//      turn.leght2 = 1;
+//      rover_degital(turn);
+//      rover->My_Direction = get_my_direction();
+//      delay(1000);
+//      //とりあえず取得した方向に進む
+//      if (para_distance >= 3) {
+//        go_straight(500);
+//        //右向き回転
+//        turn.right1 = 0;
+//        turn.right2 = 50;
+//        turn.leght1 = 50;
+//        turn.leght2 = 0;
+//      } else {
+//        if (para_distance > 1 && para_distance <= 3) {
+//          go_straight(500);
+//          //右向き回転
+//          turn.right1 = 0;
+//          turn.right2 = 50;
+//          turn.leght1 = 50;
+//          turn.leght2 = 0;
+//          goal_flag = 1;
+//        }
+//        if (goal_flag = 1) {
+//          go_straight(500);
+//          return 1;
+//        } else {
+//          return 0;
+//        }
+//      }
+//
+//    }
+//    delay(1);
+//    t++;
+//  }
+//  //停止
+//  turn.right1 = 1;
+//  turn.right2 = 1;
+//  turn.leght1 = 1;
+//  turn.leght2 = 1;
+//  rover_degital(turn);
+//  delay(1000);
+//
+//  return 0;
+//
+//}
+//
+//
 
