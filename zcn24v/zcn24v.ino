@@ -7,7 +7,7 @@
 #define XBEE_BUFFERSIZE 63
 #define ENTER 0x0D
 #define O_CAP 0x4F
-byte dev[] = {0x00, 0x13, 0xA2, 0x00, 0x40, 0xE7, 0xEB, 0xBA};  // XBEE親機アドレス（６月３０日改造版）
+byte dev[] = {0x00, 0x13, 0xA2, 0x00, 0x40, 0xE7, 0xED, 0x61};  // XBEE親機アドレス（６月３０日改造版）
 
 //byte dev[] = {0x00, 0x13, 0xA2, 0x00, 0x40, 0xE7, 0xED, 0x61};  // XBEE親機アドレス（６月３０日改造版）
 char xbee_send[XBEE_BUFFERSIZE];  //とりあえずのxbee送信用配列
@@ -22,8 +22,6 @@ char xbee_send[XBEE_BUFFERSIZE];  //とりあえずのxbee送信用配列
 #define M1_2 7
 #define M2_1 5
 #define M2_2 6
-
-
 #include <xbee.h>  //このライブラリはslackを参照して各自PCに入れてください。
 
 typedef struct {

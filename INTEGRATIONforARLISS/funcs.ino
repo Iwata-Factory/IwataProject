@@ -743,7 +743,9 @@ int tm_calibration() {
 
       delay(10000);  // 周辺の掃除
 
-      for (int i = 0; i < 1500; i++) {
+      int i = 0;
+
+      for (i = 0; i < 1500; i++) {
 
         delay(10);
 

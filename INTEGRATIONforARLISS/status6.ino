@@ -56,6 +56,8 @@ int status6(ROVER *rover) {
   } while (i < 15);
 
   xbee_uart( dev, "DANGER DANGER DANGER\r");
+  write_control_sd(F("DANGER DANGER DANGER"));
+
   i = 0;
   GPS gps_last;
   do {  // ヤバイ時に走る
@@ -64,7 +66,7 @@ int status6(ROVER *rover) {
       gps_switch();
     }
 
-    write_control_sd(F("loop"));
+    write_control_sd(F("loop2"));
 
     write_gps_sd(gps_last);
     write_timelog_sd(rover);

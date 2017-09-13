@@ -28,6 +28,7 @@ int status5(ROVER *rover) {
     }
 
     if ((i + 6) % 10 == 0) { // たまにキャリブレーションする
+
       xbee_uart( dev, "regular calibration\r");
       write_control_sd(F("regular calibration"));
       tm_calibration();  // 条件が揃ったらキャリブレーション

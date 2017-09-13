@@ -105,6 +105,7 @@ int status3(ROVER *rover) {  // Status3 降下の関数(着陸判定を行う)
       xbprintf(xbee_send);
 
       if (millis() - release_time > 1800000) {
+
         xbee_uart( dev, "Clear\r");
         write_control_sd(F("Clear"));
         return 1;

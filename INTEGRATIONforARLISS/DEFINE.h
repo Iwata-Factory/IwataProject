@@ -5,13 +5,13 @@
 
 // 定数の定義
 // ゴール位置
-#define GOAL_LATITUDE 40.65242872842791
-#define GOAL_LONGITUDE -119.35402841449282
- 
+#define GOAL_LATITUDE 40.879715
+#define GOAL_LONGITUDE 119.121768
+
 #define GOAL_CIRCLE 3
 #define LAST_GOAL_CIRCLE 1.0
 // 海抜制限
-#define ALT_REGULATION 100
+//#define ALT_REGULATION 100
 //SD関連
 #define LOG_TIME ("timelog.txt")
 #define LOG_AC ("aclog.txt")
@@ -30,7 +30,7 @@
 #define GPSBAUDRATE 9600 //シリアル通信のデータ送信レートを9600bpsに定義するための定数(GPSとArduino)
 #define READBUFFERSIZE  (256)
 #define DELIMITER   (",")  // 区切り文字定数
-#define GPS_JUMP_DISTANCE 100 // GPSのジャンプ許容距離
+#define GPS_JUMP_DISTANCE 150 // GPSのジャンプ許容距離
 //地磁気センサ関連
 #define HMC5883L 0x1E   //HMC5883L(地磁気センサ)のスレーブアドレス
 #define SINGLE_MODE 0x01   //single mode
@@ -46,26 +46,26 @@
 #define M2_1 5
 #define M2_2 6
 // PID制御関連
-#define PI_RIGHT_DEFAULT 200
-#define PI_LEGHT_DEFAULT 250
+#define PI_RIGHT_DEFAULT 250
+#define PI_LEGHT_DEFAULT 205
 #define PI_INTEGRAL_RISET 10
 #define PID_STREIGHT_BETWEEN 100
 #define PI_KP 1.2
-#define PI_KP2 0
+//#define PI_KP2 0
 #define PI_KI 0.2
 #define PI_MIN 80
 #define PI_MAX 250
 //スピーカー関連
-#define BEAT_LONG 300   // 音の長さを指定
-#define TONE_PINNO 33   // 圧電スピーカを接続したピン番号
-#define C_TONE  262    //ド
-#define D_TONE  294    //レ
-#define E_TONE  330    //ミ
-#define F_TONE  349
-#define G_TONE  392
-#define A_TONE  440
-#define B_TONE  494
-#define HIGH_C  523
+//#define BEAT_LONG 300   // 音の長さを指定
+//#define TONE_PINNO 33   // 圧電スピーカを接続したピン番号
+//#define C_TONE  262    //ド
+//#define D_TONE  294    //レ
+//#define E_TONE  330    //ミ
+//#define F_TONE  349
+//#define G_TONE  392
+//#define A_TONE  440
+//#define B_TONE  494
+//#define HIGH_C  523
 // 照度センサ関連
 #define LIGHT_PIN 2  //照度センサピン
 // 距離センサ関連
@@ -137,9 +137,9 @@
 
 // グローバル変数の定義(ごちゃごちゃしているためいずれ整理したい)
 static unsigned long time; //タイマー起動
-byte dev[] = {0x00, 0x13, 0xA2, 0x00, 0x40, 0xE7, 0xED, 0x61};  // XBEE親機アドレス（６月３０日改造版）
-
 //byte dev[] = {0x00, 0x13, 0xA2, 0x00, 0x40, 0xE7, 0xED, 0x61};  // XBEE親機アドレス（６月３０日改造版）
+
+byte dev[] = {0x00, 0x13, 0xA2, 0x00, 0x40, 0xE7, 0xEB, 0xBA};  // XBEE親機アドレス（６月３０日改造版）
 //byte dev[] = {0x00, 0x13, 0xA2, 0x00, 0x40, 0xB9, 0x3D, 0xCD};  // XBEE親機アドレス
 
 static const uint8_t length = 6;   //読み出しデータの個数
@@ -174,8 +174,8 @@ int time_out_flag = 1;
 #elif MACHINE == 2
 
 // ゴール位置
-#define GOAL_LATITUDE 40.65242872842791
-#define GOAL_LONGITUDE 119.35402841449282
+#define GOAL_LATITUDE 40.879715
+#define GOAL_LONGITUDE 119.121768
 
 #define GOAL_CIRCLE 3
 #define LAST_GOAL_CIRCLE 1.0
@@ -213,8 +213,8 @@ int time_out_flag = 1;
 #define M2_1 5
 #define M2_2 6
 // PID制御関連
-#define PI_RIGHT_DEFAULT 230
-#define PI_LEGHT_DEFAULT 250
+#define PI_RIGHT_DEFAULT 250
+#define PI_LEGHT_DEFAULT 205
 #define PI_INTEGRAL_RISET 10
 #define PID_STREIGHT_BETWEEN 100
 #define PI_KP 1.2
