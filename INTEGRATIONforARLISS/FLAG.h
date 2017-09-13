@@ -3,10 +3,10 @@
 
 // 各ステータスを飛ばすかどうか
 // 1なら実行、0なら飛ばします
-#define _S1_ 0
-#define _S2_ 0
+#define _S1_ 1
+#define _S2_ 1
 #define _S3_ 1
-#define _S4_ 0
+#define _S4_ 1
 #define _S5_ 0
 #define _S6_ 0
 
@@ -14,9 +14,9 @@
 
 // eeprom手順 ARLISSを0にし、status1の待機状態で電源を落とす。ARLISSを1にし、再度書き込みしてテストを行いケーシングに格納する。
 
-#define ARLISS 1 // 0はEEPROMクリアする。本番はリセットに対応するため1にあげる。
+#define ARLISS 0 // 0はEEPROMクリアする。本番はリセットに対応するため1にあげる。
 
-#define ARLISS_TEST 1 // 1にすると本番最初にテストを行う
+#define ARLISS_TEST 0 // 1にすると本番最初にテストを行う
 
 #define XBEE_SWITCH 1  // 0にするとxbeeを全て無視します(今は動作不安定っぽい)
 #define LAND_JUDGE_FLAG 1 // 着陸判定を行うならば1.飛ばすなら0.
@@ -30,8 +30,8 @@
 #define PI_FLAG 1
 #define CAMERA 0  // 0の時カメラを動作させない
 
-#define LAND_ALT 1 // 0でタイムアウト秒数少なく
-#define ALT_VAL 1 // 1で高度制限
+#define LAND_ALT 0 // 0でタイムアウト秒数少なく
+#define ALT_VAL 0 // 1で高度制限
 // 1の時PI制御で直進する。
 
 // テスト用フラグ

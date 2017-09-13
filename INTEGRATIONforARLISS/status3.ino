@@ -46,9 +46,9 @@ int status3(ROVER *rover) {  // Status3 降下の関数(着陸判定を行う)
       xbee_uart( dev, "2hours time-out mode by fail release decision\r");
       write_control_sd(F("2hours time-out mode by fail release decisition"));
 
-      gps_get(&fall_gps);  // GPS送信
-
       delay(10000);
+
+      gps_get(&fall_gps);  // GPS送信
 
       unsigned long last_time = 7200000 - millis() + time_out;
       dtostrf(last_time, 10, 6, xbee_send);
@@ -56,7 +56,7 @@ int status3(ROVER *rover) {  // Status3 降下の関数(着陸判定を行う)
       xbprintf(xbee_send);
 
       if ((last_time < 3600000) && abs(last_dis - fall_gps.distance) < 1.0) { // 残り１時間切るかつ座標の変化なし50秒
-        
+
         land_count += 1;
 
         if (land_count == 5) {
@@ -70,31 +70,33 @@ int status3(ROVER *rover) {  // Status3 降下の関数(着陸判定を行う)
         }
       } else {
         land_count = 0;
+        last_dis = fall_gps.distance;
       }
 
-      last_dis = fall_gps.distance;
       dtostrf(land_count, 10, 6, xbee_send);
       xbprintf("land count");
       xbprintf(xbee_send);
       write_control_sd("land count is (" + String(land_count, DEC));
 
       if (millis() - time_out > 7200000) {
+
         xbee_uart( dev, "Clear\r");
         write_control_sd(F("Clear"));
         return 1;
       }
     }
 
-  } else {  
+  } else {
 
     xbee_uart( dev, "start waiting for 30 minutes\r");
     write_control_sd(F("start waiting for 30 minutes"));
 
     while (1) {
 
-      gps_get(&fall_gps);  // GPS送信
 
       delay(10000);
+
+      gps_get(&fall_gps);  // GPS送信
 
       unsigned long last_time_thirty = 1800000 - millis() + release_time;
 
