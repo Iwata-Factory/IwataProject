@@ -7,12 +7,14 @@
 #define _S2_ 1
 #define _S3_ 1
 #define _S4_ 1
-#define _S5_ 0
-#define _S6_ 0
+#define _S5_ 1
+#define _S6_ 1
 
 // 設定用フラグ(1のほうが標準)
 
 // eeprom手順 ARLISSを0にし、status1の待機状態で電源を落とす。ARLISSを1にし、再度書き込みしてテストを行いケーシングに格納する。
+
+#define GPS_DEFAULT 2  // status6で優先するgps
 
 #define ARLISS 0 // 0はEEPROMクリアする。本番はリセットに対応するため1にあげる。
 

@@ -60,6 +60,10 @@ int status6(ROVER *rover) {
   GPS gps_last;
   do {  // ヤバイ時に走る
 
+    if (use_which_gps != GPS_DEFAULT) {
+      gps_switch();
+    }
+
     write_control_sd(F("loop"));
 
     write_gps_sd(gps_last);
@@ -123,10 +127,10 @@ POINT gps_get_by_two_module() {
   point2.latitude = gps2.latitude;
   point2.longitude = gps2.longitude;
 
-  if (!(0 <= gps1.distance && gps1.distance <= 8 && 0 <= gps2.distance && gps2.distance <= 8)) {  // どちらかのGPSがおかしいかも
+  if (!(0 <= gps1.distance && gps1.distance <= 25 && 0 <= gps2.distance && gps2.distance <= 25)) {  // どちらかのGPSがおかしいかも
 
-    xbee_uart( dev, "gps over 8m\r");
-    write_control_sd(F("gps over 8"));
+    xbee_uart( dev, "gps over 25m\r");
+    write_control_sd(F("gps over 25m"));
 
     xbee_uart( dev, "false gps_get_by_two_module\r");
     write_control_sd(F("false gps_get_by_two_module"));
@@ -134,11 +138,11 @@ POINT gps_get_by_two_module() {
     return false_point;
   }
 
-  if (!(0 <= distance_get(&gps1, &point2) && distance_get(&gps1, &point2) <= 16)) {  // どちらかのGPSがおかしいかも
+  if (!(0 <= distance_get(&gps1, &point2) && distance_get(&gps1, &point2) <= 50)) {  // どちらかのGPSがおかしいかも
 
 
-    xbee_uart( dev, "2gps are 16m off\r");
-    write_control_sd(F("2gps are 16m off"));
+    xbee_uart( dev, "2gps are 50m off\r");
+    write_control_sd(F("2gps are 50m off"));
 
     xbee_uart( dev, "false gps_get_by_two_module\r");
     write_control_sd(F("false gps_get_by_two_module"));
