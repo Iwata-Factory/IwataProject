@@ -85,7 +85,7 @@ int status3(ROVER *rover) {  // Status3 降下の関数(着陸判定を行う)
       }
     }
 
-  } else {  // 高度を用いてタイムアウトを計算
+  } else {  
 
     xbee_uart( dev, "start waiting for 30 minutes\r");
     write_control_sd(F("start waiting for 30 minutes"));
@@ -97,9 +97,10 @@ int status3(ROVER *rover) {  // Status3 降下の関数(着陸判定を行う)
       delay(10000);
 
       unsigned long last_time_thirty = 1800000 - millis() + release_time;
+
       dtostrf(last_time_thirty, 10, 6, xbee_send);
       xbprintf("last_time");
-      xbprintf(last_time_thirty);
+      xbprintf(xbee_send);
 
       if (millis() - release_time > 1800000) {
         xbee_uart( dev, "Clear\r");
