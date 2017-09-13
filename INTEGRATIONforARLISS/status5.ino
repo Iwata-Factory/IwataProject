@@ -116,7 +116,7 @@ int status5(ROVER *rover) {
 
     do_stack_check = 1;  // スタック判定をon
 
-    if (((i + 1) % 15 == 0) && (300 < rover->distance)) {
+    if (((i + 1) % 15 == 0) && (300.0 < rover->distance)) {
       xbee_uart( dev, "regular gps change\r");
       write_control_sd(F("regular gps change"));
       gps_switch();
